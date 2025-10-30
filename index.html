@@ -9,15 +9,14 @@
 </head>
 
 <body>
-    <!-- Landing Page -->
-    <div id="landingPage" class="landing-container">
+    <div class="landing-container">
         <div class="logo-container">
             <img src="assets/Logo_BST.png" alt="Banc de Sang i Teixits" class="main-logo">
         </div>
 
         <div class="buttons-container">
-            <button class="main-btn" id="btnIniciarSessio">Iniciar Sessió</button>
-            <button class="main-btn" id="btnRegistrarse">Registrar-se</button>
+            <button class="main-btn">Iniciar Sessió</button>
+            <button class="main-btn">Registrar-se</button>
         </div>
 
         <div class="footer-logo">
@@ -25,44 +24,7 @@
         </div>
     </div>
 
-    <!-- Login modal / form -->
-    <div id="loginModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" id="closeLogin">&times;</span>
-            <h2>Iniciar Sessió</h2>
-            <form id="loginForm">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-
-                <label for="password">Contrasenya</label>
-                <input type="password" id="password" name="password" required minlength="6">
-
-                <div class="actions">
-                    <button type="submit" id="loginSubmit">Entrar</button>
-                </div>
-                <p class="hint">Demo: user@example.com / password123</p>
-                <p id="loginError" class="error" aria-live="polite"></p>
-            </form>
-        </div>
-    </div>
-
-    <!-- Protected content shown after login -->
-    <main id="protectedContent" class="hidden">
-        <h1>Benvingut a Banc de Sang</h1>
-        <p id="welcomeText"></p>
-        <button id="logoutBtn">Tancar sessió</button>
-        <hr>
-        <button id="miBoton">Fes clic</button>
-    </main>
-
-    <!-- Fallback content for users without JS (progressive enhancement) -->
-    <noscript>
-        <p>Aquesta aplicació necessita JavaScript per funcionar correctament. Si us plau, habilita'l al teu navegador.
-        </p>
-    </noscript>
-
-    <!-- Incluimos el JS al final del body -->
-    <script src="script.js"></script>
+    <script src="scripts/script.js"></script>
 </body>
 
 </html>

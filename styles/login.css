@@ -106,7 +106,7 @@ body {
 
 .modal-content {
     background: var(--card);
-    padding: 30px;
+    padding: 40px 30px;
     border-radius: 12px;
     min-width: 320px;
     max-width: 400px;
@@ -120,39 +120,35 @@ body {
     top: 15px;
     right: 20px;
     font-size: 28px;
-    color: #666;
+    color: #999;
     cursor: pointer;
     line-height: 1;
     transition: color 0.2s;
+    font-weight: 300;
 }
 
 .close-modal:hover {
     color: #333;
 }
 
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: var(--text-dark);
-    font-size: 24px;
-}
-
-.modal-content label {
-    display: block;
-    margin-top: 14px;
-    margin-bottom: 6px;
-    font-size: 14px;
-    color: var(--text-dark);
-    font-weight: 500;
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .modal-content input {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
     transition: border-color 0.2s;
+    background: white;
+}
+
+.modal-content input::placeholder {
+    color: #999;
 }
 
 .modal-content input:focus {
@@ -160,27 +156,85 @@ body {
     border-color: var(--primary);
 }
 
-.modal-content .actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-}
-
-.modal-content button[type="submit"] {
+.modal-btn {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
+    padding: 14px 24px;
+    border-radius: 50px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     width: 100%;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(183, 28, 52, 0.3);
+    margin-top: 5px;
 }
 
-.modal-content button[type="submit"]:hover {
+.modal-btn:hover {
     background: #9a1829;
+    box-shadow: 0 4px 8px rgba(183, 28, 52, 0.4);
+}
+
+.modal-btn.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    box-shadow: none;
+}
+
+.modal-btn.secondary:hover {
+    background: rgba(183, 28, 52, 0.05);
+}
+
+.divider {
+    text-align: center;
+    position: relative;
+    margin: 10px 0;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    color: #999;
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+}
+
+.terms-text {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    line-height: 1.4;
+    margin: 10px 0;
+}
+
+.switch-text {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 15px;
+}
+
+.switch-text a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.switch-text a:hover {
+    text-decoration: underline;
 }
 
 button[disabled] {
