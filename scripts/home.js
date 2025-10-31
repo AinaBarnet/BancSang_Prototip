@@ -141,6 +141,14 @@ function setupEventListeners() {
         // Por ahora, añadimos una donación para pruebas
         addDonation();
     });
+
+    // Click en la información del premio
+    prizeInfoEl.addEventListener('click', () => {
+        window.location.href = 'premio.html';
+    });
+
+    // Añadir estilo de cursor pointer al premio
+    prizeInfoEl.style.cursor = 'pointer';
 }
 
 // Función para resetear el contador (útil para pruebas)

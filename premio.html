@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalls del Premi - Banc de Sang</title>
+    <link rel="stylesheet" href="styles/premio.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" id="backBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+        </div>
+        <h1 class="header-title">El premi del mes</h1>
+        <div class="header-right"></div>
+    </header>
+
+    <main>
+        <div class="prize-container">
+            <!-- Imagen del premio -->
+            <div class="prize-image">
+                <div class="prize-badge">🎁</div>
+                <div class="prize-photo">
+                    <img src="assets/galaxy-book-4-gris-funda.avif" alt="Samsung Galaxy Book4 i3" class="product-image">
+                </div>
+            </div>
+
+            <!-- Información del premio -->
+            <div class="prize-details">
+                <h2 class="prize-name">Samsung Galaxy Book4 i3 + Funda</h2>
+
+                <div class="prize-status">
+                    <div class="status-badge" id="statusBadge">
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">En progrés</span>
+                    </div>
+                    <div class="progress-info">
+                        <span id="currentDonations">0</span> / <span id="totalGoal">33,000</span> donacions
+                    </div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar">
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <div class="prize-description">
+                    <h3>Descripció del premi</h3>
+                    <p>
+                        El Samsung Galaxy Book4 amb processador Intel Core i3 és l'ordinador portàtil perfecte per
+                        a l'estudi i el treball diari. Inclou una funda de protecció premium per mantenir el teu
+                        equip segur.
+                    </p>
+                </div>
+
+                <!-- Características -->
+                <div class="prize-specs">
+                    <h3>Característiques principals</h3>
+                    <ul class="specs-list">
+                        <li>
+                            <span class="spec-icon">💻</span>
+                            <div class="spec-content">
+                                <strong>Processador:</strong> Intel Core i3 de 13a generació
+                            </div>
+                        </li>
+                        <li>
+                            <span class="spec-icon">🖥️</span>
+                            <div class="spec-content">
+                                <strong>Pantalla:</strong> 15.6" Full HD (1920x1080)
+                            </div>
+                        </li>
+                        <li>
+                            <span class="spec-icon">💾</span>
+                            <div class="spec-content">
+                                <strong>Memòria:</strong> 8GB RAM DDR4
+                            </div>
+                        </li>
+                        <li>
+                            <span class="spec-icon">📀</span>
+                            <div class="spec-content">
+                                <strong>Emmagatzematge:</strong> 256GB SSD
+                            </div>
+                        </li>
+                        <li>
+                            <span class="spec-icon">🎒</span>
+                            <div class="spec-content">
+                                <strong>Extras:</strong> Funda de protecció inclosa
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Condiciones del sorteo -->
+                <div class="prize-conditions">
+                    <h3>Condicions del sorteig</h3>
+                    <div class="conditions-grid">
+                        <div class="condition-card">
+                            <span class="condition-icon">🎯</span>
+                            <h4>Objectiu</h4>
+                            <p>33.000 donacions mensuals</p>
+                        </div>
+                        <div class="condition-card">
+                            <span class="condition-icon">📅</span>
+                            <h4>Termini</h4>
+                            <p>Fins al 30 de novembre de 2025</p>
+                        </div>
+                        <div class="condition-card">
+                            <span class="condition-icon">🎲</span>
+                            <h4>Sorteig</h4>
+                            <p>Sorteig aleatori entre tots els participants</p>
+                        </div>
+                        <div class="condition-card">
+                            <span class="condition-icon">✅</span>
+                            <h4>Participació</h4>
+                            <p>Automàtica amb cada donació registrada</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="prize-info-box">
+                    <h3>ℹ️ Informació important</h3>
+                    <ul>
+                        <li>Cada donació de sang registrada a l'aplicació compta com una participació al sorteig.</li>
+                        <li>El sorteig només es realitzarà si s'assoleixin les 33.000 donacions al final del mes.</li>
+                        <li>El guanyador serà notificat a través de l'aplicació i per correu electrònic.</li>
+                        <li>El premi s'entregarà en un termini màxim de 15 dies després del sorteig.</li>
+                    </ul>
+                </div>
+
+                <!-- Bases del sorteo (expandible) -->
+                <div class="rules-section" id="rulesSection">
+                    <button class="rules-toggle" id="rulesToggle">
+                        <span class="rules-icon">📋</span>
+                        <span class="rules-title">Bases del sorteig</span>
+                        <svg class="rules-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="rules-content" id="rulesContent">
+                        <div class="rules-inner">
+                            <div class="rule-item">
+                                <strong>1. Participació</strong>
+                                <p>Cada donació de sang registrada a través de l'aplicació "Quedem per donar sang?"
+                                    comporta una participació automàtica al sorteig mensual. No cal realitzar cap acció
+                                    addicional.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>2. Requisits</strong>
+                                <p>Poden participar totes les persones majors de 18 anys que realitzin una donació de
+                                    sang verificada i registrada durant el mes en curs. És necessari tenir un compte
+                                    actiu a l'aplicació.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>3. Objectiu mensual</strong>
+                                <p>El sorteig només es durà a terme si s'assoleix l'objectiu mínim de 33.000 donacions
+                                    registrades durant el mes. Si no s'assoleix, el premi s'acumularà per al mes
+                                    següent.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>4. Sorteig</strong>
+                                <p>El sorteig es realitzarà de forma aleatòria mitjançant un sistema informàtic
+                                    certificat el primer dia laborable del mes següent. Totes les participacions tenen
+                                    les mateixes probabilitats.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>5. Notificació</strong>
+                                <p>El guanyador serà notificat a través de l'aplicació mòbil i per correu electrònic a
+                                    l'adreça registrada. Disposarà de 15 dies naturals per reclamar el premi.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>6. Lliurament del premi</strong>
+                                <p>El premi (Samsung Galaxy Book4 i3 + Funda) s'entregarà al domicili del guanyador en
+                                    un termini màxim de 15 dies laborables després de la verificació de les dades.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>7. Condicions generals</strong>
+                                <p>El premi no és transferible ni bescanviable per diners. L'organització es reserva el
+                                    dret de descalificar participacions fraudulentes. En cas de dubte, la decisió de
+                                    l'organització serà definitiva.</p>
+                            </div>
+
+                            <div class="rule-item">
+                                <strong>8. Protecció de dades</strong>
+                                <p>Les dades personals dels participants seran tractades d'acord amb la normativa vigent
+                                    de protecció de dades (RGPD). Només s'utilitzaran per a la gestió del sorteig i
+                                    notificació del guanyador.</p>
+                            </div>
+
+                            <p class="rules-footer">Per a més informació o consultes, contacta amb nosaltres a través de
+                                <a href="mailto:atencioaldonant@bst.cat"
+                                    class="contact-email">atencioaldonant@bst.cat</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de acción -->
+                <div class="action-buttons">
+                    <button class="btn-primary" id="shareBtn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Compartir premi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="scripts/premio.js"></script>
+</body>
+
+</html>
