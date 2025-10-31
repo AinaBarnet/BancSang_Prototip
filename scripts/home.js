@@ -397,6 +397,125 @@ function setupEventListeners() {
         messagesBtn.classList.remove('active');
     });
 
+    // Locations submenu
+    const locationsBtn = document.getElementById('locationsBtn');
+    const locationsSubmenu = document.getElementById('locationsSubmenu');
+
+    locationsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        locationsBtn.classList.toggle('active');
+        locationsSubmenu.classList.toggle('active');
+        // Tancar altres submenus
+        notificationsSubmenu.classList.remove('active');
+        notificationsBtn.classList.remove('active');
+        messagesSubmenu.classList.remove('active');
+        messagesBtn.classList.remove('active');
+        registerDonationSubmenu.classList.remove('active');
+        registerDonationBtn.classList.remove('active');
+    });
+
+    // Location card buttons
+    const locationBtns = document.querySelectorAll('.location-btn');
+    locationBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = btn.closest('.location-card');
+            const locationName = card.querySelector('h5').textContent;
+            alert(`Informació detallada de:\n${locationName}\n\n(Aquesta funcionalitat s'implementarà properment)`);
+        });
+    });
+
+    // Filter locations button
+    const filterLocationsBtn = document.getElementById('filterLocationsBtn');
+    if (filterLocationsBtn) {
+        filterLocationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            alert('Filtres de localitzacions:\n- Per distància\n- Per tipus de centre\n- Només oberts ara\n\n(Funcionalitat en desenvolupament)');
+        });
+    }
+
+    // Calcular i actualitzar distàncies des de Mataró
+    calculateDistancesFromMataro();
+}
+
+// Coordenades de referència - Mataró (centre ciutat)
+const MATARO_COORDS = {
+    lat: 41.5402,
+    lon: 2.4444
+};
+
+// Coordenades dels centres de donació
+const DONATION_CENTERS = {
+    'Banc de Sang i Teixits - Barcelona': { lat: 41.4093, lon: 2.2058 },
+    'Hospital Clínic - Barcelona': { lat: 41.3889, lon: 2.1522 },
+    'Hospital Vall d\'Hebron - Barcelona': { lat: 41.4273, lon: 2.1396 },
+    'Centre Cívic - Sabadell': { lat: 41.5489, lon: 2.1089 },
+    'Hospital de Bellvitge - L\'Hospitalet': { lat: 41.3473, lon: 2.1111 }
+};
+
+// Fórmula de Haversine per calcular distància entre dues coordenades
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radi de la Terra en km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    
+    return Math.round(distance * 10) / 10; // Arrodonir a 1 decimal
+}
+
+// Calcular distàncies des de Mataró i actualitzar la interfície
+function calculateDistancesFromMataro() {
+    const locationCards = document.querySelectorAll('.location-card');
+    
+    locationCards.forEach(card => {
+        const locationName = card.querySelector('h5').textContent;
+        const centerCoords = DONATION_CENTERS[locationName];
+        
+        if (centerCoords) {
+            const distance = calculateDistance(
+                MATARO_COORDS.lat,
+                MATARO_COORDS.lon,
+                centerCoords.lat,
+                centerCoords.lon
+            );
+            
+            // Actualitzar la distància a la targeta
+            const distanceElement = card.querySelector('.location-distance');
+            if (distanceElement) {
+                distanceElement.textContent = `${distance} km`;
+            }
+            
+            // Actualitzar l'atribut data-distance per possibles filtres futurs
+            card.setAttribute('data-distance', distance);
+        }
+    });
+    
+    // Ordenar les localitzacions per distància
+    sortLocationsByDistance();
+}
+
+// Ordenar localitzacions per distància
+function sortLocationsByDistance() {
+    const locationsList = document.querySelector('.locations-list');
+    if (!locationsList) return;
+    
+    const cards = Array.from(locationsList.querySelectorAll('.location-card'));
+    
+    cards.sort((a, b) => {
+        const distA = parseFloat(a.getAttribute('data-distance'));
+        const distB = parseFloat(b.getAttribute('data-distance'));
+        return distA - distB;
+    });
+    
+    // Reordenar els elements al DOM
+    cards.forEach(card => locationsList.appendChild(card));
+
     // Manual Form
     const manualFormBtn = document.getElementById('manualFormBtn');
     manualFormBtn.addEventListener('click', () => {
