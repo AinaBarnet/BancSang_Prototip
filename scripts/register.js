@@ -37,12 +37,8 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
     console.log('Intentando registrar usuario:', email);
 
     // Simulación de registro exitoso
-    showSuccess('Registre exitós! Redirigint...');
-
-    // Redirección a login después de 2 segundos
-    setTimeout(() => {
-        window.location.href = 'login.html';
-    }, 2000);
+    // Redirigir directamente a home.html
+    window.location.href = 'home.html';
 });
 
 // Función para validar email

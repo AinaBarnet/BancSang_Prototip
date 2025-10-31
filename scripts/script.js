@@ -1,21 +1,15 @@
-// Script para la página de login
+// Script para la página landing (index.html)
 
-// Manejo del formulario de inicio de sesión
-document.getElementById('loginForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    // Aquí iría la lógica de autenticación
-    console.log('Intentando iniciar sesión con:', email);
-
-    // Por ahora, solo mostramos un mensaje
-    alert('Funcionalidad de inicio de sesión en desarrollo');
-});
-
-// Función para ir a la página de registro
-function goToRegister() {
-    // Aquí redirigirás a la página de registro cuando la crees
-    alert('Funcionalidad de registro próximamente');
+function goToLogin() {
+    window.location.href = 'login.html';
 }
+
+// Evento para el botón de registrarse
+document.addEventListener('DOMContentLoaded', function () {
+    const btnRegistrarse = document.getElementById('btnRegistrarse');
+    if (btnRegistrarse) {
+        btnRegistrarse.addEventListener('click', function () {
+            window.location.href = 'register.html';
+        });
+    }
+});

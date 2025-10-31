@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banc de Sang - Inicio</title>
+    <link rel="stylesheet" href="styles/home.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" id="configBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m-6-6H0m6 0h6m6 0h6"></path>
+                </svg>
+            </button>
+        </div>
+        <h1 class="header-title">Banc de Sang</h1>
+        <div class="header-right">
+            <button class="icon-btn" id="addBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="counter-container">
+            <h2 class="counter-label">Donaciones totales</h2>
+            <div class="blood-drop">
+                <svg viewBox="0 0 100 120" class="drop-svg">
+                    <defs>
+                        <clipPath id="dropClip">
+                            <path
+                                d="M50,10 C50,10 20,40 20,65 C20,85 32,100 50,100 C68,100 80,85 80,65 C80,40 50,10 50,10 Z" />
+                        </clipPath>
+                    </defs>
+                    <!-- Contorno de la gota -->
+                    <path d="M50,10 C50,10 20,40 20,65 C20,85 32,100 50,100 C68,100 80,85 80,65 C80,40 50,10 50,10 Z"
+                        fill="none" stroke="#e0e0e0" stroke-width="2" />
+                    <!-- Relleno de sangre -->
+                    <rect x="0" y="0" width="100" height="120" fill="#c62828" clip-path="url(#dropClip)"
+                        class="blood-fill" id="bloodFill" />
+                </svg>
+            </div>
+            <div class="counter-value">
+                <span id="donationCount">0</span>
+                <span class="counter-unit">donaciones</span>
+            </div>
+            <div class="percentage">
+                <span id="percentage">0</span>%
+            </div>
+        </div>
+    </main>
+
+    <script src="scripts/home.js"></script>
+</body>
+
+</html>

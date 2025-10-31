@@ -1,11 +1,3 @@
-/* Estilos para la página principal */
-:root {
-    --bg: #e8e8e8;
-    --card: #ffffff;
-    --primary: #b71c34;
-    --text-dark: #333333;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -13,93 +5,176 @@
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--bg);
-    margin: 0;
-    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Landing Page */
-.landing-container {
+/* Header */
+header {
+    background-color: #fff;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left,
+.header-right {
+    width: 50px;
+}
+
+.header-title {
+    font-size: 1.5rem;
+    color: #c62828;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c62828;
+}
+
+.icon-btn:hover {
+    background-color: #fce4ec;
+    transform: scale(1.1);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.counter-container {
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.counter-label {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+/* Blood Drop */
+.blood-drop {
+    width: 200px;
+    height: 240px;
+    margin: 0 auto 2rem;
+    position: relative;
+}
+
+.drop-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 5px 15px rgba(198, 40, 40, 0.3));
+}
+
+.blood-fill {
+    transform-origin: center bottom;
+    transition: height 0.8s ease-out;
+}
+
+/* Counter Value */
+.counter-value {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    min-height: 100vh;
-    padding: 40px 20px;
+    margin-bottom: 1rem;
 }
 
-.logo-container {
-    flex: 0 0 auto;
-    margin-top: 40px;
+#donationCount {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #c62828;
+    line-height: 1;
+    margin-bottom: 0.5rem;
 }
 
-.main-logo {
-    max-width: 280px;
-    width: 100%;
-    height: auto;
+.counter-unit {
+    font-size: 1rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-    max-width: 320px;
-    flex: 1;
-    justify-content: center;
+/* Percentage */
+.percentage {
+    font-size: 1.2rem;
+    color: #999;
+    margin-top: 1rem;
 }
 
-.main-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    width: 100%;
+#percentage {
+    font-weight: 600;
+    color: #c62828;
 }
 
-.main-btn:hover {
-    background: #9a1829;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-.main-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.footer-logo {
-    flex: 0 0 auto;
-    margin-bottom: 20px;
-}
-
-.tecno-logo {
-    max-width: 180px;
-    width: 100%;
-    height: auto;
-    opacity: 0.8;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .main-logo {
-        max-width: 220px;
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-title {
+        font-size: 1.2rem;
     }
 
-    .buttons-container {
-        max-width: 280px;
+    .counter-container {
+        padding: 2rem 1.5rem;
     }
 
-    .main-btn {
-        padding: 16px 32px;
-        font-size: 15px;
+    .counter-label {
+        font-size: 1.2rem;
     }
+
+    .blood-drop {
+        width: 150px;
+        height: 180px;
+    }
+
+    #donationCount {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fillUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.blood-fill.animate {
+    animation: fillUp 1.5s ease-out;
 }

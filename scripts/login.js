@@ -12,8 +12,8 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     const validPassword = 'password1234';
 
     if (email === validEmail && password === validPassword) {
-        alert('Inicio de sesión exitoso');
-        window.location.href = 'index.html';
+        // Redirigir a home.html sin mostrar alert
+        window.location.href = 'home.html';
     } else {
         alert('Email o contraseña incorrectos');
     }
