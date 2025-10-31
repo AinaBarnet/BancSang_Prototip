@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     loadNotifications();
     updateNotificationBadge();
+    loadMessages();
+    updateMessagesBadge();
 });
 
 // Carregar i renderitzar notificacions
@@ -41,7 +43,97 @@ function loadNotifications() {
     });
 
     setupNotificationListeners();
-}// Crear targeta de notificació
+}
+
+// Carregar i renderitzar missatges
+function loadMessages() {
+    const unreadMessages = MessagesManager.getUnread().slice(0, 3);
+    const messagesList = document.querySelector('.messages-list');
+
+    messagesList.innerHTML = '';
+
+    if (unreadMessages.length === 0) {
+        messagesList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;"><p>No hi ha missatges nous</p></div>';
+        return;
+    }
+
+    unreadMessages.forEach(message => {
+        const card = createMessageCard(message);
+        messagesList.appendChild(card);
+    });
+
+    setupMessageListeners();
+}
+
+// Crear targeta de missatge
+function createMessageCard(message) {
+    const card = document.createElement('div');
+    card.className = `message-card${message.unread ? ' unread' : ''}`;
+    card.dataset.id = message.id;
+
+    card.innerHTML = `
+        <div class="message-avatar">${message.avatar}</div>
+        <div class="message-content">
+            <div class="message-header">
+                <h5>${message.sender}</h5>
+                <span class="message-time">${message.time}</span>
+            </div>
+            <p>${message.message}</p>
+        </div>
+        <button class="message-close">✕</button>
+    `;
+
+    return card;
+}
+
+// Configurar listeners de missatges
+function setupMessageListeners() {
+    // Marcar tots com llegits
+    const markAllMessagesReadBtn = document.getElementById('markAllMessagesRead');
+    if (markAllMessagesReadBtn) {
+        markAllMessagesReadBtn.replaceWith(markAllMessagesReadBtn.cloneNode(true));
+        document.getElementById('markAllMessagesRead').addEventListener('click', (e) => {
+            e.stopPropagation();
+            MessagesManager.markAllAsRead();
+            loadMessages();
+            updateMessagesBadge();
+        });
+    }
+
+    // Tancar missatges individuals
+    const closeButtons = document.querySelectorAll('.message-close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = button.closest('.message-card');
+            const id = parseInt(card.dataset.id);
+
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+
+            setTimeout(() => {
+                MessagesManager.remove(id);
+                loadMessages();
+                updateMessagesBadge();
+            }, 300);
+        });
+    });
+
+    // Click en missatge per marcar com llegit
+    const messageCards = document.querySelectorAll('.message-card');
+    messageCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('message-close')) {
+                const id = parseInt(card.dataset.id);
+                MessagesManager.markAsRead(id);
+                card.classList.remove('unread');
+                updateMessagesBadge();
+            }
+        });
+    });
+}
+
+// Crear targeta de notificació
 function createNotificationCard(notification) {
     const card = document.createElement('div');
     card.className = `notification-card${notification.unread ? ' unread' : ''}`;
@@ -226,10 +318,13 @@ function setupEventListeners() {
         e.stopPropagation();
         dropdownMenu.classList.toggle('active');
         userMenuBtn.classList.toggle('active');
-        // Cerrar submenu de notificaciones si está abierto
+        // Cerrar submenus si están abiertos
         const notificationsSubmenu = document.getElementById('notificationsSubmenu');
+        const messagesSubmenu = document.getElementById('messagesSubmenu');
         notificationsSubmenu.classList.remove('active');
+        messagesSubmenu.classList.remove('active');
         document.getElementById('notificationsBtn').classList.remove('active');
+        document.getElementById('messagesBtn').classList.remove('active');
     });
 
     // Cerrar el menú al hacer click fuera
@@ -237,10 +332,13 @@ function setupEventListeners() {
         if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.remove('active');
             userMenuBtn.classList.remove('active');
-            // Cerrar submenu de notificaciones
+            // Cerrar submenus
             const notificationsSubmenu = document.getElementById('notificationsSubmenu');
+            const messagesSubmenu = document.getElementById('messagesSubmenu');
             notificationsSubmenu.classList.remove('active');
+            messagesSubmenu.classList.remove('active');
             document.getElementById('notificationsBtn').classList.remove('active');
+            document.getElementById('messagesBtn').classList.remove('active');
         }
     });
 
@@ -263,7 +361,28 @@ function setupEventListeners() {
     window.addEventListener('notificationsUpdated', () => {
         loadNotifications();
         updateNotificationBadge();
-    });    // Click en la información del premio
+    });
+
+    // Messages submenu
+    const messagesBtn = document.getElementById('messagesBtn');
+    const messagesSubmenu = document.getElementById('messagesSubmenu');
+
+    messagesBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        messagesBtn.classList.toggle('active');
+        messagesSubmenu.classList.toggle('active');
+        // Tancar submenu de notificacions si està obert
+        notificationsSubmenu.classList.remove('active');
+        notificationsBtn.classList.remove('active');
+    });
+
+    // Actualitzar quan es modifiquen els missatges
+    window.addEventListener('messagesUpdated', () => {
+        loadMessages();
+        updateMessagesBadge();
+    });
+
+    // Click en la información del premio
     prizeInfoEl.addEventListener('click', () => {
         window.location.href = 'premio.html';
     });
@@ -276,6 +395,19 @@ function setupEventListeners() {
 function updateNotificationBadge() {
     const unreadCount = NotificationsManager.getUnreadCount();
     const badge = document.getElementById('notificationBadge');
+
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+// Actualitzar badge de missatges
+function updateMessagesBadge() {
+    const unreadCount = MessagesManager.getUnreadCount();
+    const badge = document.getElementById('messagesBadge');
 
     if (unreadCount > 0) {
         badge.textContent = unreadCount;

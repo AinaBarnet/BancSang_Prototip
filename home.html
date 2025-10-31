@@ -29,13 +29,61 @@
                         </svg>
                         <span>El meu calendari</span>
                     </a>
-                    <a href="#" class="dropdown-item">
+                    <div class="dropdown-item messages-item" id="messagesBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                         </svg>
                         <span>Missatges</span>
-                    </a>
+                        <span class="notification-badge" id="messagesBadge">2</span>
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" class="submenu-arrow">
+                            <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" />
+                        </svg>
+                    </div>
+                    <div class="submenu messages-submenu" id="messagesSubmenu">
+                        <div class="submenu-header">
+                            <h4>Missatges recents</h4>
+                            <button class="mark-all-read" id="markAllMessagesRead">Marcar tots com llegits</button>
+                        </div>
+                        <div class="messages-list">
+                            <div class="message-card unread" data-id="1">
+                                <div class="message-avatar">👨‍⚕️</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <h5>Dr. Joan Martínez</h5>
+                                        <span class="message-time">Fa 1 hora</span>
+                                    </div>
+                                    <p>Gràcies per la teva donació. Els resultats de l'anàlisi són correctes.</p>
+                                </div>
+                                <button class="message-close">✕</button>
+                            </div>
+                            <div class="message-card unread" data-id="2">
+                                <div class="message-avatar">🏥</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <h5>Centre Banc de Sang</h5>
+                                        <span class="message-time">Fa 3 hores</span>
+                                    </div>
+                                    <p>Recordatori: Tens una cita confirmada per demà a les 10:00h</p>
+                                </div>
+                                <button class="message-close">✕</button>
+                            </div>
+                            <div class="message-card" data-id="3">
+                                <div class="message-avatar">👥</div>
+                                <div class="message-content">
+                                    <div class="message-header">
+                                        <h5>Equip de suport</h5>
+                                        <span class="message-time">Ahir</span>
+                                    </div>
+                                    <p>Hem rebut la teva consulta i et respondrem en breu</p>
+                                </div>
+                                <button class="message-close">✕</button>
+                            </div>
+                        </div>
+                        <div class="submenu-footer">
+                            <a href="missatges.html" class="view-all-link">Veure tots els missatges</a>
+                        </div>
+                    </div>
                     <div class="dropdown-item notifications-item" id="notificationsBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -184,6 +232,7 @@
     </main>
 
     <script src="scripts/notifications-manager.js"></script>
+    <script src="scripts/messages-manager.js"></script>
     <script src="scripts/home.js"></script>
 </body>
 

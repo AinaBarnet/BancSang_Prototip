@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tots els Missatges - Banc de Sang</title>
+    <link rel="stylesheet" href="styles/missatges.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='home.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+            </button>
+        </div>
+        <h1 class="header-title">Els meus missatges</h1>
+        <div class="header-right">
+            <button class="icon-btn new-message-btn" id="newMessageBtn" title="Nou missatge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+            </button>
+            <button class="icon-btn" id="markAllReadBtn" title="Marcar tots com llegits">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="messages-container">
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all">Tots</button>
+                <button class="tab-btn" data-filter="unread">No llegits</button>
+            </div>
+
+            <div class="messages-list" id="messagesList">
+                <!-- Los mensajes se cargarán dinámicamente -->
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">📭</div>
+                <h3>No hi ha missatges</h3>
+                <p>Tots els teus missatges estan llegits</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal per crear nou missatge -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nou Missatge</h2>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="newMessageForm">
+                    <div class="form-group">
+                        <label for="recipient">Destinatari</label>
+                        <select id="recipient" required>
+                            <option value="">Selecciona un destinatari</option>
+                            <option value="dr-joan">Dr. Joan Martínez</option>
+                            <option value="centre">Centre Banc de Sang</option>
+                            <option value="suport">Equip de suport</option>
+                            <option value="dra-maria">Dra. Maria López</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Assumpte</label>
+                        <input type="text" id="subject" placeholder="Assumpte del missatge" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageText">Missatge</label>
+                        <textarea id="messageText" rows="6" placeholder="Escriu el teu missatge aquí..." required></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" id="cancelBtn">Cancel·lar</button>
+                        <button type="submit" class="btn-send">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/messages-manager.js"></script>
+    <script src="scripts/missatges.js"></script>
+</body>
+
+</html>
