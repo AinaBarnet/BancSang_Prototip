@@ -382,6 +382,87 @@ function setupEventListeners() {
         updateMessagesBadge();
     });
 
+    // Register Donation submenu
+    const registerDonationBtn = document.getElementById('registerDonationBtn');
+    const registerDonationSubmenu = document.getElementById('registerDonationSubmenu');
+
+    registerDonationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        registerDonationBtn.classList.toggle('active');
+        registerDonationSubmenu.classList.toggle('active');
+        // Tancar altres submenus
+        notificationsSubmenu.classList.remove('active');
+        notificationsBtn.classList.remove('active');
+        messagesSubmenu.classList.remove('active');
+        messagesBtn.classList.remove('active');
+    });
+
+    // Manual Form
+    const manualFormBtn = document.getElementById('manualFormBtn');
+    manualFormBtn.addEventListener('click', () => {
+        openDonationModal();
+    });
+
+    // Code Form
+    const codeFormBtn = document.getElementById('codeFormBtn');
+    codeFormBtn.addEventListener('click', () => {
+        openCodeModal();
+    });
+
+    // Modal controls
+    const donationModal = document.getElementById('donationModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const cancelFormBtn = document.getElementById('cancelFormBtn');
+    const donationForm = document.getElementById('donationForm');
+    const donationCenter = document.getElementById('donationCenter');
+    const otherCenterGroup = document.getElementById('otherCenterGroup');
+
+    closeModalBtn.addEventListener('click', closeDonationModal);
+    cancelFormBtn.addEventListener('click', closeDonationModal);
+
+    donationModal.addEventListener('click', (e) => {
+        if (e.target === donationModal) {
+            closeDonationModal();
+        }
+    });
+
+    // Mostrar/ocultar camp "Altre centre"
+    donationCenter.addEventListener('change', (e) => {
+        if (e.target.value === 'other') {
+            otherCenterGroup.style.display = 'block';
+            document.getElementById('otherCenter').required = true;
+        } else {
+            otherCenterGroup.style.display = 'none';
+            document.getElementById('otherCenter').required = false;
+        }
+    });
+
+    // Gestionar enviament del formulari
+    donationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleDonationFormSubmit();
+    });
+
+    // Code Modal controls
+    const codeModal = document.getElementById('codeModal');
+    const closeCodeModalBtn = document.getElementById('closeCodeModalBtn');
+    const cancelCodeBtn = document.getElementById('cancelCodeBtn');
+    const codeForm = document.getElementById('codeForm');
+
+    closeCodeModalBtn.addEventListener('click', closeCodeModal);
+    cancelCodeBtn.addEventListener('click', closeCodeModal);
+
+    codeModal.addEventListener('click', (e) => {
+        if (e.target === codeModal) {
+            closeCodeModal();
+        }
+    });
+
+    codeForm.addEventListener('submit', handleCodeFormSubmit);
+
+    // Carregar última donació
+    loadLastDonation();
+
     // Click en la información del premio
     prizeInfoEl.addEventListener('click', () => {
         window.location.href = 'premio.html';
@@ -421,6 +502,251 @@ function resetCounter() {
     todayDonations = 0;
     saveDonations();
     updateDisplay();
+}
+
+// Funcions per registrar donacions
+function openDonationModal(qrData = null) {
+    const modal = document.getElementById('donationModal');
+    const form = document.getElementById('donationForm');
+
+    // Reset form
+    form.reset();
+    document.getElementById('otherCenterGroup').style.display = 'none';
+
+    // Establir data d'avui per defecte
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('donationDate').value = today;
+    document.getElementById('donationDate').max = today; // No permetre dates futures
+
+    // Si hi ha dades del QR, pre-omplir el formulari
+    if (qrData) {
+        document.getElementById('donationDate').value = qrData.date;
+        document.getElementById('donationCenter').value = qrData.center;
+        document.getElementById('donationType').value = qrData.type;
+        document.getElementById('donationVolume').value = qrData.volume;
+    }
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDonationModal() {
+    const modal = document.getElementById('donationModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Funcions per modal de codi
+function openCodeModal() {
+    const modal = document.getElementById('codeModal');
+    const form = document.getElementById('codeForm');
+    const errorDiv = document.getElementById('codeError');
+
+    // Reset form and errors
+    form.reset();
+    errorDiv.style.display = 'none';
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCodeModal() {
+    const modal = document.getElementById('codeModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function handleCodeFormSubmit(e) {
+    e.preventDefault();
+
+    const code = document.getElementById('donationCode').value.toUpperCase();
+    const errorDiv = document.getElementById('codeError');
+
+    // Validar format del codi
+    const codePattern = /^[A-Z]{3}-[0-9]{4}-[0-9]{6}$/;
+    if (!codePattern.test(code)) {
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Verificar si el codi ja s'ha utilitzat
+    const usedCodes = JSON.parse(localStorage.getItem('usedDonationCodes') || '[]');
+    if (usedCodes.includes(code)) {
+        errorDiv.querySelector('p').textContent = 'Aquest codi ja ha estat utilitzat anteriorment.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    // Simular validació del codi (en producció es faria una crida al servidor)
+    // Per ara, acceptem qualsevol codi amb el format correcte
+
+    // Extreure informació del codi
+    const [prefix, year, number] = code.split('-');
+    const centerMap = {
+        'BST': 'Banc de Sang i Teixits - Barcelona',
+        'HCB': 'Hospital Clínic - Barcelona',
+        'HVH': 'Hospital Vall d\'Hebron - Barcelona',
+        'HBV': 'Hospital de Bellvitge - L\'Hospitalet',
+        'HGT': 'Hospital Germans Trias i Pujol - Badalona'
+    };
+
+    const donation = {
+        code: code,
+        center: centerMap[prefix] || 'Centre de donació',
+        date: new Date().toISOString().split('T')[0],
+        type: 'Sang total',
+        volume: 450,
+        method: 'Codi',
+        timestamp: Date.now()
+    };
+
+    // Guardar codi com a utilitzat
+    usedCodes.push(code);
+    localStorage.setItem('usedDonationCodes', JSON.stringify(usedCodes));
+
+    // Guardar donació
+    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
+    donations.push(donation);
+    localStorage.setItem('userDonations', JSON.stringify(donations));
+
+    // Actualitzar comptador global
+    addDonation();
+
+    // Actualitzar visualització
+    loadLastDonation();
+
+    // Tancar modal
+    closeCodeModal();
+
+    // Mostrar confirmació
+    showCodeSuccessMessage(donation);
+}
+
+function showCodeSuccessMessage(donation) {
+    alert(`✅ Donació registrada correctament amb codi!\n\n` +
+        `Codi: ${donation.code}\n` +
+        `Centre: ${donation.center}\n` +
+        `Data: ${new Date(donation.date).toLocaleDateString('ca-ES')}\n\n` +
+        `Gràcies per la teva col·laboració solidària!`);
+}
+
+function handleDonationFormSubmit() {
+    const date = document.getElementById('donationDate').value;
+    const centerSelect = document.getElementById('donationCenter').value;
+    const center = centerSelect === 'other'
+        ? document.getElementById('otherCenter').value
+        : centerSelect;
+    const type = document.getElementById('donationType').value;
+    const volume = document.getElementById('donationVolume').value;
+    const observations = document.getElementById('observations').value;
+
+    const donation = {
+        date: date,
+        center: center,
+        type: type,
+        volume: parseInt(volume),
+        observations: observations,
+        timestamp: Date.now()
+    };
+
+    // Guardar donació
+    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
+    donations.push(donation);
+    localStorage.setItem('userDonations', JSON.stringify(donations));
+
+    // Actualitzar comptador global
+    addDonation();
+
+    // Actualitzar visualització
+    loadLastDonation();
+
+    // Tancar modal
+    closeDonationModal();
+
+    // Mostrar confirmació
+    showSuccessMessage(donation);
+}
+
+function showSuccessMessage(donation) {
+    const formattedDate = new Date(donation.date).toLocaleDateString('ca-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    alert(`✅ Donació registrada correctament!\n\n` +
+        `Centre: ${donation.center}\n` +
+        `Data: ${formattedDate}\n` +
+        `Tipus: ${donation.type}\n` +
+        `Volum: ${donation.volume} ml\n\n` +
+        `Gràcies per la teva col·laboració solidària!`);
+}
+
+function registerDonation(method, location) {
+    const donation = {
+        date: new Date().toISOString(),
+        method: method,
+        location: location,
+        timestamp: Date.now()
+    };
+
+    // Guardar donació
+    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
+    donations.push(donation);
+    localStorage.setItem('userDonations', JSON.stringify(donations));
+
+    // Actualitzar comptador global
+    addDonation();
+
+    // Actualitzar visualització
+    loadLastDonation();
+
+    // Mostrar confirmació
+    alert('✅ Donació registrada correctament!\n\nGràcies per la teva col·laboració!');
+}
+
+function showDonationForm() {
+    const location = prompt('Introdueix el nom del centre de donació:', 'Centre Banc de Sang');
+
+    if (location) {
+        const confirm = window.confirm(`Confirmes el registre de la donació?\n\nCentre: ${location}\nData: ${new Date().toLocaleDateString('ca-ES')}`);
+
+        if (confirm) {
+            registerDonation('Manual', location);
+        }
+    }
+}
+
+function loadLastDonation() {
+    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
+    const lastDonationInfo = document.getElementById('lastDonationInfo');
+
+    if (donations.length === 0) {
+        lastDonationInfo.innerHTML = '<p>Encara no has registrat cap donació</p>';
+        return;
+    }
+
+    const lastDonation = donations[donations.length - 1];
+    const date = new Date(lastDonation.date || lastDonation.timestamp);
+    const formattedDate = date.toLocaleDateString('ca-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    const centerName = lastDonation.center || lastDonation.location || 'Centre no especificat';
+    const donationType = lastDonation.type || 'Sang total';
+
+    lastDonationInfo.innerHTML = `
+        <div class="donation-detail">
+            <span class="donation-icon">🩸</span>
+            <div class="donation-text">
+                <strong>${centerName}</strong>
+                <span>${formattedDate}</span>
+                <span class="donation-method">${donationType}</span>
+            </div>
+        </div>
+    `;
 }
 
 // Exponer funciones globales para pruebas
