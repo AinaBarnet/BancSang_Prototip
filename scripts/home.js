@@ -8,7 +8,8 @@ const donationCountEl = document.getElementById('donationCount');
 const percentageEl = document.getElementById('percentage');
 const bloodFillEl = document.getElementById('bloodFill');
 const configBtn = document.getElementById('configBtn');
-const addBtn = document.getElementById('addBtn');
+const userMenuBtn = document.getElementById('userMenuBtn');
+const dropdownMenu = document.getElementById('dropdownMenu');
 const remainingEl = document.getElementById('remaining');
 const participantsEl = document.getElementById('participants');
 const prizeInfoEl = document.getElementById('prizeInfo');
@@ -134,12 +135,24 @@ function setupEventListeners() {
         // TODO: Navegar a página de configuración
     });
 
-    // Botón de añadir
-    addBtn.addEventListener('click', () => {
-        console.log('Añadir - Por implementar');
-        // TODO: Implementar funcionalidad del botón +
-        // Por ahora, añadimos una donación para pruebas
-        addDonation();
+    // User menu dropdown
+    userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('active');
+        userMenuBtn.classList.toggle('active');
+    });
+
+    // Cerrar el menú al hacer click fuera
+    document.addEventListener('click', (e) => {
+        if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('active');
+            userMenuBtn.classList.remove('active');
+        }
+    });
+
+    // Prevenir que los clicks dentro del menú lo cierren
+    dropdownMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
     });
 
     // Click en la información del premio
