@@ -6,23 +6,40 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+    background: linear-gradient(135deg, #e8e8e8 0%, #f0f0f0 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 15% 25%, rgba(183, 28, 52, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(183, 28, 52, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Header */
 header {
-    background-color: #fff;
-    padding: 1rem 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(139, 34, 59, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: box-shadow 0.3s ease;
 }
 
 .header-left,
@@ -31,33 +48,37 @@ header {
 }
 
 .header-title {
-    font-size: 1.5rem;
-    color: #c62828;
-    font-weight: 600;
+    font-size: 1.6rem;
+    color: #b71c34;
+    font-weight: 700;
     text-align: center;
     flex: 1;
+    letter-spacing: 0.3px;
 }
 
 .icon-btn {
-    background: none;
-    border: none;
+    background: #fff;
+    border: 2px solid #b71c34;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.6rem;
     border-radius: 50%;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #c62828;
+    color: #b71c34;
 }
 
 .icon-btn:hover {
-    background-color: #fce4ec;
-    transform: scale(1.1);
+    background: #b71c34;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 2px 12px rgba(139, 34, 59, 0.08);
 }
 
 .icon-btn:active {
-    transform: scale(0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(183, 28, 52, 0.2);
 }
 
 /* Main Content */
@@ -67,37 +88,169 @@ main {
     justify-content: center;
     align-items: center;
     padding: 2rem;
+    position: relative;
+    z-index: 1;
 }
 
 .counter-container {
-    background-color: #fff;
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    box-shadow:
+        0 8px 24px rgba(183, 28, 52, 0.12),
+        0 0 0 1px rgba(183, 28, 52, 0.03);
     text-align: center;
-    max-width: 400px;
+    max-width: 550px;
     width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideUp 0.6s ease-out;
 }
 
-.counter-label {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 2rem;
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.counter-container:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 12px 32px rgba(183, 28, 52, 0.15),
+        0 0 0 1px rgba(183, 28, 52, 0.05);
+}
+
+/* Prize Info */
+.prize-info {
+    background: linear-gradient(135deg, #fffcf0 0%, #fff8dc 50%, #fff4cc 100%);
+    border-radius: 20px;
+    padding: 2.2rem 2.5rem;
+    margin-bottom: 2.5rem;
+    border: 3px solid #ffc107;
+    box-shadow:
+        0 6px 20px rgba(255, 193, 7, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.prize-info::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.2) 50%,
+            transparent 70%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) translateY(-100%);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%);
+    }
+}
+
+.prize-info:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow:
+        0 10px 28px rgba(255, 193, 7, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    border-color: #ffb300;
+}
+
+.prize-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.8rem;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(255, 193, 7, 0.3));
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.prize-title {
+    font-size: 1.65rem;
+    color: #e65100;
+    margin-bottom: 0.9rem;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: 0.2px;
+    text-shadow: 0 2px 4px rgba(230, 81, 0, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.prize-description {
+    font-size: 1.05rem;
+    color: #666;
+    line-height: 1.8;
     font-weight: 500;
+    max-width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.prize-info.completed {
+    background: linear-gradient(135deg, #f1f8f4 0%, #c8e6c9 50%, #a5d6a7 100%);
+    border-color: #66bb6a;
+    box-shadow:
+        0 6px 20px rgba(76, 175, 80, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.prize-info.completed .prize-title {
+    color: #1b5e20;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(27, 94, 32, 0.1);
 }
 
 /* Blood Drop */
 .blood-drop {
-    width: 200px;
-    height: 240px;
-    margin: 0 auto 2rem;
+    width: 240px;
+    height: 288px;
+    margin: 0 auto 2.5rem;
     position: relative;
 }
 
 .drop-svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 5px 15px rgba(198, 40, 40, 0.3));
+    filter: drop-shadow(0 10px 25px rgba(183, 28, 52, 0.4));
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.drop-svg:hover {
+    filter: drop-shadow(0 12px 30px rgba(183, 28, 52, 0.45));
+    transform: scale(1.02);
 }
 
 .blood-fill {
@@ -114,30 +267,128 @@ main {
 }
 
 #donationCount {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #c62828;
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: #b71c34;
     line-height: 1;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
+    letter-spacing: -2px;
+    text-shadow: 0 4px 12px rgba(183, 28, 52, 0.15);
+    animation: countPulse 2s ease-in-out infinite;
+}
+
+@keyframes countPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
 }
 
 .counter-unit {
-    font-size: 1rem;
-    color: #666;
+    font-size: 1.05rem;
+    color: #777;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    font-weight: 700;
 }
 
 /* Percentage */
 .percentage {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: #999;
-    margin-top: 1rem;
+    margin-top: 1.2rem;
+    font-weight: 500;
 }
 
 #percentage {
+    font-weight: 800;
+    color: #b71c34;
+    font-size: 1.6rem;
+    text-shadow: 0 2px 6px rgba(183, 28, 52, 0.1);
+}
+
+/* Donation Info Cards */
+.donation-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.info-card {
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    border-radius: 16px;
+    padding: 1.4rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid rgba(183, 28, 52, 0.1);
+    box-shadow: 0 2px 8px rgba(183, 28, 52, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #b71c34 0%, #d32f2f 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.info-card:hover::before {
+    opacity: 1;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(183, 28, 52, 0.18);
+    border-color: rgba(183, 28, 52, 0.2);
+}
+
+.info-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(183, 28, 52, 0.15));
+}
+
+.info-content {
+    flex: 1;
+    text-align: left;
+}
+
+.info-content h4 {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 0.4rem;
     font-weight: 600;
-    color: #c62828;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.info-content p {
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: 700;
+    margin: 0;
+}
+
+.info-content span {
+    color: #b71c34;
+    font-weight: 900;
+    text-shadow: 0 1px 3px rgba(183, 28, 52, 0.1);
 }
 
 /* Responsive Design */
@@ -150,10 +401,6 @@ main {
         padding: 2rem 1.5rem;
     }
 
-    .counter-label {
-        font-size: 1.2rem;
-    }
-
     .blood-drop {
         width: 150px;
         height: 180px;
@@ -162,19 +409,46 @@ main {
     #donationCount {
         font-size: 2.5rem;
     }
+
+    .prize-info {
+        padding: 1rem;
+    }
+
+    .prize-icon {
+        font-size: 2rem;
+    }
+
+    .prize-title {
+        font-size: 1.1rem;
+    }
+
+    .prize-description {
+        font-size: 0.85rem;
+    }
+
+    .donation-info {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .info-card {
+        padding: 0.8rem;
+    }
 }
 
 /* Animations */
 @keyframes fillUp {
-    from {
+    0% {
         transform: translateY(100%);
+        opacity: 0.8;
     }
 
-    to {
+    100% {
         transform: translateY(0);
+        opacity: 1;
     }
 }
 
 .blood-fill.animate {
-    animation: fillUp 1.5s ease-out;
+    animation: fillUp 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

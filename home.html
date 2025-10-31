@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banc de Sang - Inicio</title>
+    <title>Banc de Sang - Inici</title>
     <link rel="stylesheet" href="styles/home.css">
 </head>
 
@@ -18,7 +18,7 @@
                 </svg>
             </button>
         </div>
-        <h1 class="header-title">Banc de Sang</h1>
+        <h1 class="header-title">Quedem per donar sang?</h1>
         <div class="header-right">
             <button class="icon-btn" id="addBtn">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -31,7 +31,14 @@
 
     <main>
         <div class="counter-container">
-            <h2 class="counter-label">Donaciones totales</h2>
+            <!-- Información del sorteo -->
+            <div class="prize-info" id="prizeInfo">
+                <div class="prize-icon">🎁</div>
+                <h3 class="prize-title">El PREMI del mes: Samsung Galaxy Book4 i3 + Funda!</h3>
+                <p class="prize-description">Meta diària: 1100 donacions.
+                    Cada mes es sortegen premis entre tots els participants</p>
+            </div>
+
             <div class="blood-drop">
                 <svg viewBox="0 0 100 120" class="drop-svg">
                     <defs>
@@ -50,10 +57,28 @@
             </div>
             <div class="counter-value">
                 <span id="donationCount">0</span>
-                <span class="counter-unit">donaciones</span>
+                <span class="counter-unit">donacions</span>
             </div>
             <div class="percentage">
                 <span id="percentage">0</span>%
+            </div>
+
+            <!-- Información adicional -->
+            <div class="donation-info">
+                <div class="info-card">
+                    <div class="info-icon">💉</div>
+                    <div class="info-content">
+                        <h4>Meta actual</h4>
+                        <p><span id="remaining">1000</span> donacions restants</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">👥</div>
+                    <div class="info-content">
+                        <h4>Participants</h4>
+                        <p><span id="participants">0</span> persones</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

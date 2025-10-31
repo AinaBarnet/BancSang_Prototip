@@ -1,6 +1,6 @@
 // Variables globales
 let totalDonations = 0;
-const maxDonations = 100; // Meta de donaciones para llenar la gota completamente
+const maxDonations = 1100; // Meta de donaciones diarias
 
 // Elementos del DOM
 const donationCountEl = document.getElementById('donationCount');
@@ -8,6 +8,9 @@ const percentageEl = document.getElementById('percentage');
 const bloodFillEl = document.getElementById('bloodFill');
 const configBtn = document.getElementById('configBtn');
 const addBtn = document.getElementById('addBtn');
+const remainingEl = document.getElementById('remaining');
+const participantsEl = document.getElementById('participants');
+const prizeInfoEl = document.getElementById('prizeInfo');
 
 // Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,6 +41,16 @@ function updateDisplay() {
     const percentage = Math.min(100, (totalDonations / maxDonations) * 100);
     percentageEl.textContent = percentage.toFixed(1);
 
+    // Actualizar donaciones restantes
+    const remaining = Math.max(0, maxDonations - totalDonations);
+    remainingEl.textContent = remaining;
+
+    // Actualizar participantes (por ahora igual a donaciones)
+    participantsEl.textContent = totalDonations;
+
+    // Actualizar información del sorteo
+    updatePrizeInfo();
+
     // Actualizar el relleno de la gota
     updateBloodFill(percentage);
 }
@@ -60,9 +73,36 @@ function updateBloodFill(percentage) {
 
 // Añadir una donación (temporal para pruebas)
 function addDonation() {
-    totalDonations++;
-    saveDonations();
-    updateDisplay();
+    if (totalDonations < maxDonations) {
+        totalDonations++;
+        saveDonations();
+        updateDisplay();
+
+        // Si llegamos al 100%, mostrar celebración
+        if (totalDonations === maxDonations) {
+            celebrateGoalReached();
+        }
+    } else {
+        alert('¡Ya hemos alcanzado la meta de 1100 donaciones del día! 🎉\n\nSigue donando para el sorteo mensual.');
+    }
+}
+
+// Actualizar información del sorteo
+function updatePrizeInfo() {
+    if (totalDonations >= maxDonations) {
+        prizeInfoEl.classList.add('completed');
+        prizeInfoEl.querySelector('.prize-title').textContent = '¡Meta diaria alcanzada!';
+        prizeInfoEl.querySelector('.prize-description').textContent =
+            '¡Felicidades! Hemos alcanzado las 1100 donaciones del día. Continúa participando en el sorteo mensual.';
+    } else {
+        prizeInfoEl.classList.remove('completed');
+    }
+}
+
+// Celebrar cuando se alcanza la meta
+function celebrateGoalReached() {
+    // Mostrar mensaje de celebración
+    alert('🎉 ¡FELICIDADES! 🎉\n\n¡Hemos alcanzado las 1100 donaciones del día!\n\nSigue donando para participar en el sorteo mensual.');
 }
 
 // Configurar event listeners
