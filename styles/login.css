@@ -1,4 +1,4 @@
-/* Estilos para Banc de Sang i Teixits */
+/* Estilos para página de login */
 :root {
     --bg: #e8e8e8;
     --card: #ffffff;
@@ -21,12 +21,8 @@ body {
     min-height: 100vh;
 }
 
-.hidden {
-    display: none;
-}
-
-/* Landing Page */
-.landing-container {
+/* Login Page Container */
+.login-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -37,107 +33,44 @@ body {
 
 .logo-container {
     flex: 0 0 auto;
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .main-logo {
-    max-width: 280px;
+    max-width: 220px;
     width: 100%;
     height: auto;
 }
 
-.buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-    max-width: 320px;
-    flex: 1;
-    justify-content: center;
-}
-
-.main-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    width: 100%;
-}
-
-.main-btn:hover {
-    background: #9a1829;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
-}
-
-.main-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.footer-logo {
-    flex: 0 0 auto;
-    margin-bottom: 20px;
-}
-
-.tecno-logo {
-    max-width: 180px;
-    width: 100%;
-    height: auto;
-    opacity: 0.8;
-}
-
-/* Modal styles */
-.modal {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-}
-
-.modal-content {
+/* Login Card */
+.login-card {
     background: var(--card);
     padding: 40px 30px;
     border-radius: 12px;
     min-width: 320px;
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    color: #999;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s;
-    font-weight: 300;
+.login-card h2 {
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 24px;
 }
 
-.close-modal:hover {
-    color: #333;
-}
-
-.modal-content form {
+.login-card form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.modal-content input {
+.login-card input {
     width: 100%;
     padding: 14px 16px;
     border: 1px solid #ddd;
@@ -147,16 +80,16 @@ body {
     background: white;
 }
 
-.modal-content input::placeholder {
+.login-card input::placeholder {
     color: #999;
 }
 
-.modal-content input:focus {
+.login-card input:focus {
     outline: none;
     border-color: var(--primary);
 }
 
-.modal-btn {
+.login-btn {
     background: var(--primary);
     color: white;
     border: none;
@@ -171,19 +104,19 @@ body {
     margin-top: 5px;
 }
 
-.modal-btn:hover {
+.login-btn:hover {
     background: #9a1829;
     box-shadow: 0 4px 8px rgba(183, 28, 52, 0.4);
 }
 
-.modal-btn.secondary {
+.login-btn.secondary {
     background: transparent;
     color: var(--primary);
     border: 2px solid var(--primary);
     box-shadow: none;
 }
 
-.modal-btn.secondary:hover {
+.login-btn.secondary:hover {
     background: rgba(183, 28, 52, 0.05);
 }
 
@@ -220,21 +153,30 @@ body {
     margin: 10px 0;
 }
 
-.switch-text {
+.back-link {
+    display: block;
     text-align: center;
-    font-size: 13px;
-    color: #666;
-    margin-top: 15px;
-}
-
-.switch-text a {
+    margin-top: 20px;
     color: var(--primary);
     text-decoration: none;
+    font-size: 14px;
     font-weight: 500;
 }
 
-.switch-text a:hover {
+.back-link:hover {
     text-decoration: underline;
+}
+
+.footer-logo {
+    flex: 0 0 auto;
+    margin-bottom: 20px;
+}
+
+.tecno-logo {
+    max-width: 180px;
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
 }
 
 button[disabled] {
@@ -246,57 +188,22 @@ button[disabled] {
     color: var(--danger);
     margin-top: 10px;
     font-size: 14px;
-}
-
-.hint {
-    font-size: 13px;
-    color: #666;
-    margin-top: 12px;
     text-align: center;
-}
-
-main {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-main h1 {
-    color: var(--text-dark);
-    margin-bottom: 20px;
-}
-
-main button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 10px 5px;
-    transition: background 0.2s;
-}
-
-main button:hover {
-    background: #9a1829;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
+    .login-card {
+        padding: 30px 20px;
+        min-width: 280px;
+    }
+
     .main-logo {
-        max-width: 220px;
+        max-width: 180px;
     }
 
-    .buttons-container {
-        max-width: 280px;
-    }
-
-    .main-btn {
-        padding: 16px 32px;
-        font-size: 15px;
+    .login-btn {
+        padding: 12px 20px;
+        font-size: 14px;
     }
 }

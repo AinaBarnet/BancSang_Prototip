@@ -1,0 +1,105 @@
+/* Estilos para la página principal */
+:root {
+    --bg: #e8e8e8;
+    --card: #ffffff;
+    --primary: #b71c34;
+    --text-dark: #333333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Landing Page */
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.logo-container {
+    flex: 0 0 auto;
+    margin-top: 40px;
+}
+
+.main-logo {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+}
+
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 320px;
+    flex: 1;
+    justify-content: center;
+}
+
+.main-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 100%;
+}
+
+.main-btn:hover {
+    background: #9a1829;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.main-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.footer-logo {
+    flex: 0 0 auto;
+    margin-bottom: 20px;
+}
+
+.tecno-logo {
+    max-width: 180px;
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .main-logo {
+        max-width: 220px;
+    }
+
+    .buttons-container {
+        max-width: 280px;
+    }
+
+    .main-btn {
+        padding: 16px 32px;
+        font-size: 15px;
+    }
+}
