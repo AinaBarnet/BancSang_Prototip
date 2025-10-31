@@ -1,6 +1,7 @@
 // Variables globales
 let totalDonations = 0;
-const maxDonations = 1100; // Meta de donaciones diarias
+let todayDonations = 0;
+const maxDonations = 33000; // Meta mensual para desbloquear el premio
 
 // Elementos del DOM
 const donationCountEl = document.getElementById('donationCount');
@@ -25,11 +26,30 @@ function loadDonations() {
     if (savedDonations !== null) {
         totalDonations = parseInt(savedDonations, 10);
     }
+
+    // Cargar donaciones del día
+    const savedDate = localStorage.getItem('lastDonationDate');
+    const today = new Date().toDateString();
+
+    if (savedDate === today) {
+        // Mismo día, cargar donaciones del día
+        const savedTodayDonations = localStorage.getItem('todayDonations');
+        if (savedTodayDonations !== null) {
+            todayDonations = parseInt(savedTodayDonations, 10);
+        }
+    } else {
+        // Nuevo día, resetear contador diario
+        todayDonations = 0;
+        localStorage.setItem('lastDonationDate', today);
+        localStorage.setItem('todayDonations', '0');
+    }
 }
 
 // Guardar donaciones en localStorage
 function saveDonations() {
     localStorage.setItem('totalDonations', totalDonations.toString());
+    localStorage.setItem('todayDonations', todayDonations.toString());
+    localStorage.setItem('lastDonationDate', new Date().toDateString());
 }
 
 // Actualizar la visualización
@@ -43,10 +63,10 @@ function updateDisplay() {
 
     // Actualizar donaciones restantes
     const remaining = Math.max(0, maxDonations - totalDonations);
-    remainingEl.textContent = remaining;
+    remainingEl.textContent = remaining.toLocaleString('ca-ES');
 
-    // Actualizar participantes (por ahora igual a donaciones)
-    participantsEl.textContent = totalDonations;
+    // Actualizar donaciones de hoy
+    participantsEl.textContent = todayDonations.toLocaleString('ca-ES');
 
     // Actualizar información del sorteo
     updatePrizeInfo();
@@ -75,6 +95,7 @@ function updateBloodFill(percentage) {
 function addDonation() {
     if (totalDonations < maxDonations) {
         totalDonations++;
+        todayDonations++;
         saveDonations();
         updateDisplay();
 
@@ -83,7 +104,7 @@ function addDonation() {
             celebrateGoalReached();
         }
     } else {
-        alert('¡Ya hemos alcanzado la meta de 1100 donaciones del día! 🎉\n\nSigue donando para el sorteo mensual.');
+        alert('¡Ja hem assolit l\'objectiu de 33.000 donacions del mes! 🎉\n\nEl sorteig es realitzarà aviat.');
     }
 }
 
@@ -91,9 +112,9 @@ function addDonation() {
 function updatePrizeInfo() {
     if (totalDonations >= maxDonations) {
         prizeInfoEl.classList.add('completed');
-        prizeInfoEl.querySelector('.prize-title').textContent = '¡Meta diaria alcanzada!';
+        prizeInfoEl.querySelector('.prize-title').textContent = '¡Objectiu assolit!';
         prizeInfoEl.querySelector('.prize-description').textContent =
-            '¡Felicidades! Hemos alcanzado las 1100 donaciones del día. Continúa participando en el sorteo mensual.';
+            'Felicitats! Hem arribat a les 33.000 donacions del mes. El sorteig es realitzarà aviat!';
     } else {
         prizeInfoEl.classList.remove('completed');
     }
@@ -102,7 +123,7 @@ function updatePrizeInfo() {
 // Celebrar cuando se alcanza la meta
 function celebrateGoalReached() {
     // Mostrar mensaje de celebración
-    alert('🎉 ¡FELICIDADES! 🎉\n\n¡Hemos alcanzado las 1100 donaciones del día!\n\nSigue donando para participar en el sorteo mensual.');
+    alert('🎉 FELICITATS! 🎉\n\n¡Hem assolit les 33.000 donacions del mes!\n\nEl sorteig del premi es realitzarà aviat.');
 }
 
 // Configurar event listeners
@@ -125,6 +146,7 @@ function setupEventListeners() {
 // Función para resetear el contador (útil para pruebas)
 function resetCounter() {
     totalDonations = 0;
+    todayDonations = 0;
     saveDonations();
     updateDisplay();
 }
