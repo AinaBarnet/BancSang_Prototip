@@ -19,7 +19,93 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDonations();
     updateDisplay();
     setupEventListeners();
+    loadNotifications();
+    updateNotificationBadge();
 });
+
+// Carregar i renderitzar notificacions
+function loadNotifications() {
+    const unreadNotifications = NotificationsManager.getUnread().slice(0, 4);
+    const notificationList = document.querySelector('.notification-list');
+
+    notificationList.innerHTML = '';
+
+    if (unreadNotifications.length === 0) {
+        notificationList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;"><p>No hi ha notificacions noves</p></div>';
+        return;
+    }
+
+    unreadNotifications.forEach(notification => {
+        const card = createNotificationCard(notification);
+        notificationList.appendChild(card);
+    });
+
+    setupNotificationListeners();
+}// Crear targeta de notificació
+function createNotificationCard(notification) {
+    const card = document.createElement('div');
+    card.className = `notification-card${notification.unread ? ' unread' : ''}`;
+    card.dataset.id = notification.id;
+
+    card.innerHTML = `
+        <div class="notification-icon ${notification.iconClass}">${notification.icon}</div>
+        <div class="notification-content">
+            <h5>${notification.title}</h5>
+            <p>${notification.description}</p>
+            <span class="notification-time">${notification.time}</span>
+        </div>
+        <button class="notification-close">✕</button>
+    `;
+
+    return card;
+}
+
+// Configurar listeners de notificacions
+function setupNotificationListeners() {
+    // Marcar totes com llegides
+    const markAllReadBtn = document.getElementById('markAllRead');
+    if (markAllReadBtn) {
+        markAllReadBtn.replaceWith(markAllReadBtn.cloneNode(true));
+        document.getElementById('markAllRead').addEventListener('click', (e) => {
+            e.stopPropagation();
+            NotificationsManager.markAllAsRead();
+            loadNotifications();
+            updateNotificationBadge();
+        });
+    }
+
+    // Tancar notificacions individuals
+    const closeButtons = document.querySelectorAll('.notification-close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = button.closest('.notification-card');
+            const id = parseInt(card.dataset.id);
+
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+
+            setTimeout(() => {
+                NotificationsManager.remove(id);
+                loadNotifications();
+                updateNotificationBadge();
+            }, 300);
+        });
+    });
+
+    // Click en notificació per marcar com llegida
+    const notificationCards = document.querySelectorAll('.notification-card');
+    notificationCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('notification-close')) {
+                const id = parseInt(card.dataset.id);
+                NotificationsManager.markAsRead(id);
+                card.classList.remove('unread');
+                updateNotificationBadge();
+            }
+        });
+    });
+}
 
 // Cargar donaciones desde localStorage
 function loadDonations() {
@@ -173,46 +259,11 @@ function setupEventListeners() {
         notificationsSubmenu.classList.toggle('active');
     });
 
-    // Marcar todas como leídas
-    const markAllReadBtn = document.getElementById('markAllRead');
-    markAllReadBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const unreadNotifications = document.querySelectorAll('.notification-card.unread');
-        unreadNotifications.forEach(notification => {
-            notification.classList.remove('unread');
-        });
+    // Actualitzar quan es modifiquen les notificacions
+    window.addEventListener('notificationsUpdated', () => {
+        loadNotifications();
         updateNotificationBadge();
-    });
-
-    // Cerrar notificaciones individuales
-    const notificationCloseButtons = document.querySelectorAll('.notification-close');
-    notificationCloseButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const notificationCard = button.closest('.notification-card');
-            notificationCard.style.opacity = '0';
-            notificationCard.style.transform = 'translateX(20px)';
-            setTimeout(() => {
-                notificationCard.remove();
-                updateNotificationBadge();
-            }, 300);
-        });
-    });
-
-    // Click en notificación para marcarla como leída
-    const notificationCards = document.querySelectorAll('.notification-card');
-    notificationCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('notification-close')) {
-                card.classList.remove('unread');
-                updateNotificationBadge();
-                // Aquí podrías agregar lógica para abrir detalles de la notificación
-                console.log('Notificación clicada:', card.dataset.id);
-            }
-        });
-    });
-
-    // Click en la información del premio
+    });    // Click en la información del premio
     prizeInfoEl.addEventListener('click', () => {
         window.location.href = 'premio.html';
     });
@@ -223,7 +274,7 @@ function setupEventListeners() {
 
 // Actualizar badge de notificaciones
 function updateNotificationBadge() {
-    const unreadCount = document.querySelectorAll('.notification-card.unread').length;
+    const unreadCount = NotificationsManager.getUnreadCount();
     const badge = document.getElementById('notificationBadge');
 
     if (unreadCount > 0) {
@@ -232,9 +283,7 @@ function updateNotificationBadge() {
     } else {
         badge.style.display = 'none';
     }
-}
-
-// Función para resetear el contador (útil para pruebas)
+}// Función para resetear el contador (útil para pruebas)
 function resetCounter() {
     totalDonations = 0;
     todayDonations = 0;

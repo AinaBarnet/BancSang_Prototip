@@ -6,9 +6,98 @@ const filterTabs = document.querySelectorAll('.tab-btn');
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
+    loadAllNotifications();
     setupEventListeners();
     updateEmptyState();
 });
+
+// Carregar totes les notificacions
+function loadAllNotifications() {
+    const notifications = NotificationsManager.getAll();
+    renderNotifications(notifications);
+}
+
+// Renderitzar notificacions agrupades per dates
+function renderNotifications(notifications) {
+    notificationsList.innerHTML = '';
+
+    // Agrupar per dates
+    const grouped = {
+        'Avui': [],
+        'Ahir': [],
+        'Fa 3 dies': [],
+        'Fa 5 dies': [],
+        'Fa 1 setmana': []
+    };
+
+    notifications.forEach(n => {
+        if (grouped[n.date]) {
+            grouped[n.date].push(n);
+        }
+    });
+
+    // Crear grups de dates
+    Object.keys(grouped).forEach(date => {
+        if (grouped[date].length > 0) {
+            const dateGroup = createDateGroup(date, grouped[date]);
+            notificationsList.appendChild(dateGroup);
+        }
+    });
+}
+
+// Crear grup de dates
+function createDateGroup(date, notifications) {
+    const group = document.createElement('div');
+    group.className = 'date-group';
+
+    const header = document.createElement('h3');
+    header.className = 'date-header';
+    header.textContent = date;
+    group.appendChild(header);
+
+    notifications.forEach(notification => {
+        const card = createNotificationCard(notification);
+        group.appendChild(card);
+    });
+
+    return group;
+}
+
+// Crear targeta de notificació
+function createNotificationCard(notification) {
+    const card = document.createElement('div');
+    card.className = `notification-card${notification.unread ? ' unread' : ''}`;
+    card.dataset.id = notification.id;
+    card.dataset.type = notification.type;
+
+    card.innerHTML = `
+        <div class="notification-icon ${notification.iconClass}">${notification.icon}</div>
+        <div class="notification-content">
+            <h4>${notification.title}</h4>
+            <p>${notification.description}</p>
+            <div class="notification-meta">
+                <span class="notification-time">${notification.time}</span>
+                <span class="notification-category">${notification.category}</span>
+            </div>
+        </div>
+        <button class="notification-close">✕</button>
+    `;
+
+    // Event listeners
+    const closeBtn = card.querySelector('.notification-close');
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeNotification(card);
+    });
+
+    card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('notification-close')) {
+            markAsRead(card);
+        }
+    });
+
+    return card;
+}
 
 // Configurar event listeners
 function setupEventListeners() {
@@ -23,121 +112,67 @@ function setupEventListeners() {
             filterNotifications(tab.dataset.filter);
         });
     });
-
-    // Tancar notificacions
-    const closeButtons = document.querySelectorAll('.notification-close');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            removeNotification(button);
-        });
-    });
-
-    // Marcar com llegida en fer clic
-    const notificationCards = document.querySelectorAll('.notification-card');
-    notificationCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('notification-close')) {
-                markAsRead(card);
-            }
-        });
-    });
 }
 
 // Marcar totes com llegides
 function markAllAsRead() {
-    const unreadNotifications = document.querySelectorAll('.notification-card.unread');
-
-    unreadNotifications.forEach((notification, index) => {
-        setTimeout(() => {
-            notification.classList.remove('unread');
-            notification.style.animation = 'flash 0.5s ease';
-        }, index * 50);
-    });
-
-    // Mostrar feedback
+    NotificationsManager.markAllAsRead();
+    loadAllNotifications();
     showFeedback('Totes les notificacions marcades com llegides');
 }
 
 // Marcar una notificació com llegida
 function markAsRead(card) {
+    const id = parseInt(card.dataset.id);
     if (card.classList.contains('unread')) {
+        NotificationsManager.markAsRead(id);
         card.classList.remove('unread');
         card.style.animation = 'flash 0.5s ease';
-        console.log('Notificació marcada com llegida:', card.dataset.id);
     }
 }
 
 // Eliminar notificació
-function removeNotification(button) {
-    const card = button.closest('.notification-card');
+function removeNotification(card) {
+    const id = parseInt(card.dataset.id);
     card.style.opacity = '0';
     card.style.transform = 'translateX(30px)';
 
     setTimeout(() => {
-        const dateGroup = card.closest('.date-group');
-        card.remove();
+        NotificationsManager.remove(id);
 
-        // Si el grup de dates està buit, eliminar-lo també
+        const dateGroup = card.closest('.date-group');
         const remainingCards = dateGroup.querySelectorAll('.notification-card');
-        if (remainingCards.length === 0) {
+
+        if (remainingCards.length <= 1) {
             dateGroup.style.opacity = '0';
             setTimeout(() => {
-                dateGroup.remove();
+                loadAllNotifications();
                 updateEmptyState();
             }, 300);
+        } else {
+            card.remove();
+            updateEmptyState();
         }
-
-        updateEmptyState();
     }, 300);
 }
 
 // Filtrar notificacions
 function filterNotifications(filter) {
-    const allCards = document.querySelectorAll('.notification-card');
-    const dateGroups = document.querySelectorAll('.date-group');
+    let notifications = NotificationsManager.getAll();
 
-    if (filter === 'all') {
-        allCards.forEach(card => {
-            card.style.display = 'flex';
-        });
-        dateGroups.forEach(group => {
-            group.style.display = 'block';
-        });
-    } else if (filter === 'unread') {
-        allCards.forEach(card => {
-            if (card.classList.contains('unread')) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    } else {
-        allCards.forEach(card => {
-            if (card.dataset.type === filter) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
+    if (filter === 'unread') {
+        notifications = notifications.filter(n => n.unread);
+    } else if (filter !== 'all') {
+        notifications = notifications.filter(n => n.type === filter);
     }
 
-    // Amagar grups de dates buits
-    dateGroups.forEach(group => {
-        const visibleCards = group.querySelectorAll('.notification-card[style*="display: flex"], .notification-card:not([style*="display"])');
-        if (visibleCards.length === 0) {
-            group.style.display = 'none';
-        } else {
-            group.style.display = 'block';
-        }
-    });
-
+    renderNotifications(notifications);
     updateEmptyState();
 }
 
 // Actualitzar estat buit
 function updateEmptyState() {
-    const visibleCards = document.querySelectorAll('.notification-card:not([style*="display: none"])');
+    const visibleCards = document.querySelectorAll('.notification-card');
     const activeFilter = document.querySelector('.tab-btn.active').dataset.filter;
 
     if (visibleCards.length === 0) {
@@ -158,9 +193,7 @@ function updateEmptyState() {
         notificationsList.style.display = 'flex';
         emptyState.style.display = 'none';
     }
-}
-
-// Mostrar feedback
+}// Mostrar feedback
 function showFeedback(message) {
     const feedback = document.createElement('div');
     feedback.className = 'feedback-toast';
