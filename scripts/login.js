@@ -7,11 +7,16 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
-    // Aquí iría la lógica de autenticación
-    console.log('Intentando iniciar sesión con:', email);
+    // Validación de credenciales
+    const validEmail = 'demo@exemple.com';
+    const validPassword = 'password1234';
 
-    // Por ahora, solo mostramos un mensaje
-    alert('Funcionalidad de inicio de sesión en desarrollo');
+    if (email === validEmail && password === validPassword) {
+        alert('Inicio de sesión exitoso');
+        window.location.href = 'index.html';
+    } else {
+        alert('Email o contraseña incorrectos');
+    }
 });
 
 // Función para ir a la página de registro
