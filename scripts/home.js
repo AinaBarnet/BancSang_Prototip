@@ -140,6 +140,10 @@ function setupEventListeners() {
         e.stopPropagation();
         dropdownMenu.classList.toggle('active');
         userMenuBtn.classList.toggle('active');
+        // Cerrar submenu de notificaciones si está abierto
+        const notificationsSubmenu = document.getElementById('notificationsSubmenu');
+        notificationsSubmenu.classList.remove('active');
+        document.getElementById('notificationsBtn').classList.remove('active');
     });
 
     // Cerrar el menú al hacer click fuera
@@ -147,12 +151,65 @@ function setupEventListeners() {
         if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.remove('active');
             userMenuBtn.classList.remove('active');
+            // Cerrar submenu de notificaciones
+            const notificationsSubmenu = document.getElementById('notificationsSubmenu');
+            notificationsSubmenu.classList.remove('active');
+            document.getElementById('notificationsBtn').classList.remove('active');
         }
     });
 
     // Prevenir que los clicks dentro del menú lo cierren
     dropdownMenu.addEventListener('click', (e) => {
         e.stopPropagation();
+    });
+
+    // Notifications submenu
+    const notificationsBtn = document.getElementById('notificationsBtn');
+    const notificationsSubmenu = document.getElementById('notificationsSubmenu');
+
+    notificationsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationsBtn.classList.toggle('active');
+        notificationsSubmenu.classList.toggle('active');
+    });
+
+    // Marcar todas como leídas
+    const markAllReadBtn = document.getElementById('markAllRead');
+    markAllReadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const unreadNotifications = document.querySelectorAll('.notification-card.unread');
+        unreadNotifications.forEach(notification => {
+            notification.classList.remove('unread');
+        });
+        updateNotificationBadge();
+    });
+
+    // Cerrar notificaciones individuales
+    const notificationCloseButtons = document.querySelectorAll('.notification-close');
+    notificationCloseButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const notificationCard = button.closest('.notification-card');
+            notificationCard.style.opacity = '0';
+            notificationCard.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                notificationCard.remove();
+                updateNotificationBadge();
+            }, 300);
+        });
+    });
+
+    // Click en notificación para marcarla como leída
+    const notificationCards = document.querySelectorAll('.notification-card');
+    notificationCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('notification-close')) {
+                card.classList.remove('unread');
+                updateNotificationBadge();
+                // Aquí podrías agregar lógica para abrir detalles de la notificación
+                console.log('Notificación clicada:', card.dataset.id);
+            }
+        });
     });
 
     // Click en la información del premio
@@ -162,6 +219,19 @@ function setupEventListeners() {
 
     // Añadir estilo de cursor pointer al premio
     prizeInfoEl.style.cursor = 'pointer';
+}
+
+// Actualizar badge de notificaciones
+function updateNotificationBadge() {
+    const unreadCount = document.querySelectorAll('.notification-card.unread').length;
+    const badge = document.getElementById('notificationBadge');
+
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
 }
 
 // Función para resetear el contador (útil para pruebas)
