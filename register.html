@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar-se - Banc de Sang i Teixits</title>
+    <link rel="stylesheet" href="styles/register.css">
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="logo-container">
+            <img src="assets/Logo_BST.png" alt="Banc de Sang i Teixits" class="main-logo">
+        </div>
+
+        <div class="register-card">
+            <h2>Registrar-se</h2>
+
+            <form id="registerForm">
+                <input type="email" id="registerEmail" placeholder="Email*" required>
+                <input type="password" id="registerPassword" placeholder="Choose password*" required>
+                <input type="password" id="registerPasswordRepeat" placeholder="Repeat password*" required>
+
+                <button type="submit" class="register-btn">Registrar-se</button>
+
+                <p class="terms-text">Al continuar, també acceptes les condicions del servei i la política de privacitat
+                </p>
+
+                <p class="login-text">Ja tens un compte? <a href="login.html">Inicia la sessió</a></p>
+            </form>
+
+            <a href="index.html" class="back-link">← Tornar a l'inici</a>
+        </div>
+
+        <div class="footer-logo">
+            <img src="assets/Logo_TCM.webp" alt="TecnoCampus" class="tecno-logo">
+        </div>
+    </div>
+
+    <script src="scripts/register.js"></script>
+</body>
+
+</html>

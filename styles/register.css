@@ -1,0 +1,207 @@
+/* Estilos para página de registro */
+:root {
+    --bg: #e8e8e8;
+    --card: #ffffff;
+    --primary: #b71c34;
+    --danger: #c0392b;
+    --text-dark: #333333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Register Page Container */
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.logo-container {
+    flex: 0 0 auto;
+    margin-top: 20px;
+}
+
+.main-logo {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+}
+
+/* Register Card */
+.register-card {
+    background: var(--card);
+    padding: 40px 30px;
+    border-radius: 12px;
+    min-width: 320px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.register-card h2 {
+    color: var(--text-dark);
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.register-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.register-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    background: white;
+}
+
+.register-card input::placeholder {
+    color: #999;
+}
+
+.register-card input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.register-card input.error {
+    border-color: var(--danger);
+}
+
+.register-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    width: 100%;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(183, 28, 52, 0.3);
+    margin-top: 5px;
+}
+
+.register-btn:hover {
+    background: #9a1829;
+    box-shadow: 0 4px 8px rgba(183, 28, 52, 0.4);
+}
+
+.register-btn:active {
+    transform: translateY(1px);
+}
+
+.terms-text {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    line-height: 1.4;
+    margin: 10px 0;
+}
+
+.login-text {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 15px;
+}
+
+.login-text a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-text a:hover {
+    text-decoration: underline;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.footer-logo {
+    flex: 0 0 auto;
+    margin-bottom: 20px;
+}
+
+.tecno-logo {
+    max-width: 180px;
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
+}
+
+button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: var(--danger);
+    font-size: 13px;
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.success-message {
+    color: #27ae60;
+    font-size: 13px;
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .register-card {
+        padding: 30px 20px;
+        min-width: 280px;
+    }
+
+    .main-logo {
+        max-width: 180px;
+    }
+
+    .register-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
