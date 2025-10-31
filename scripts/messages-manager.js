@@ -12,6 +12,7 @@ const MessagesManager = {
             time: 'Fa 1 hora',
             date: 'Avui',
             unread: true,
+            sent: false,
             timestamp: Date.now() - 1 * 60 * 60 * 1000
         },
         {
@@ -22,6 +23,7 @@ const MessagesManager = {
             time: 'Fa 3 hores',
             date: 'Avui',
             unread: true,
+            sent: false,
             timestamp: Date.now() - 3 * 60 * 60 * 1000
         },
         {
@@ -32,6 +34,7 @@ const MessagesManager = {
             time: 'Ahir',
             date: 'Ahir',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 24 * 60 * 60 * 1000
         },
         {
@@ -42,6 +45,7 @@ const MessagesManager = {
             time: 'Ahir',
             date: 'Ahir',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 26 * 60 * 60 * 1000
         },
         {
@@ -52,6 +56,7 @@ const MessagesManager = {
             time: 'Fa 2 dies',
             date: 'Fa 2 dies',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 2 * 24 * 60 * 60 * 1000
         },
         {
@@ -62,6 +67,7 @@ const MessagesManager = {
             time: 'Fa 3 dies',
             date: 'Fa 3 dies',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 3 * 24 * 60 * 60 * 1000
         },
         {
@@ -72,6 +78,7 @@ const MessagesManager = {
             time: 'Fa 5 dies',
             date: 'Fa 5 dies',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 5 * 24 * 60 * 60 * 1000
         },
         {
@@ -82,6 +89,7 @@ const MessagesManager = {
             time: 'Fa 1 setmana',
             date: 'Fa 1 setmana',
             unread: false,
+            sent: false,
             timestamp: Date.now() - 7 * 24 * 60 * 60 * 1000
         }
     ],
@@ -103,6 +111,11 @@ const MessagesManager = {
     // Obtenir missatges no llegits
     getUnread() {
         return this.getAll().filter(m => m.unread);
+    },
+
+    // Obtenir missatges enviats
+    getSent() {
+        return this.getAll().filter(m => m.sent);
     },
 
     // Obtenir només els més recents (per al submenu)

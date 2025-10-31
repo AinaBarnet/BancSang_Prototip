@@ -1,4 +1,4 @@
-// Elements del DOM
+﻿// Elements del DOM
 const markAllReadBtn = document.getElementById('markAllReadBtn');
 const messagesList = document.getElementById('messagesList');
 const emptyState = document.getElementById('emptyState');
@@ -8,12 +8,49 @@ const modalOverlay = document.getElementById('modalOverlay');
 const modalCloseBtn = document.querySelector('.modal-close');
 const messageForm = document.getElementById('messageForm');
 const cancelBtn = document.querySelector('.btn-cancel');
+const recipientSelect = document.getElementById('recipient');
+const contactsGroup = document.getElementById('contactsGroup');
+const contactSelect = document.getElementById('contactSelect');
+const addContactBtn = document.getElementById('addContactBtn');
+const deleteContactBtn = document.getElementById('deleteContactBtn');
+const addContactModal = document.getElementById('addContactModal');
+const addContactModalClose = document.getElementById('addContactModalClose');
+const addContactForm = document.getElementById('addContactForm');
+const cancelAddContactBtn = document.getElementById('cancelAddContactBtn');
+
+// Clau de localStorage per als contactes
+const CONTACTS_KEY = 'bancSang_contacts';
+
+// Llista de contactes per defecte
+const defaultContacts = [
+    { id: 'contact-1', name: 'Anna Puig', avatar: '👤' },
+    { id: 'contact-2', name: 'Marc Soler', avatar: '👤' },
+    { id: 'contact-3', name: 'Laura Vidal', avatar: '👤' },
+    { id: 'contact-4', name: 'Pau Ribas', avatar: '👤' },
+    { id: 'contact-5', name: 'Marta Serra', avatar: '👤' }
+];
+
+// Obtenir contactes
+function getContacts() {
+    const stored = localStorage.getItem(CONTACTS_KEY);
+    if (!stored) {
+        localStorage.setItem(CONTACTS_KEY, JSON.stringify(defaultContacts));
+        return defaultContacts;
+    }
+    return JSON.parse(stored);
+}
+
+// Guardar contactes
+function saveContacts(contacts) {
+    localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+}
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
     loadAllMessages();
     setupEventListeners();
     updateEmptyState();
+    loadContacts();
 });
 
 // Carregar tots els missatges
@@ -127,6 +164,43 @@ function setupEventListeners() {
         }
     });
 
+    // Mostrar/ocultar selector de contactes
+    recipientSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'contacts') {
+            contactsGroup.style.display = 'block';
+            contactSelect.required = true;
+        } else {
+            contactsGroup.style.display = 'none';
+            contactSelect.required = false;
+            deleteContactBtn.style.display = 'none';
+        }
+    });
+
+    // Mostrar/ocultar botó eliminar contacte
+    contactSelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+            deleteContactBtn.style.display = 'flex';
+        } else {
+            deleteContactBtn.style.display = 'none';
+        }
+    });
+
+    // Eliminar contacte
+    deleteContactBtn.addEventListener('click', handleDeleteContact);
+
+    // Modal afegir contacte
+    addContactBtn.addEventListener('click', openAddContactModal);
+    addContactModalClose.addEventListener('click', closeAddContactModal);
+    cancelAddContactBtn.addEventListener('click', closeAddContactModal);
+    addContactModal.addEventListener('click', (e) => {
+        if (e.target === addContactModal) {
+            closeAddContactModal();
+        }
+    });
+
+    // Afegir contacte
+    addContactForm.addEventListener('submit', handleAddContact);
+
     // Enviar missatge
     messageForm.addEventListener('submit', handleSendMessage);
 }
@@ -179,6 +253,8 @@ function filterMessages(filter) {
 
     if (filter === 'unread') {
         messages = messages.filter(m => m.unread);
+    } else if (filter === 'sent') {
+        messages = MessagesManager.getSent();
     }
 
     renderMessages(messages);
@@ -197,6 +273,9 @@ function updateEmptyState() {
         if (activeFilter === 'unread') {
             emptyState.querySelector('h3').textContent = 'No hi ha missatges no llegits';
             emptyState.querySelector('p').textContent = 'Molt bé! Has llegit tots els missatges';
+        } else if (activeFilter === 'sent') {
+            emptyState.querySelector('h3').textContent = 'No hi ha missatges enviats';
+            emptyState.querySelector('p').textContent = 'Encara no has enviat cap missatge';
         } else {
             emptyState.querySelector('h3').textContent = 'No hi ha missatges';
             emptyState.querySelector('p').textContent = 'Tots els teus missatges estan llegits';
@@ -245,6 +324,85 @@ function closeModal() {
     modalOverlay.classList.remove('active');
     document.body.style.overflow = '';
     messageForm.reset();
+    contactsGroup.style.display = 'none';
+    contactSelect.required = false;
+}
+
+// Carregar llista de contactes
+function loadContacts() {
+    const contacts = getContacts();
+    contactSelect.innerHTML = '<option value="">Tria un contacte</option>';
+    contacts.forEach(contact => {
+        const option = document.createElement('option');
+        option.value = contact.id;
+        option.textContent = contact.name;
+        contactSelect.appendChild(option);
+    });
+}
+
+// Obrir modal afegir contacte
+function openAddContactModal() {
+    addContactModal.classList.add('active');
+}
+
+// Tancar modal afegir contacte
+function closeAddContactModal() {
+    addContactModal.classList.remove('active');
+    addContactForm.reset();
+}
+
+// Gestionar afegir contacte
+function handleAddContact(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('contactName').value.trim();
+    const avatar = document.querySelector('input[name="avatar"]:checked').value;
+
+    if (!name || !avatar) {
+        showFeedback('Si us plau, omple tots els camps');
+        return;
+    }
+
+    // Crear nou contacte
+    const contacts = getContacts();
+    const newContact = {
+        id: `contact-${Date.now()}`,
+        name: name,
+        avatar: avatar
+    };
+
+    contacts.push(newContact);
+    saveContacts(contacts);
+
+    // Actualitzar selector i tancar modal
+    loadContacts();
+    closeAddContactModal();
+    showFeedback(`Contacte "${name}" afegit correctament!`);
+}
+
+// Gestionar eliminar contacte
+function handleDeleteContact() {
+    const selectedId = contactSelect.value;
+    if (!selectedId) {
+        showFeedback('Si us plau, selecciona un contacte');
+        return;
+    }
+
+    const contacts = getContacts();
+    const contactToDelete = contacts.find(c => c.id === selectedId);
+
+    if (!contactToDelete) return;
+
+    // Confirmar eliminació
+    if (confirm(`Estàs segur que vols eliminar el contacte "${contactToDelete.name}"?`)) {
+        const updatedContacts = contacts.filter(c => c.id !== selectedId);
+        saveContacts(updatedContacts);
+
+        // Actualitzar selector
+        loadContacts();
+        deleteContactBtn.style.display = 'none';
+        showFeedback(`Contacte "${contactToDelete.name}" eliminat correctament!`);
+    }
 }
 
 // Gestionar enviament de missatge
@@ -261,29 +419,44 @@ function handleSendMessage(e) {
         return;
     }
 
+    // Si s'ha seleccionat contactes, validar que s'hagi triat un
+    if (recipient === 'contacts') {
+        const selectedContact = contactSelect.value;
+        if (!selectedContact) {
+            showFeedback('Si us plau, selecciona un contacte');
+            return;
+        }
+    }
+
+    // Determinar destinatari final
+    let finalRecipient, finalAvatar;
+
+    if (recipient === 'contacts') {
+        const contacts = getContacts();
+        const selectedContact = contacts.find(c => c.id === contactSelect.value);
+        finalRecipient = selectedContact.name;
+        finalAvatar = selectedContact.avatar;
+    } else {
+        const recipientNames = {
+            'dr-joan': 'Dr. Joan Martínez',
+            'suport': 'Equip de suport',
+            'dra-maria': 'Dra. Maria López'
+        };
+
+        finalRecipient = recipientNames[recipient] || recipient;
+        finalAvatar = '📤';
+    }
+
     // Crear nou missatge
-    const recipientNames = {
-        'dr-martinez': 'Dr. Joan Martínez',
-        'banc-sang': 'Centre Banc de Sang',
-        'suport': 'Equip de suport',
-        'dra-lopez': 'Dra. Maria López'
-    };
-
-    const avatars = {
-        'dr-martinez': '👨‍⚕️',
-        'banc-sang': '🏥',
-        'suport': '💬',
-        'dra-lopez': '👩‍⚕️'
-    };
-
     const newMessage = {
         id: Date.now(),
-        avatar: avatars[recipient] || '👤',
-        sender: recipientNames[recipient] || recipient,
+        avatar: finalAvatar,
+        sender: finalRecipient,
         message: `${subject}: ${messageText}`,
         time: 'Ara mateix',
         date: 'Avui',
         unread: false,
+        sent: true,
         timestamp: Date.now()
     };
 
@@ -323,3 +496,4 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
