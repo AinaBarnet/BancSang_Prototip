@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El meu calendari - Banc de Sang</title>
+    <link rel="stylesheet" href="styles/calendari.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='home.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Tornar
+            </button>
+        </div>
+        <h1 class="header-title">El meu calendari</h1>
+        <div class="header-right">
+            <button class="icon-btn" id="addEventBtn" title="Afegir cita">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="calendar-container">
+            <!-- Navegació del calendari -->
+            <div class="calendar-header">
+                <button class="nav-btn" id="prevMonthBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <h2 class="current-month" id="currentMonth">Novembre 2025</h2>
+                <button class="nav-btn" id="nextMonthBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+                <button class="today-btn" id="todayBtn">Avui</button>
+            </div>
+
+            <!-- Vista de calendari -->
+            <div class="calendar-view">
+                <!-- Dies de la setmana -->
+                <div class="weekdays">
+                    <div class="weekday">Dilluns</div>
+                    <div class="weekday">Dimarts</div>
+                    <div class="weekday">Dimecres</div>
+                    <div class="weekday">Dijous</div>
+                    <div class="weekday">Divendres</div>
+                    <div class="weekday">Dissabte</div>
+                    <div class="weekday">Diumenge</div>
+                </div>
+
+                <!-- Grid de dies -->
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Dies generats dinàmicament per JavaScript -->
+                </div>
+            </div>
+
+            <!-- Llegenda -->
+            <div class="calendar-legend">
+                <h3>Llegenda</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #d32f2f;"></span>
+                        <span>Donacions realitzades</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #1976d2;"></span>
+                        <span>Cites programades</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #388e3c;"></span>
+                        <span>Ja pots tornar a donar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Llista d'esdeveniments del mes -->
+        <div class="events-sidebar">
+            <h3>Esdeveniments del mes</h3>
+            <div class="events-list" id="eventsList">
+                <!-- Esdeveniments generats dinàmicament -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal per afegir/editar cita -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Afegir cita de donació</h3>
+                <button class="close-btn" id="closeModalBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventDate">Data *</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Hora *</label>
+                    <input type="time" id="eventTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventCenter">Centre de donació *</label>
+                    <select id="eventCenter" required>
+                        <option value="">Selecciona un centre</option>
+                        <option value="Banc de Sang i Teixits - Barcelona">Banc de Sang i Teixits - Barcelona</option>
+                        <option value="Hospital Universitari Vall d'Hebron - Barcelona">Hospital Universitari Vall
+                            d'Hebron - Barcelona</option>
+                        <option value="Hospital de la Santa Creu i Sant Pau - Barcelona">Hospital de la Santa Creu i
+                            Sant Pau - Barcelona</option>
+                        <option value="Hospital Clínic - Barcelona">Hospital Clínic - Barcelona</option>
+                        <option value="Hospital Germans Trias i Pujol - Badalona">Hospital Germans Trias i Pujol -
+                            Badalona</option>
+                        <option value="Hospital Universitari de Bellvitge - L'Hospitalet">Hospital Universitari de
+                            Bellvitge - L'Hospitalet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventType">Tipus de donació</label>
+                    <select id="eventType">
+                        <option value="Sang">Sang</option>
+                        <option value="Plasma">Plasma</option>
+                        <option value="Plaquetes">Plaquetes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventNotes">Notes</label>
+                    <textarea id="eventNotes" rows="3" placeholder="Notes o recordatoris..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel·lar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal per veure detalls d'un esdeveniment -->
+    <div class="modal" id="eventDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="detailsTitle">Detalls de l'esdeveniment</h3>
+                <button class="close-btn" id="closeDetailsBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="event-details-content" id="eventDetailsContent">
+                <!-- Contingut generat dinàmicament -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="closeDetailsActionBtn">Tancar</button>
+                <button type="button" class="btn-danger" id="deleteEventBtn" style="display: none;">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/calendari.js"></script>
+</body>
+
+</html>
