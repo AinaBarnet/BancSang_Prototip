@@ -1,0 +1,373 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e8e8e8 0%, #f0f0f0 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    background: #b71c34;
+    color: white;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(139, 34, 59, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-3px);
+}
+
+header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Main Content */
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Search Container */
+.search-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+    border-color: #b71c34;
+    box-shadow: 0 0 0 3px rgba(183, 28, 52, 0.1);
+}
+
+.search-icon {
+    color: #666;
+    flex-shrink: 0;
+}
+
+#searchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+}
+
+#searchInput::placeholder {
+    color: #999;
+}
+
+.location-btn {
+    background: #b71c34;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.location-btn:hover {
+    background: #8b1526;
+    transform: scale(1.05);
+}
+
+/* Section Title */
+.section-title {
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Locations Grid */
+.locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* City Section */
+.city-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.city-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 24px rgba(183, 28, 52, 0.15);
+}
+
+.city-name {
+    font-size: 1.1rem;
+    color: #b71c34;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Hospital Card */
+.hospital-card {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.hospital-card:last-child {
+    margin-bottom: 0;
+}
+
+.hospital-card:hover {
+    background: #f5f5f5;
+    border-color: #b71c34;
+}
+
+.hospital-card h4 {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    min-height: 2.8rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Card Actions */
+.card-actions {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #b71c34 0%, #d32f2f 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(183, 28, 52, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 12px rgba(183, 28, 52, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #ffc107;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-secondary:hover {
+    background: #ffb300;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+    transform: translateY(-2px);
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.no-results svg {
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+}
+
+.no-results h3 {
+    font-size: 1.4rem;
+    color: #666;
+    margin-bottom: 0.8rem;
+}
+
+.no-results p {
+    font-size: 1rem;
+    color: #999;
+}
+
+/* Hidden class */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    main {
+        padding: 1.5rem 1rem;
+    }
+
+    .locations-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .search-container {
+        padding: 1rem;
+    }
+
+    .search-box {
+        padding: 0.6rem 1rem;
+    }
+
+    #searchInput {
+        font-size: 0.9rem;
+    }
+
+    .city-section {
+        padding: 1.2rem;
+    }
+
+    .hospital-card {
+        padding: 1rem;
+    }
+
+    .hospital-card h4 {
+        font-size: 0.9rem;
+        min-height: 2.5rem;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* Animation for cards appearing */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.city-section {
+    animation: slideIn 0.4s ease-out;
+}
+
+/* Stagger animation for multiple cards */
+.city-section:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.city-section:nth-child(2) {
+    animation-delay: 0.05s;
+}
+
+.city-section:nth-child(3) {
+    animation-delay: 0.1s;
+}
+
+.city-section:nth-child(4) {
+    animation-delay: 0.15s;
+}
+
+.city-section:nth-child(5) {
+    animation-delay: 0.2s;
+}
+
+.city-section:nth-child(6) {
+    animation-delay: 0.25s;
+}
+
+.city-section:nth-child(7) {
+    animation-delay: 0.3s;
+}
+
+.city-section:nth-child(8) {
+    animation-delay: 0.35s;
+}
+
+.city-section:nth-child(9) {
+    animation-delay: 0.4s;
+}
+
+.city-section:nth-child(10) {
+    animation-delay: 0.45s;
+}

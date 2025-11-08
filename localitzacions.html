@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On puc donar sang?</title>
+    <link rel="stylesheet" href="styles/localitzacions.css">
+</head>
+
+<body>
+    <header>
+        <button class="back-btn" onclick="window.history.back()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <h1>On puc donar sang?</h1>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Escriu la teva població, comarca o codi postal">
+                <button class="location-btn" id="useLocationBtn" title="Usa la meva ubicació">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <h2 class="section-title">Hospitals amb espai de donació</h2>
+
+        <div class="locations-grid">
+            <!-- Barcelona -->
+            <div class="city-section" data-city="Barcelona" data-comarca="Barcelonès">
+                <h3 class="city-name">Barcelona</h3>
+
+                <div class="hospital-card">
+                    <h4>Germans Trias i Pujol</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+
+                <div class="hospital-card">
+                    <h4>Barcelona<br>Hospital Clínic</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+
+                <div class="hospital-card">
+                    <h4>Barcelona<br>Hospital de la Santa Creu i Sant Pau</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Girona -->
+            <div class="city-section" data-city="Girona" data-comarca="Gironès">
+                <h3 class="city-name">Girona</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari de<br>Girona Doctor Josep Trueta</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- L'Hospitalet de Llobregat -->
+            <div class="city-section" data-city="L'Hospitalet de Llobregat" data-comarca="Barcelonès">
+                <h3 class="city-name">Hospitalet de Llobregat, L'</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari<br>de Bellvitge</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barcelona (Universitari) -->
+            <div class="city-section" data-city="Barcelona" data-comarca="Barcelonès">
+                <h3 class="city-name">Barcelona</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari<br>Vall d'Hebron</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lleida -->
+            <div class="city-section" data-city="Lleida" data-comarca="Segrià">
+                <h3 class="city-name">Lleida</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari<br>Arnau de Vilanova</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manresa -->
+            <div class="city-section" data-city="Manresa" data-comarca="Bages">
+                <h3 class="city-name">Manresa</h3>
+
+                <div class="hospital-card">
+                    <h4>Fundació Althaia -<br>Hospital Sant Joan de Déu</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reus -->
+            <div class="city-section" data-city="Reus" data-comarca="Baix Camp">
+                <h3 class="city-name">Reus</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari<br>Sant Joan de Reus</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarragona -->
+            <div class="city-section" data-city="Tarragona" data-comarca="Tarragonès">
+                <h3 class="city-name">Tarragona</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari Joan XXIII</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terrassa -->
+            <div class="city-section" data-city="Terrassa" data-comarca="Vallès Occidental">
+                <h3 class="city-name">Terrassa</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Universitari<br>Mútua Terrassa</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tortosa -->
+            <div class="city-section" data-city="Tortosa" data-comarca="Baix Ebre">
+                <h3 class="city-name">Tortosa</h3>
+
+                <div class="hospital-card">
+                    <h4>Hospital Verge de la Cinta</h4>
+                    <div class="card-actions">
+                        <button class="btn-primary">Dona sang</button>
+                        <button class="btn-secondary">Zona plasma</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <h3>No s'han trobat resultats</h3>
+            <p>Prova amb una altra població o comarca</p>
+        </div>
+    </main>
+
+    <script src="scripts/localitzacions.js"></script>
+</body>
+
+</html>

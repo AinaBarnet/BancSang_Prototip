@@ -312,7 +312,8 @@ function setupEventListeners() {
             e.stopPropagation();
             const card = btn.closest('.location-card');
             const locationName = card.querySelector('h5').textContent;
-            alert(`Informació detallada de:\n${locationName}\n\n(Aquesta funcionalitat s'implementarà properment)`);
+            // Redirigir a la pàgina de localitzacions amb el nom de l'hospital
+            window.location.href = `localitzacions.html?cerca=${encodeURIComponent(locationName)}`;
         });
     });
 
