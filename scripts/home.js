@@ -18,95 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDonations();
     updateDisplay();
     setupEventListeners();
-    loadNotifications();
     updateNotificationBadge();
 });
 
-// Carregar i renderitzar notificacions
-function loadNotifications() {
-    const unreadNotifications = NotificationsManager.getUnread().slice(0, 4);
-    const notificationList = document.querySelector('.notification-list');
 
-    notificationList.innerHTML = '';
-
-    if (unreadNotifications.length === 0) {
-        notificationList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;"><p>No hi ha notificacions noves</p></div>';
-        return;
-    }
-
-    unreadNotifications.forEach(notification => {
-        const card = createNotificationCard(notification);
-        notificationList.appendChild(card);
-    });
-
-    setupNotificationListeners();
-}
-
-// Crear targeta de notificació
-function createNotificationCard(notification) {
-    const card = document.createElement('div');
-    card.className = `notification-card${notification.unread ? ' unread' : ''}`;
-    card.dataset.id = notification.id;
-
-    card.innerHTML = `
-        <div class="notification-icon ${notification.iconClass}">${notification.icon}</div>
-        <div class="notification-content">
-            <h5>${notification.title}</h5>
-            <p>${notification.description}</p>
-            <span class="notification-time">${notification.time}</span>
-        </div>
-        <button class="notification-close">✕</button>
-    `;
-
-    return card;
-}
-
-// Configurar listeners de notificacions
-function setupNotificationListeners() {
-    // Marcar totes com llegides
-    const markAllReadBtn = document.getElementById('markAllRead');
-    if (markAllReadBtn) {
-        markAllReadBtn.replaceWith(markAllReadBtn.cloneNode(true));
-        document.getElementById('markAllRead').addEventListener('click', (e) => {
-            e.stopPropagation();
-            NotificationsManager.markAllAsRead();
-            loadNotifications();
-            updateNotificationBadge();
-        });
-    }
-
-    // Tancar notificacions individuals
-    const closeButtons = document.querySelectorAll('.notification-close');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = button.closest('.notification-card');
-            const id = parseInt(card.dataset.id);
-
-            card.style.opacity = '0';
-            card.style.transform = 'translateX(20px)';
-
-            setTimeout(() => {
-                NotificationsManager.remove(id);
-                loadNotifications();
-                updateNotificationBadge();
-            }, 300);
-        });
-    });
-
-    // Click en notificació per marcar com llegida
-    const notificationCards = document.querySelectorAll('.notification-card');
-    notificationCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('notification-close')) {
-                const id = parseInt(card.dataset.id);
-                NotificationsManager.markAsRead(id);
-                card.classList.remove('unread');
-                updateNotificationBadge();
-            }
-        });
-    });
-}
 
 // Cargar donaciones desde localStorage
 function loadDonations() {
@@ -238,10 +153,6 @@ function setupEventListeners() {
         e.stopPropagation();
         dropdownMenu.classList.toggle('active');
         userMenuBtn.classList.toggle('active');
-        // Cerrar submenus si están abiertos
-        const notificationsSubmenu = document.getElementById('notificationsSubmenu');
-        notificationsSubmenu.classList.remove('active');
-        document.getElementById('notificationsBtn').classList.remove('active');
     });
 
     // Cerrar el menú al hacer click fuera
@@ -249,10 +160,6 @@ function setupEventListeners() {
         if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
             dropdownMenu.classList.remove('active');
             userMenuBtn.classList.remove('active');
-            // Cerrar submenus
-            const notificationsSubmenu = document.getElementById('notificationsSubmenu');
-            notificationsSubmenu.classList.remove('active');
-            document.getElementById('notificationsBtn').classList.remove('active');
         }
     });
 
@@ -261,19 +168,8 @@ function setupEventListeners() {
         e.stopPropagation();
     });
 
-    // Notifications submenu
-    const notificationsBtn = document.getElementById('notificationsBtn');
-    const notificationsSubmenu = document.getElementById('notificationsSubmenu');
-
-    notificationsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notificationsBtn.classList.toggle('active');
-        notificationsSubmenu.classList.toggle('active');
-    });
-
     // Actualitzar quan es modifiquen les notificacions
     window.addEventListener('notificationsUpdated', () => {
-        loadNotifications();
         updateNotificationBadge();
     });
 
@@ -287,9 +183,6 @@ function setupEventListeners() {
         e.stopPropagation();
         locationsBtn.classList.toggle('active');
         locationsSubmenu.classList.toggle('active');
-        // Tancar altres submenus
-        notificationsSubmenu.classList.remove('active');
-        notificationsBtn.classList.remove('active');
     });
 
     // Location card buttons
@@ -409,11 +302,21 @@ function sortLocationsByDistance() {
 // Actualizar badge de notificaciones
 function updateNotificationBadge() {
     const unreadCount = NotificationsManager.getUnreadCount();
+    const urgentCount = NotificationsManager.getUrgent().length;
     const badge = document.getElementById('notificationBadge');
 
     if (unreadCount > 0) {
         badge.textContent = unreadCount;
         badge.style.display = 'inline-block';
+
+        // Canviar color segons urgència
+        if (urgentCount > 0) {
+            badge.style.background = 'linear-gradient(135deg, #ff5252 0%, #d32f2f 100%)';
+            badge.style.animation = 'pulse 2s ease-in-out infinite';
+        } else {
+            badge.style.background = '#d32f2f';
+            badge.style.animation = 'none';
+        }
     } else {
         badge.style.display = 'none';
     }

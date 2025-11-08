@@ -29,7 +29,7 @@
                         </svg>
                         <span>El meu calendari</span>
                     </a>
-                    <div class="dropdown-item notifications-item" id="notificationsBtn">
+                    <a href="notificacions.html" class="dropdown-item notifications-item" id="notificationsBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -37,58 +37,7 @@
                         </svg>
                         <span>Notificacions</span>
                         <span class="notification-badge" id="notificationBadge">4</span>
-                        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" class="submenu-arrow">
-                            <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" />
-                        </svg>
-                    </div>
-                    <div class="submenu notifications-submenu" id="notificationsSubmenu">
-                        <div class="submenu-header">
-                            <h4>Notificacions recents</h4>
-                            <button class="mark-all-read" id="markAllRead">Marcar totes com llegides</button>
-                        </div>
-                        <div class="notification-list">
-                            <div class="notification-card unread" data-id="1">
-                                <div class="notification-icon new-event">📅</div>
-                                <div class="notification-content">
-                                    <h5>Nova cita disponible</h5>
-                                    <p>Hi ha places disponibles per donar sang demà al matí al Centre Banc de Sang de
-                                        Barcelona</p>
-                                    <span class="notification-time">Fa 2 hores</span>
-                                </div>
-                                <button class="notification-close">✕</button>
-                            </div>
-                            <div class="notification-card unread" data-id="2">
-                                <div class="notification-icon new-event">�</div>
-                                <div class="notification-content">
-                                    <h5>Confirmació de cita</h5>
-                                    <p>La teva cita per donar sang està confirmada per demà a les 10:00h</p>
-                                    <span class="notification-time">Fa 5 hores</span>
-                                </div>
-                                <button class="notification-close">✕</button>
-                            </div>
-                            <div class="notification-card unread" data-id="3">
-                                <div class="notification-icon reminder">🔔</div>
-                                <div class="notification-content">
-                                    <h5>Recordatori de donació</h5>
-                                    <p>Ja pots tornar a donar sang! Han passat 3 mesos des de la teva última donació</p>
-                                    <span class="notification-time">Ahir</span>
-                                </div>
-                                <button class="notification-close">✕</button>
-                            </div>
-                            <div class="notification-card unread" data-id="5">
-                                <div class="notification-icon achievement">🏆</div>
-                                <div class="notification-content">
-                                    <h5>Nou assoliment desbloquejat!</h5>
-                                    <p>Has completat 5 donacions. Gràcies per la teva col·laboració!</p>
-                                    <span class="notification-time">Fa 3 dies</span>
-                                </div>
-                                <button class="notification-close">✕</button>
-                            </div>
-                        </div>
-                        <div class="submenu-footer">
-                            <a href="notificacions.html" class="view-all-link">Veure totes les notificacions</a>
-                        </div>
-                    </div>
+                    </a>
 
                     <a href="registrar-donacio.html" class="dropdown-item" id="registerDonationBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -288,8 +237,7 @@
         </div>
     </main>
 
-    <script src="scripts/notifications-manager.js">
-        <script src="scripts/messages-manager.js"></script>
+    <script src="scripts/notificacions.js"></script>
     <script src="scripts/home.js"></script>
 </body>
 

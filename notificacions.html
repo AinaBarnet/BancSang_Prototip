@@ -20,168 +20,67 @@
         </div>
         <h1 class="header-title">Les meves notificacions</h1>
         <div class="header-right">
-            <button class="icon-btn" id="markAllReadBtn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="mark-all-btn" id="markAllReadBtn" title="Marcar totes com llegides">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
+                <span>Marcar com llegides</span>
             </button>
         </div>
     </header>
 
     <main>
         <div class="notifications-container">
+            <!-- Estadístiques -->
+            <div id="notificationStats" class="notification-stats"></div>
+
+            <!-- Accions ràpides -->
+            <div class="quick-actions">
+                <button class="quick-action-btn" id="settingsBtn" title="Preferències">
+                    ⚙️ Preferències
+                </button>
+                <button class="quick-action-btn" id="viewTrashBtn" title="Veure paperera">
+                    🗑️ Paperera (<span id="trashCount">0</span>)
+                </button>
+                <button class="quick-action-btn" id="cleanOldBtn" title="Netejar notificacions antigues">
+                    Netejar notificacions antigues
+                </button>
+            </div>
+
             <div class="filter-tabs">
                 <button class="tab-btn active" data-filter="all">Totes</button>
                 <button class="tab-btn" data-filter="unread">No llegides</button>
+                <button class="tab-btn urgent-tab" data-filter="urgent">Urgents</button>
                 <button class="tab-btn" data-filter="events">Cites</button>
                 <button class="tab-btn" data-filter="reminders">Recordatoris</button>
                 <button class="tab-btn" data-filter="achievements">Assoliments</button>
+                <button class="tab-btn" data-filter="info">Informació</button>
             </div>
 
             <div class="notifications-list" id="notificationsList">
-                <!-- Notificaciones de hoy -->
+                <!-- Notificacions d'avui -->
                 <div class="date-group">
                     <h3 class="date-header">Avui</h3>
-
-                    <div class="notification-card unread" data-id="1" data-type="events">
-                        <div class="notification-icon new-event">📅</div>
-                        <div class="notification-content">
-                            <h4>Nova cita disponible</h4>
-                            <p>Hi ha places disponibles per donar sang demà al matí al Centre Banc de Sang de Barcelona
-                            </p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 2 hores</span>
-                                <span class="notification-category">Cita</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
-
-                    <div class="notification-card unread" data-id="2" data-type="events">
-                        <div class="notification-icon new-event">📅</div>
-                        <div class="notification-content">
-                            <h4>Confirmació de cita</h4>
-                            <p>La teva cita per donar sang està confirmada per demà a les 10:00h</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 5 hores</span>
-                                <span class="notification-category">Cita</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
                 </div>
 
-                <!-- Notificaciones de ayer -->
+                <!-- Notificacions d'ahir -->
                 <div class="date-group">
                     <h3 class="date-header">Ahir</h3>
-
-                    <div class="notification-card unread" data-id="3" data-type="reminders">
-                        <div class="notification-icon reminder">🔔</div>
-                        <div class="notification-content">
-                            <h4>Recordatori de donació</h4>
-                            <p>Ja pots tornar a donar sang! Han passat 3 mesos des de la teva última donació</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Ahir</span>
-                                <span class="notification-category">Recordatori</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
-
-                    <div class="notification-card" data-id="4" data-type="info">
-                        <div class="notification-icon info">ℹ️</div>
-                        <div class="notification-content">
-                            <h4>Actualització important</h4>
-                            <p>Hem actualitzat les nostres polítiques de privacitat. Consulta els canvis al teu perfil
-                            </p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Ahir</span>
-                                <span class="notification-category">Informació</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
                 </div>
 
-                <!-- Notificaciones de hace 3 días -->
+                <!-- Notificacions de fa 3 dies -->
                 <div class="date-group">
                     <h3 class="date-header">Fa 3 dies</h3>
-
-                    <div class="notification-card unread" data-id="5" data-type="achievements">
-                        <div class="notification-icon achievement">🏆</div>
-                        <div class="notification-content">
-                            <h4>Nou assoliment desbloquejat!</h4>
-                            <p>Has completat 5 donacions. Gràcies per la teva col·laboració!</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 3 dies</span>
-                                <span class="notification-category">Assoliment</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
                 </div>
 
-                <!-- Notificaciones de hace 5 días -->
+                <!-- Notificacions de fa 5 dies -->
                 <div class="date-group">
                     <h3 class="date-header">Fa 5 dies</h3>
-
-                    <div class="notification-card" data-id="6" data-type="info">
-                        <div class="notification-icon info">ℹ️</div>
-                        <div class="notification-content">
-                            <h4>Informació important</h4>
-                            <p>El proper sorteig del premi mensual es realitzarà el dia 15. Assegura't de participar!
-                            </p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 5 dies</span>
-                                <span class="notification-category">Informació</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
-
-                    <div class="notification-card" data-id="7" data-type="reminders">
-                        <div class="notification-icon reminder">🔔</div>
-                        <div class="notification-content">
-                            <h4>Recordatori de sorteig</h4>
-                            <p>No oblidis participar en el sorteig d'aquest mes. Tens temps fins el dia 15!</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 5 dies</span>
-                                <span class="notification-category">Recordatori</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
                 </div>
 
-                <!-- Notificaciones de hace 1 semana -->
+                <!-- Notificacions de fa 1 setmana -->
                 <div class="date-group">
                     <h3 class="date-header">Fa 1 setmana</h3>
-
-                    <div class="notification-card" data-id="8" data-type="achievements">
-                        <div class="notification-icon achievement">🏆</div>
-                        <div class="notification-content">
-                            <h4>Primera donació completada</h4>
-                            <p>Felicitats per la teva primera donació de sang. Has salvat fins a 3 vides!</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 1 setmana</span>
-                                <span class="notification-category">Assoliment</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
-
-                    <div class="notification-card" data-id="9" data-type="events">
-                        <div class="notification-icon new-event">📅</div>
-                        <div class="notification-content">
-                            <h4>Donació completada</h4>
-                            <p>Gràcies per la teva donació del dia 24. La teva contribució és molt valuosa</p>
-                            <div class="notification-meta">
-                                <span class="notification-time">Fa 1 setmana</span>
-                                <span class="notification-category">Cita</span>
-                            </div>
-                        </div>
-                        <button class="notification-close">✕</button>
-                    </div>
                 </div>
             </div>
 
@@ -193,7 +92,103 @@
         </div>
     </main>
 
-    <script src="scripts/notifications-manager.js"></script>
+    <!-- Modal de preferències -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Preferències de Notificacions</h2>
+                <button class="modal-close" id="closeSettingsModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>🔔 Tipus de Notificacions</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableSound">
+                            <span>🔊 Activar so de notificacions</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableEvents">
+                            <span>📅 Notificacions de cites</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableReminders">
+                            <span>🔔 Recordatoris</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableAchievements">
+                            <span>🏆 Assoliments</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="enableInfo">
+                            <span>ℹ️ Informació general</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🌙 Hores Silencioses</h3>
+                    <div class="setting-row">
+                        <div class="setting-item">
+                            <label for="quietStart">Inici (hora):</label>
+                            <input type="number" id="quietStart" min="0" max="23" placeholder="22">
+                        </div>
+                        <div class="setting-item">
+                            <label for="quietEnd">Fi (hora):</label>
+                            <input type="number" id="quietEnd" min="0" max="23" placeholder="8">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>🧹 Neteja Automàtica</h3>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="autoDeleteOld">
+                            <span>Eliminar automàticament notificacions antigues</span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="daysToKeep">Dies a mantenir:</label>
+                        <input type="number" id="daysToKeep" min="1" max="365" placeholder="30">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelSettings">Cancel·lar</button>
+                    <button class="btn-primary" id="saveSettings">💾 Guardar Preferències</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Paperera -->
+    <div class="modal-overlay" id="trashModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Paperera de notificacions</h2>
+                <button class="modal-close" id="closeTrashModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="trashList" class="trash-list">
+                    <!-- S'omplirà amb JavaScript -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="closeTrash">Tancar</button>
+                    <button class="btn-danger" id="emptyTrashBtn">Buidar paperera</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="scripts/notificacions.js"></script>
 </body>
 
