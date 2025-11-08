@@ -7,7 +7,6 @@ const maxDonations = 33000; // Meta mensual para desbloquear el premio
 const donationCountEl = document.getElementById('donationCount');
 const percentageEl = document.getElementById('percentage');
 const bloodFillEl = document.getElementById('bloodFill');
-const configBtn = document.getElementById('configBtn');
 const userMenuBtn = document.getElementById('userMenuBtn');
 const dropdownMenu = document.getElementById('dropdownMenu');
 const remainingEl = document.getElementById('remaining');
@@ -21,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     loadNotifications();
     updateNotificationBadge();
-    loadMessages();
-    updateMessagesBadge();
 });
 
 // Carregar i renderitzar notificacions
@@ -43,94 +40,6 @@ function loadNotifications() {
     });
 
     setupNotificationListeners();
-}
-
-// Carregar i renderitzar missatges
-function loadMessages() {
-    const unreadMessages = MessagesManager.getUnread().slice(0, 3);
-    const messagesList = document.querySelector('.messages-list');
-
-    messagesList.innerHTML = '';
-
-    if (unreadMessages.length === 0) {
-        messagesList.innerHTML = '<div style="padding: 2rem; text-align: center; color: #999;"><p>No hi ha missatges nous</p></div>';
-        return;
-    }
-
-    unreadMessages.forEach(message => {
-        const card = createMessageCard(message);
-        messagesList.appendChild(card);
-    });
-
-    setupMessageListeners();
-}
-
-// Crear targeta de missatge
-function createMessageCard(message) {
-    const card = document.createElement('div');
-    card.className = `message-card${message.unread ? ' unread' : ''}`;
-    card.dataset.id = message.id;
-
-    card.innerHTML = `
-        <div class="message-avatar">${message.avatar}</div>
-        <div class="message-content">
-            <div class="message-header">
-                <h5>${message.sender}</h5>
-                <span class="message-time">${message.time}</span>
-            </div>
-            <p>${message.message}</p>
-        </div>
-        <button class="message-close">✕</button>
-    `;
-
-    return card;
-}
-
-// Configurar listeners de missatges
-function setupMessageListeners() {
-    // Marcar tots com llegits
-    const markAllMessagesReadBtn = document.getElementById('markAllMessagesRead');
-    if (markAllMessagesReadBtn) {
-        markAllMessagesReadBtn.replaceWith(markAllMessagesReadBtn.cloneNode(true));
-        document.getElementById('markAllMessagesRead').addEventListener('click', (e) => {
-            e.stopPropagation();
-            MessagesManager.markAllAsRead();
-            loadMessages();
-            updateMessagesBadge();
-        });
-    }
-
-    // Tancar missatges individuals
-    const closeButtons = document.querySelectorAll('.message-close');
-    closeButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = button.closest('.message-card');
-            const id = parseInt(card.dataset.id);
-
-            card.style.opacity = '0';
-            card.style.transform = 'translateX(20px)';
-
-            setTimeout(() => {
-                MessagesManager.remove(id);
-                loadMessages();
-                updateMessagesBadge();
-            }, 300);
-        });
-    });
-
-    // Click en missatge per marcar com llegit
-    const messageCards = document.querySelectorAll('.message-card');
-    messageCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.classList.contains('message-close')) {
-                const id = parseInt(card.dataset.id);
-                MessagesManager.markAsRead(id);
-                card.classList.remove('unread');
-                updateMessagesBadge();
-            }
-        });
-    });
 }
 
 // Crear targeta de notificació
@@ -307,10 +216,21 @@ function celebrateGoalReached() {
 
 // Configurar event listeners
 function setupEventListeners() {
-    // Botón de configuración
-    configBtn.addEventListener('click', () => {
-        console.log('Configuración - Por implementar');
+    // Botón de chat
+    const chatBtn = document.getElementById('chatBtn');
+    chatBtn.addEventListener('click', () => {
+        console.log('Chat - Por implementar');
+        // TODO: Abrir interfaz de chat
+        alert('📱 Xat\n\nLa funcionalitat de xat s\'està desenvolupant.\nProperement podràs enviar i rebre missatges en temps real!');
+    });
+
+    // Opción de configuración en el menú desplegable
+    const configMenuItem = document.getElementById('configMenuItem');
+    configMenuItem.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Configuración desde menú - Por implementar');
         // TODO: Navegar a página de configuración
+        alert('⚙️ Configuració\n\nAquí podràs:\n• Gestionar el teu perfil\n• Configurar notificacions\n• Preferències d\'idioma\n• Privacitat i seguretat\n\n(En desenvolupament)');
     });
 
     // User menu dropdown
@@ -320,11 +240,8 @@ function setupEventListeners() {
         userMenuBtn.classList.toggle('active');
         // Cerrar submenus si están abiertos
         const notificationsSubmenu = document.getElementById('notificationsSubmenu');
-        const messagesSubmenu = document.getElementById('messagesSubmenu');
         notificationsSubmenu.classList.remove('active');
-        messagesSubmenu.classList.remove('active');
         document.getElementById('notificationsBtn').classList.remove('active');
-        document.getElementById('messagesBtn').classList.remove('active');
     });
 
     // Cerrar el menú al hacer click fuera
@@ -334,11 +251,8 @@ function setupEventListeners() {
             userMenuBtn.classList.remove('active');
             // Cerrar submenus
             const notificationsSubmenu = document.getElementById('notificationsSubmenu');
-            const messagesSubmenu = document.getElementById('messagesSubmenu');
             notificationsSubmenu.classList.remove('active');
-            messagesSubmenu.classList.remove('active');
             document.getElementById('notificationsBtn').classList.remove('active');
-            document.getElementById('messagesBtn').classList.remove('active');
         }
     });
 
@@ -363,25 +277,6 @@ function setupEventListeners() {
         updateNotificationBadge();
     });
 
-    // Messages submenu
-    const messagesBtn = document.getElementById('messagesBtn');
-    const messagesSubmenu = document.getElementById('messagesSubmenu');
-
-    messagesBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        messagesBtn.classList.toggle('active');
-        messagesSubmenu.classList.toggle('active');
-        // Tancar submenu de notificacions si està obert
-        notificationsSubmenu.classList.remove('active');
-        notificationsBtn.classList.remove('active');
-    });
-
-    // Actualitzar quan es modifiquen els missatges
-    window.addEventListener('messagesUpdated', () => {
-        loadMessages();
-        updateMessagesBadge();
-    });
-
     // Register Donation submenu
     const registerDonationBtn = document.getElementById('registerDonationBtn');
     const registerDonationSubmenu = document.getElementById('registerDonationSubmenu');
@@ -393,8 +288,6 @@ function setupEventListeners() {
         // Tancar altres submenus
         notificationsSubmenu.classList.remove('active');
         notificationsBtn.classList.remove('active');
-        messagesSubmenu.classList.remove('active');
-        messagesBtn.classList.remove('active');
     });
 
     // Locations submenu
@@ -408,8 +301,6 @@ function setupEventListeners() {
         // Tancar altres submenus
         notificationsSubmenu.classList.remove('active');
         notificationsBtn.classList.remove('active');
-        messagesSubmenu.classList.remove('active');
-        messagesBtn.classList.remove('active');
         registerDonationSubmenu.classList.remove('active');
         registerDonationBtn.classList.remove('active');
     });
@@ -458,25 +349,25 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radi de la Terra en km
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
-    
+
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
-    
+
     return Math.round(distance * 10) / 10; // Arrodonir a 1 decimal
 }
 
 // Calcular distàncies des de Mataró i actualitzar la interfície
 function calculateDistancesFromMataro() {
     const locationCards = document.querySelectorAll('.location-card');
-    
+
     locationCards.forEach(card => {
         const locationName = card.querySelector('h5').textContent;
         const centerCoords = DONATION_CENTERS[locationName];
-        
+
         if (centerCoords) {
             const distance = calculateDistance(
                 MATARO_COORDS.lat,
@@ -484,18 +375,18 @@ function calculateDistancesFromMataro() {
                 centerCoords.lat,
                 centerCoords.lon
             );
-            
+
             // Actualitzar la distància a la targeta
             const distanceElement = card.querySelector('.location-distance');
             if (distanceElement) {
                 distanceElement.textContent = `${distance} km`;
             }
-            
+
             // Actualitzar l'atribut data-distance per possibles filtres futurs
             card.setAttribute('data-distance', distance);
         }
     });
-    
+
     // Ordenar les localitzacions per distància
     sortLocationsByDistance();
 }
@@ -504,15 +395,15 @@ function calculateDistancesFromMataro() {
 function sortLocationsByDistance() {
     const locationsList = document.querySelector('.locations-list');
     if (!locationsList) return;
-    
+
     const cards = Array.from(locationsList.querySelectorAll('.location-card'));
-    
+
     cards.sort((a, b) => {
         const distA = parseFloat(a.getAttribute('data-distance'));
         const distB = parseFloat(b.getAttribute('data-distance'));
         return distA - distB;
     });
-    
+
     // Reordenar els elements al DOM
     cards.forEach(card => locationsList.appendChild(card));
 
@@ -604,18 +495,7 @@ function updateNotificationBadge() {
     }
 }
 
-// Actualitzar badge de missatges
-function updateMessagesBadge() {
-    const unreadCount = MessagesManager.getUnreadCount();
-    const badge = document.getElementById('messagesBadge');
-
-    if (unreadCount > 0) {
-        badge.textContent = unreadCount;
-        badge.style.display = 'inline-block';
-    } else {
-        badge.style.display = 'none';
-    }
-}// Función para resetear el contador (útil para pruebas)
+// Función para resetear el contador (útil para pruebas)
 function resetCounter() {
     totalDonations = 0;
     todayDonations = 0;
