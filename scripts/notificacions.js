@@ -143,8 +143,11 @@ const NotificationsManager = {
 
     // Inicialitzar notificacions
     init() {
-        // Netejar notificacions antigues i començar amb l'array buit
-        this.saveNotifications(this.defaultNotifications);
+        // Només inicialitzar si no existeixen notificacions guardades
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (!stored) {
+            this.saveNotifications(this.defaultNotifications);
+        }
     },
 
     // Obtenir totes les notificacions
@@ -318,13 +321,10 @@ const NotificationsManager = {
     getPreferences() {
         const stored = localStorage.getItem(this.PREFERENCES_KEY);
         return stored ? JSON.parse(stored) : {
-            enableSound: true,
             enableEvents: true,
             enableReminders: true,
             enableAchievements: true,
             enableInfo: true,
-            quietHoursStart: null,
-            quietHoursEnd: null,
             autoDeleteOld: false,
             daysToKeep: 7
         };
@@ -391,36 +391,7 @@ const NotificationsManager = {
         notifications.unshift(notification);
         this.saveNotifications(notifications);
 
-        // Reproduir so si està activat
-        const prefs = this.getPreferences();
-        if (prefs.enableSound) {
-            this.playNotificationSound();
-        }
-
         window.dispatchEvent(new CustomEvent('newNotification', { detail: notification }));
-    },
-
-    // Reproduir so de notificació
-    playNotificationSound() {
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } catch (e) {
-            console.log('Audio no disponible:', e);
-        }
     },
 
     // Simular notificacions en temps real (per demo)
@@ -876,13 +847,10 @@ if (window.location.pathname.includes('notificacions.html')) {
     function openSettingsModal() {
         const prefs = NotificationsManager.getPreferences();
 
-        document.getElementById('enableSound').checked = prefs.enableSound;
         document.getElementById('enableEvents').checked = prefs.enableEvents;
         document.getElementById('enableReminders').checked = prefs.enableReminders;
         document.getElementById('enableAchievements').checked = prefs.enableAchievements;
         document.getElementById('enableInfo').checked = prefs.enableInfo;
-        document.getElementById('quietStart').value = prefs.quietHoursStart || '';
-        document.getElementById('quietEnd').value = prefs.quietHoursEnd || '';
         document.getElementById('autoDeleteOld').checked = prefs.autoDeleteOld;
         document.getElementById('daysToKeep').value = prefs.daysToKeep;
 
@@ -895,13 +863,10 @@ if (window.location.pathname.includes('notificacions.html')) {
 
     function savePreferences() {
         const prefs = {
-            enableSound: document.getElementById('enableSound').checked,
             enableEvents: document.getElementById('enableEvents').checked,
             enableReminders: document.getElementById('enableReminders').checked,
             enableAchievements: document.getElementById('enableAchievements').checked,
             enableInfo: document.getElementById('enableInfo').checked,
-            quietHoursStart: parseInt(document.getElementById('quietStart').value) || null,
-            quietHoursEnd: parseInt(document.getElementById('quietEnd').value) || null,
             autoDeleteOld: document.getElementById('autoDeleteOld').checked,
             daysToKeep: parseInt(document.getElementById('daysToKeep').value) || 30
         };

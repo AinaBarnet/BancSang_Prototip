@@ -766,13 +766,11 @@ main {
 
 /* Settings Sections */
 .settings-section {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 1.5rem;
 }
 
 .settings-section:last-of-type {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
 .settings-section h3 {
@@ -828,9 +826,7 @@ main {
 .modal-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 2px solid #f0f0f0;
+    margin-top: 1.5rem;
 }
 
 .btn-primary,

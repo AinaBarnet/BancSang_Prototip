@@ -18,10 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDonations();
     updateDisplay();
     setupEventListeners();
-    updateNotificationBadge();
+    // Actualitzar badge de notificacions quan es carrega la pàgina
+    // Petit retard per assegurar que NotificationsManager està inicialitzat
+    setTimeout(() => {
+        updateNotificationBadge();
+    }, 10);
 });
-
-
 
 // Cargar donaciones desde localStorage
 function loadDonations() {
@@ -173,6 +175,16 @@ function setupEventListeners() {
         updateNotificationBadge();
     });
 
+    // Actualitzar quan l'usuari torna a la pàgina
+    window.addEventListener('focus', () => {
+        updateNotificationBadge();
+    });
+
+    // Actualitzar periòdicament per sincronitzar
+    setInterval(() => {
+        updateNotificationBadge();
+    }, 5000); // Cada 5 segons
+
     // Register Donation - ara és un enllaç directe a registrar-donacio.html
 
     // Locations submenu
@@ -301,13 +313,28 @@ function sortLocationsByDistance() {
 
 // Actualizar badge de notificaciones
 function updateNotificationBadge() {
+    // Verificar que NotificationsManager existeix
+    if (typeof NotificationsManager === 'undefined') {
+        console.warn('NotificationsManager no disponible encara');
+        return;
+    }
+
+    const badge = document.getElementById('notificationBadge');
+    if (!badge) {
+        console.warn('Element notificationBadge no trobat');
+        return;
+    }
+
     const unreadCount = NotificationsManager.getUnreadCount();
     const urgentCount = NotificationsManager.getUrgent().length;
-    const badge = document.getElementById('notificationBadge');
+
+    console.log('Actualitzant badge - Notificacions no llegides:', unreadCount);
 
     if (unreadCount > 0) {
         badge.textContent = unreadCount;
         badge.style.display = 'inline-block';
+        badge.style.visibility = 'visible';
+        badge.style.opacity = '1';
 
         // Canviar color segons urgència
         if (urgentCount > 0) {
