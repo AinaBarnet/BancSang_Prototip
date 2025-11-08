@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xat - BancSang</title>
+    <link rel="stylesheet" href="styles/xat.css">
+</head>
+
+<body>
+    <!-- Header principal -->
+    <header>
+        <div class="header-left">
+            <button class="back-btn" onclick="window.location.href='home.html'" title="Tornar">
+                <span>←</span>
+                <span>Tornar</span>
+            </button>
+        </div>
+        <h1 class="header-title">Xat</h1>
+        <div class="header-right">
+            <button class="icon-btn" id="newChatBtn" title="Nova conversa">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                    </path>
+                    <line x1="12" y1="9" x2="12" y2="15"></line>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                </svg>
+            </button>
+            <button class="icon-btn" id="newGroupBtn" title="Nou grup">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="chat-container">
+        <!-- Panel lateral amb llista de converses -->
+        <aside class="chat-sidebar">
+            <!-- Capçalera del sidebar -->
+            <div class="sidebar-header">
+                <div class="search-bar-inline">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Cercar converses">
+                </div>
+                <div class="contact-actions">
+                    <button class="contact-action-btn" id="addContactBtn" title="Afegir contacte">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="23" y1="11" x2="17" y2="11"></line>
+                        </svg>
+                    </button>
+                    <button class="contact-action-btn" id="exportContactsBtn" title="Exportar contactes">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Llista de converses -->
+            <div class="conversations-list" id="conversationsList">
+                <!-- Les converses es carregaran dinàmicament -->
+            </div>
+        </aside>
+
+        <!-- Panell principal del xat -->
+        <main class="chat-main">
+            <!-- Estat inicial (cap conversa seleccionada) -->
+            <div class="chat-welcome" id="chatWelcome">
+                <div class="welcome-content">
+                    <h2>Xat de BancSang</h2>
+                    <p>Selecciona una conversa per començar a enviar missatges</p>
+                </div>
+            </div>
+
+            <!-- Conversa activa -->
+            <div class="chat-active" id="chatActive" style="display: none;">
+                <!-- Capçalera de la conversa -->
+                <div class="chat-header">
+                    <div class="contact-info">
+                        <div class="avatar" id="chatAvatar">👤</div>
+                        <div class="contact-details">
+                            <h3 id="chatName">Nom del contacte</h3>
+                            <p id="chatStatus">En línia</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="icon-btn" id="searchInChatBtn" title="Cercar">
+                            <span>🔍</span>
+                        </button>
+                        <button class="icon-btn" id="chatMenuBtn" title="Menú">
+                            <span>⋮</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Missatges de la conversa -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Els missatges es carregaran dinàmicament -->
+                </div>
+
+                <!-- Indicador d'escriptura -->
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="avatar-small" id="typingAvatar">👤</div>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                <!-- Entrada de missatges -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <button class="icon-btn" id="emojiBtn" title="Emoji">
+                            <span>😊</span>
+                        </button>
+                        <button class="icon-btn" id="attachBtn" title="Adjuntar">
+                            <span>📎</span>
+                        </button>
+                        <div class="input-field-wrapper">
+                            <textarea id="messageInput" placeholder="Escriu un missatge" rows="1"></textarea>
+                        </div>
+                        <button class="send-btn" id="sendBtn" title="Enviar">
+                            <span>➤</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal per nova conversa -->
+    <div class="modal-overlay" id="newChatModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Nova conversa</h2>
+                <button class="modal-close" id="closeNewChatModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="contactSearchInput" placeholder="Cercar contactes">
+                </div>
+                <div class="contacts-list" id="contactsList">
+                    <!-- Els contactes es carregaran dinàmicament -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panell d'emojis (simple) -->
+    <div class="emoji-panel" id="emojiPanel" style="display: none;">
+        <div class="emoji-grid">
+            <button class="emoji-btn">😊</button>
+            <button class="emoji-btn">😂</button>
+            <button class="emoji-btn">❤️</button>
+            <button class="emoji-btn">👍</button>
+            <button class="emoji-btn">🙏</button>
+            <button class="emoji-btn">😍</button>
+            <button class="emoji-btn">😢</button>
+            <button class="emoji-btn">😮</button>
+            <button class="emoji-btn">😡</button>
+            <button class="emoji-btn">👏</button>
+            <button class="emoji-btn">🎉</button>
+            <button class="emoji-btn">💪</button>
+            <button class="emoji-btn">🩸</button>
+            <button class="emoji-btn">⚕️</button>
+            <button class="emoji-btn">✅</button>
+            <button class="emoji-btn">❌</button>
+        </div>
+    </div>
+
+    <!-- Menú contextual -->
+    <div class="context-menu" id="contextMenu" style="display: none;">
+        <button class="context-menu-item" data-action="info">
+            <span>ℹ️</span> Info del contacte
+        </button>
+        <button class="context-menu-item" data-action="mute">
+            <span>🔕</span> Silenciar notificacions
+        </button>
+        <button class="context-menu-item" data-action="clear">
+            <span>🗑️</span> Esborrar xat
+        </button>
+        <button class="context-menu-item danger" data-action="delete">
+            <span>❌</span> Eliminar conversa
+        </button>
+    </div>
+
+    <!-- Modal per afegir contacte -->
+    <div class="modal-overlay" id="addContactModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Afegir contacte</h2>
+                <button class="modal-close" id="closeAddContactModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="contactName">Nom del contacte</label>
+                    <input type="text" id="contactName" placeholder="Ex: Maria García" maxlength="50" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactRole">Rol o descripció</label>
+                    <input type="text" id="contactRole" placeholder="Ex: Infermera, Voluntari/ària" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Selecciona un avatar</label>
+                    <div class="avatar-selector" id="avatarSelector">
+                        <button type="button" class="avatar-option selected" data-avatar="👤">👤</button>
+                        <button type="button" class="avatar-option" data-avatar="👨">👨</button>
+                        <button type="button" class="avatar-option" data-avatar="👩">👩</button>
+                        <button type="button" class="avatar-option" data-avatar="👨‍⚕️">👨‍⚕️</button>
+                        <button type="button" class="avatar-option" data-avatar="👩‍⚕️">👩‍⚕️</button>
+                        <button type="button" class="avatar-option" data-avatar="👨‍💼">👨‍💼</button>
+                        <button type="button" class="avatar-option" data-avatar="👩‍💼">👩‍💼</button>
+                        <button type="button" class="avatar-option" data-avatar="👨‍🔬">👨‍🔬</button>
+                        <button type="button" class="avatar-option" data-avatar="👩‍🔬">👩‍🔬</button>
+                        <button type="button" class="avatar-option" data-avatar="🧑‍⚕️">🧑‍⚕️</button>
+                        <button type="button" class="avatar-option" data-avatar="⚕️">⚕️</button>
+                        <button type="button" class="avatar-option" data-avatar="🏥">🏥</button>
+                    </div>
+                    <input type="hidden" id="contactAvatar" value="👤">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelContactBtn">Cancel·lar</button>
+                    <button class="btn-primary" id="saveContactBtn">Afegir contacte</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal per nou grup -->
+    <div class="modal-overlay" id="newGroupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Nou grup</h2>
+                <button class="modal-close" id="closeNewGroupModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="groupName">Nom del grup</label>
+                    <input type="text" id="groupName" placeholder="Ex: Equip donació Mataró" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="groupDescription">Descripció (opcional)</label>
+                    <textarea id="groupDescription" placeholder="Afegeix una descripció del grup" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Selecciona els participants</label>
+                    <div class="search-bar">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="groupContactSearchInput" placeholder="Cercar contactes">
+                    </div>
+                    <div class="contacts-list" id="groupContactsList">
+                        <!-- Els contactes es carregaran dinàmicament -->
+                    </div>
+                </div>
+                <div class="selected-contacts" id="selectedContacts" style="display: none;">
+                    <label>Participants seleccionats:</label>
+                    <div class="selected-contacts-list" id="selectedContactsList"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelGroupBtn">Cancel·lar</button>
+                    <button class="btn-primary" id="createGroupBtn">Crear grup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/xat.js"></script>
+</body>
+
+</html>

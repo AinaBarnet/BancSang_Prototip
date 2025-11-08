@@ -136,9 +136,7 @@ function setupEventListeners() {
     // Botón de chat
     const chatBtn = document.getElementById('chatBtn');
     chatBtn.addEventListener('click', () => {
-        console.log('Chat - Por implementar');
-        // TODO: Abrir interfaz de chat
-        alert('📱 Xat\n\nLa funcionalitat de xat s\'està desenvolupant.\nProperement podràs enviar i rebre missatges en temps real!');
+        window.location.href = 'xat.html';
     });
 
     // Opción de configuración en el menú desplegable
