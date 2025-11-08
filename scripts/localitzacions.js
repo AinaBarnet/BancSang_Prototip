@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSearchFunctionality();
     setupLocationButton();
     setupHospitalButtons();
+    setupModalListeners();
 });
 
 // Configurar funcionalitat de cerca
@@ -65,12 +66,12 @@ function setupLocationButton() {
                 },
                 (error) => {
                     console.error('Error obtenint ubicació:', error);
-                    alert('No s\'ha pogut obtenir la teva ubicació.\n\nSi us plau, assegura\'t que has donat permís al navegador per accedir a la teva ubicació.');
+                    showAlert('⚠️ Error d\'ubicació', 'No s\'ha pogut obtenir la teva ubicació.\n\nSi us plau, assegura\'t que has donat permís al navegador per accedir a la teva ubicació.');
                     useLocationBtn.classList.remove('loading');
                 }
             );
         } else {
-            alert('El teu navegador no suporta geolocalització.');
+            showAlert('⚠️ No disponible', 'El teu navegador no suporta geolocalització.');
         }
     });
 }
@@ -132,67 +133,135 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
     return distance;
 }
 
+// Mapa d'IDs d'hospitals amb les seves URLs
+const HOSPITAL_URLS = {
+    '1': 'https://www.bancsang.net/ca/hospitals/1/hospital-universitari-vall-d-hebron',
+    '2': 'https://www.bancsang.net/ca/hospitals/2/hospital-de-la-santa-creu-i-sant-pau',
+    '3': 'https://www.bancsang.net/ca/hospitals/3/hospital-clinic',
+    '4': 'https://www.bancsang.net/ca/hospitals/4/germans-trias-i-pujol',
+    '5': 'https://www.bancsang.net/ca/hospitals/5/hospital-universitari-de-bellvitge',
+    '7': 'https://www.bancsang.net/ca/hospitals/7/fundacio-althaia-hospital-sant-joan-de-deu',
+    '8': 'https://www.bancsang.net/ca/hospitals/8/hospital-universitari-mutua-terrassa',
+    '9': 'https://www.bancsang.net/ca/hospitals/9/hospital-universitari-de-girona-doctor-josep-trueta',
+    '10': 'https://www.bancsang.net/ca/hospitals/10/hospital-universitari-arnau-de-vilanova',
+    '11': 'https://www.bancsang.net/ca/hospitals/11/hospital-universitari-joan-xxiii',
+    '12': 'https://www.bancsang.net/ca/hospitals/12/hospital-verge-de-la-cinta',
+    '13': 'https://www.bancsang.net/ca/hospitals/13/hospital-universitari-sant-joan-de-reus'
+};
+
 // Configurar botons dels hospitals
 function setupHospitalButtons() {
-    // Botons "Dona sang"
-    const primaryButtons = document.querySelectorAll('.btn-primary');
-    primaryButtons.forEach(btn => {
+    // Botons "Vull donar"
+    const donateButtons = document.querySelectorAll('.btn-donate');
+    donateButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             const hospitalCard = btn.closest('.hospital-card');
-            const hospitalName = hospitalCard.querySelector('h4').textContent.trim();
-            const citySection = btn.closest('.city-section');
-            const cityName = citySection.dataset.city;
+            const hospitalId = hospitalCard.dataset.hospitalId;
+            const hospitalUrl = HOSPITAL_URLS[hospitalId];
 
-            showDonationInfo(hospitalName, cityName);
-        });
-    });
-
-    // Botons "Zona plasma"
-    const secondaryButtons = document.querySelectorAll('.btn-secondary');
-    secondaryButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const hospitalCard = btn.closest('.hospital-card');
-            const hospitalName = hospitalCard.querySelector('h4').textContent.trim();
-            const citySection = btn.closest('.city-section');
-            const cityName = citySection.dataset.city;
-
-            showPlasmaInfo(hospitalName, cityName);
+            if (hospitalUrl) {
+                // Redirigir a la pàgina del Banc de Sang
+                window.open(hospitalUrl, '_blank');
+            } else {
+                showAlert('⚠️ Error', 'No s\'ha pogut trobar la informació d\'aquest hospital.');
+            }
         });
     });
 }
 
-// Mostrar informació de donació de sang
-function showDonationInfo(hospitalName, cityName) {
-    const message = `📍 ${hospitalName}\n${cityName}\n\n` +
-        `Per donar sang en aquest centre:\n\n` +
-        `✓ Horari: De dilluns a divendres, de 8:00h a 20:00h\n` +
-        `✓ No cal cita prèvia\n` +
-        `✓ Recorda portar el DNI o document d'identitat\n` +
-        `✓ És recomanable haver menjat abans\n\n` +
-        `Vols reservar una cita?`;
+// Mostrar modal genèric
+function showModal(icon, title, content, actions) {
+    const modal = document.getElementById('infoModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+    const modalActions = document.getElementById('modalActions');
 
-    if (confirm(message)) {
-        // Aquí es podria implementar la funcionalitat de reserva
-        alert('🗓️ Redirigint al sistema de reserves...\n\n(Funcionalitat en desenvolupament)');
-    }
+    modalIcon.textContent = icon;
+    modalTitle.textContent = title;
+    modalContent.innerHTML = content;
+
+    // Crear botons d'acció
+    modalActions.innerHTML = '';
+    actions.forEach(action => {
+        const button = document.createElement('button');
+        button.className = action.primary ? 'btn-modal-primary' : 'btn-modal-secondary';
+        button.textContent = action.text;
+        button.onclick = action.callback;
+        modalActions.appendChild(button);
+    });
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
 }
 
-// Mostrar informació de donació de plasma
-function showPlasmaInfo(hospitalName, cityName) {
-    const message = `🩸 Zona de Plasma\n\n` +
-        `📍 ${hospitalName}\n${cityName}\n\n` +
-        `La donació de plasma requereix:\n\n` +
-        `✓ Cita prèvia obligatòria\n` +
-        `✓ Durada aproximada: 45-60 minuts\n` +
-        `✓ Es pot donar cada 15 dies\n` +
-        `✓ Portar DNI o document d'identitat\n\n` +
-        `Vols més informació o reservar cita?`;
+// Tancar modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
 
-    if (confirm(message)) {
-        alert('📞 Contactant amb el centre...\n\n(Funcionalitat en desenvolupament)');
+// Mostrar alerta simple
+function showAlert(title, message) {
+    const alertModal = document.getElementById('alertModal');
+    const alertTitle = document.getElementById('alertTitle');
+    const alertIcon = document.getElementById('alertIcon');
+    const alertMessage = document.getElementById('alertMessage');
+
+    // Determinar l'icona segons el tipus d'alerta
+    let icon = '⚠️';
+    if (title.includes('Error')) {
+        icon = '❌';
+    } else if (title.includes('Sistema') || title.includes('Contacte')) {
+        icon = 'ℹ️';
     }
+
+    alertIcon.textContent = icon;
+    alertTitle.textContent = title;
+    alertMessage.textContent = message;
+
+    alertModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Configurar listeners dels modals
+function setupModalListeners() {
+    // Tancar modal d'informació
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+        closeModal('infoModal');
+    });
+
+    // Tancar modal d'alerta
+    document.getElementById('closeAlertBtn').addEventListener('click', () => {
+        closeModal('alertModal');
+    });
+
+    document.getElementById('alertOkBtn').addEventListener('click', () => {
+        closeModal('alertModal');
+    });
+
+    // Tancar en fer clic fora del modal
+    document.getElementById('infoModal').addEventListener('click', (e) => {
+        if (e.target.id === 'infoModal') {
+            closeModal('infoModal');
+        }
+    });
+
+    document.getElementById('alertModal').addEventListener('click', (e) => {
+        if (e.target.id === 'alertModal') {
+            closeModal('alertModal');
+        }
+    });
+
+    // Tancar amb la tecla ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal('infoModal');
+            closeModal('alertModal');
+        }
+    });
 }
 
 // Detectar si l'usuari ve de home.html amb cerca
