@@ -1,0 +1,85 @@
+:root{
+    --primary: #b71c34;
+    --card: #ffffff;
+    --bg: #f6f6f6;
+}
+
+body {
+    background: var(--bg);
+}
+
+.profile-container{
+    max-width: 900px;
+    margin: 2.2rem auto;
+    padding: 1rem;
+}
+
+.profile-card{
+    display:flex;
+    gap:1rem;
+    background: var(--card);
+    border-radius:16px;
+    padding:1.2rem;
+    align-items:center;
+    box-shadow:0 8px 24px rgba(183,28,52,0.08);
+}
+
+.profile-avatar{
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),#d32f2f);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.2rem;
+    font-weight:800;
+}
+
+.profile-info h2{
+    margin-bottom:0.2rem;
+    color:#333;
+}
+
+.muted{color:#666;font-weight:600;font-size:0.95rem}
+
+.controls{
+    margin-top:1rem;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+}
+
+.controls input{
+    padding:0.8rem 1rem;
+    border-radius:10px;
+    border:2px solid #eee;
+    max-width:420px;
+}
+
+.control-actions{display:flex;gap:0.8rem;margin-top:0.4rem}
+
+.groups{margin-top:1.6rem}
+
+.groups h3{margin-bottom:0.6rem;color:#333}
+
+.groups-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:0.6rem}
+
+.group-item{
+    background:var(--card);
+    padding:0.9rem 1rem;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border:1px solid #f0f0f0;
+}
+
+.group-name{font-weight:700;color:#333}
+.group-date{color:#888;font-size:0.9rem}
+
+@media(max-width:600px){
+    .profile-card{flex-direction:row;gap:0.8rem}
+    .profile-avatar{width:68px;height:68px;font-size:1.6rem}
+}

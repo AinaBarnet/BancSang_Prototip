@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalització - Banc de Sang i Teixits</title>
+    <link rel="stylesheet" href="styles/home.css">
+    <link rel="stylesheet" href="styles/personalizacion.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" onclick="location.href='home.html'" aria-label="Tornar">
+                ←
+            </button>
+        </div>
+
+        <div class="header-title">Personalització</div>
+
+        <div class="header-right">
+            <div class="user-menu">
+                <button class="user-menu-btn">
+                    <span class="user-name" id="headerUserName">Usuari</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="profile-container">
+            <div class="profile-card">
+                <div class="profile-avatar">L</div>
+                <div class="profile-info">
+                    <h2 id="displayName">Laura García</h2>
+                    <p class="muted" id="donationSummary">Has donat <strong id="donationCount">5</strong> vegades</p>
+                    <p class="muted">Darrera donació: <strong id="lastDonation">10/12/2025</strong></p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <label for="nameInput">Editar nom</label>
+                <input id="nameInput" type="text" placeholder="El teu nom">
+                <div class="control-actions">
+                    <button id="saveName" class="main-btn">Desar</button>
+                    <button id="resetName" class="main-btn" style="background:#e0e0e0;color:#333;">Restablir</button>
+                </div>
+            </div>
+
+            <div class="groups">
+                <h3>Grups de xat</h3>
+                <ul id="groupsList" class="groups-list">
+                    <!-- Omplert per JS -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="scripts/personalizacion.js"></script>
+</body>
+
+</html>
