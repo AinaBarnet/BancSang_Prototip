@@ -13,8 +13,18 @@ const remainingEl = document.getElementById('remaining');
 const participantsEl = document.getElementById('participants');
 const prizeInfoEl = document.getElementById('prizeInfo');
 
+// Protegir la pàgina - requerir autenticació
+if (!AuthManager.requireAuth()) {
+    // Si no està autenticat, requireAuth redirigirà a login
+    throw new Error('Accés no autoritzat');
+}
+
 // Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', () => {
+    // Mostrar nom de l'usuari
+    const userName = AuthManager.getCurrentUserName();
+    document.querySelector('.user-name').textContent = userName.toUpperCase();
+
     loadDonations();
     updateDisplay();
     setupEventListeners();
@@ -147,6 +157,17 @@ function setupEventListeners() {
         // TODO: Navegar a página de configuración
         alert('⚙️ Configuració\n\nAquí podràs:\n• Gestionar el teu perfil\n• Configurar notificacions\n• Preferències d\'idioma\n• Privacitat i seguretat\n\n(En desenvolupament)');
     });
+
+    // Botó de tancar sessió
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Segur que vols tancar la sessió?')) {
+                AuthManager.logout();
+            }
+        });
+    }
 
     // User menu dropdown
     userMenuBtn.addEventListener('click', (e) => {

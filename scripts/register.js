@@ -33,12 +33,23 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
         return;
     }
 
-    // Aquí iría la lógica de registro (API call)
-    console.log('Intentando registrar usuario:', email);
+    // Registrar usuari amb AuthManager
+    const registerResult = AuthManager.register(email, password);
 
-    // Simulación de registro exitoso
-    // Redirigir directamente a home.html
-    window.location.href = 'home.html';
+    if (!registerResult.success) {
+        showError(registerResult.message);
+        return;
+    }
+
+    // Iniciar sessió automàticament després del registre
+    const loginResult = AuthManager.login(email, password);
+
+    if (loginResult.success) {
+        // Redirigir directamente a home.html
+        window.location.href = 'home.html';
+    } else {
+        showError('Error al iniciar sessió. Si us plau, intenta-ho manualment.');
+    }
 });
 
 // Función para validar email

@@ -1,3 +1,8 @@
+// Protegir la pàgina - requerir autenticació
+if (!AuthManager.requireAuth()) {
+    throw new Error('Accés no autoritzat');
+}
+
 // Gestor de xat per BancSang - estil WhatsApp
 const ChatManager = {
     STORAGE_KEY: 'bancSang_chat',

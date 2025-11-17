@@ -1,4 +1,9 @@
-// Script para la página de login
+// Script per a la pàgina de login
+
+// Si l'usuari ja està autenticat, redirigir a home
+if (AuthManager.isAuthenticated()) {
+    window.location.href = 'home.html';
+}
 
 // Manejo del formulario de inicio de sesión
 document.getElementById('loginForm').addEventListener('submit', function (e) {
@@ -7,15 +12,14 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
-    // Validación de credenciales
-    const validEmail = 'demo@exemple.com';
-    const validPassword = 'password1234';
+    // Intentar iniciar sessió amb AuthManager
+    const result = AuthManager.login(email, password);
 
-    if (email === validEmail && password === validPassword) {
-        // Redirigir a home.html sin mostrar alert
+    if (result.success) {
+        // Redirigir a home.html
         window.location.href = 'home.html';
     } else {
-        alert('Email o contraseña incorrectos');
+        alert(result.message);
     }
 });
 

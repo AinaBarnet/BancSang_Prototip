@@ -1,3 +1,8 @@
+// Protegir la pàgina - requerir autenticació
+if (typeof AuthManager !== 'undefined' && !AuthManager.isAuthenticated()) {
+    AuthManager.requireAuth();
+}
+
 // ============================================================
 // SISTEMA CENTRALITZAT DE GESTIÓ DE NOTIFICACIONS
 // ============================================================
