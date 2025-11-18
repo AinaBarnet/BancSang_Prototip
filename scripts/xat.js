@@ -415,6 +415,9 @@ let selectedGroupContacts = [];
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure ChatManager defaults exist
+    if (typeof ChatManager.init === 'function') ChatManager.init();
+
     loadConversations();
     setupEventListeners();
 
@@ -439,6 +442,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reproduir so de notificació (opcional)
         playNotificationSound();
     });
+    // If page was opened with ?contactId=..., open that chat automatically
+    const params = new URLSearchParams(window.location.search);
+    const contactParam = params.get('contactId');
+    if (contactParam) {
+        // Delay a bit to allow UI to render
+        setTimeout(() => {
+            openChat(contactParam);
+        }, 120);
+    }
 });
 
 // Configurar event listeners
