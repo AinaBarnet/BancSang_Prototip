@@ -1,0 +1,145 @@
+/* Estilos para el sistema de modals personalitzats */
+#customModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+    pointer-events: all;
+    z-index: 10001;
+}
+
+.custom-modal-overlay.show {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.custom-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9) translateY(-20px);
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.custom-modal-overlay.show .custom-modal {
+    transform: scale(1) translateY(0);
+}
+
+.custom-modal-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    line-height: 1;
+}
+
+.custom-modal-icon.success {
+    color: #28a745;
+}
+
+.custom-modal-icon.error {
+    color: #dc3545;
+}
+
+.custom-modal-icon.warning {
+    color: #ffc107;
+}
+
+.custom-modal-icon.info {
+    color: #17a2b8;
+}
+
+.custom-modal-title {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.custom-modal-message {
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #666;
+    white-space: pre-line;
+}
+
+.custom-modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.custom-modal-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    max-width: 150px;
+}
+
+.custom-modal-btn-confirm {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.custom-modal-btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.custom-modal-btn-cancel {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.custom-modal-btn-cancel:hover {
+    background: #e0e0e0;
+}
+
+.custom-modal-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .custom-modal {
+        padding: 25px 20px;
+    }
+
+    .custom-modal-title {
+        font-size: 18px;
+    }
+
+    .custom-modal-message {
+        font-size: 14px;
+    }
+
+    .custom-modal-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}

@@ -208,27 +208,16 @@ function closeModal(modalId) {
     document.body.style.overflow = '';
 }
 
-// Mostrar alerta simple
+// Mostrar alerta simple utilitzant el sistema de modals
 function showAlert(title, message) {
-    const alertModal = document.getElementById('alertModal');
-    const alertTitle = document.getElementById('alertTitle');
-    const alertIcon = document.getElementById('alertIcon');
-    const alertMessage = document.getElementById('alertMessage');
-
-    // Determinar l'icona segons el tipus d'alerta
-    let icon = '⚠️';
+    // Determinar el tipus segons el títol
     if (title.includes('Error')) {
-        icon = '❌';
-    } else if (title.includes('Sistema') || title.includes('Contacte')) {
-        icon = 'ℹ️';
+        modalManager.error(message, title);
+    } else if (title.includes('⚠️') || title.toLowerCase().includes('avís')) {
+        modalManager.warning(message, title);
+    } else {
+        modalManager.alert(message, title);
     }
-
-    alertIcon.textContent = icon;
-    alertTitle.textContent = title;
-    alertMessage.textContent = message;
-
-    alertModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
 }
 
 // Configurar listeners dels modals

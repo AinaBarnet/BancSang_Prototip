@@ -87,7 +87,7 @@ function setupEventListeners() {
 function openDonationModal() {
     // Comprovar si l'usuari pot donar
     const nextAvailableDate = UserDataManager.getNextAvailableDonationDate();
-    
+
     if (nextAvailableDate) {
         // L'usuari encara no pot donar
         const formattedDate = nextAvailableDate.toLocaleDateString('ca-ES', {
@@ -95,14 +95,74 @@ function openDonationModal() {
             month: 'long',
             year: 'numeric'
         });
-        
-        alert(`⚠️ No pots donar sang encara\n\n` +
-              `Encara no han passat 3 mesos des de la teva última donació.\n\n` +
-              `Podràs tornar a donar a partir del:\n${formattedDate}\n\n` +
-              `Gràcies per la teva paciència i solidaritat!`);
+
+        modalManager.warning(`Encara no han passat 3 mesos des de la teva última donació.\n\nPodràs tornar a donar a partir del:\n${formattedDate}\n\nGràcies per la teva paciència i solidaritat! 🩸`, '⚠️ No pots donar sang encara');
         return; // No obrir el modal
     }
-    
+
+    const modal = document.getElementById('donationModal');
+    const form = document.getElementById('donationForm');
+    const errorDiv = document.getElementById('donationError');
+
+    // Reset form and errors
+    form.reset();
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+
+    // Establir la data d'avui per defecte
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('donationDate').value = today;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDonationModal() {
+    const modal = document.getElementById('donationModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function handleDonationFormSubmit(e) {
+    e.preventDefault();
+
+    // Obtenir dades del formulari
+    let center = document.getElementById('donationCenter').value;
+    if (center === 'other') {
+        center = document.getElementById('otherCenter').value;
+    }
+
+    const date = document.getElementById('donationDate').value;
+    const time = document.getElementById('donationTime').value;
+    const type = document.getElementById('donationType').value;
+    let volume = document.getElementById('donationVolume').value;
+
+    // Ajustar volum segons tipus
+    if (type === 'Plasma') {
+        volume = null;
+    } else if (!volume) {
+        volume = 450;
+    }
+
+    const donation = {
+        center: center,
+        date: date,
+        time: time,
+        type: type,
+        volume: volume ? parseInt(volume, 10) : null,
+        method: 'Manual',
+        timestamp: Date.now()
+    };
+
+    // Guardar donació
+    const success = saveDonation(donation);
+
+    // Només continuar si s'ha guardat correctament
+    if (!success) {
+        return;
+    }
+
     const modal = document.getElementById('donationModal');
     const form = document.getElementById('donationForm');
 
@@ -113,10 +173,10 @@ function openDonationModal() {
     // Configurar dates del calendari
     const today = new Date().toISOString().split('T')[0];
     const dateInput = document.getElementById('donationDate');
-    
+
     // Establir data màxima (avui) i mínima (si hi ha donació anterior, 3 mesos després)
     dateInput.max = today;
-    
+
     // Si hi ha donacions prèvies, establir data mínima
     const userDonations = UserDataManager.getDonations();
     if (userDonations && userDonations.list.length > 0) {
@@ -126,7 +186,7 @@ function openDonationModal() {
         minDate.setMonth(minDate.getMonth() + 3);
         dateInput.min = minDate.toISOString().split('T')[0];
     }
-    
+
     dateInput.value = today;
 
     modal.classList.add('active');
@@ -188,19 +248,14 @@ function showSuccessMessage(donation) {
 
     const volumeText = donation.volume ? `\nVolum: ${donation.volume} ml` : '';
 
-    alert(`✅ Donació registrada correctament!\n\n` +
-        `Centre: ${donation.center}\n` +
-        `Data: ${formattedDate}\n` +
-        `Tipus: ${donation.type}` +
-        volumeText + `\n\n` +
-        `Gràcies per la teva col·laboració solidària!`);
+    modalManager.success(`Centre: ${donation.center}\nData: ${formattedDate}\nTipus: ${donation.type}${volumeText}\n\nGràcies per la teva col·laboració solidària!`, 'Donació registrada!');
 }
 
 // Funcions per modal de codi
 function openCodeModal() {
     // Comprovar si l'usuari pot donar
     const nextAvailableDate = UserDataManager.getNextAvailableDonationDate();
-    
+
     if (nextAvailableDate) {
         // L'usuari encara no pot donar
         const formattedDate = nextAvailableDate.toLocaleDateString('ca-ES', {
@@ -208,14 +263,11 @@ function openCodeModal() {
             month: 'long',
             year: 'numeric'
         });
-        
-        alert(`⚠️ No pots registrar una donació encara\n\n` +
-              `Encara no han passat 3 mesos des de la teva última donació.\n\n` +
-              `Podràs tornar a donar a partir del:\n${formattedDate}\n\n` +
-              `Gràcies per la teva paciència i solidaritat! 🩸`);
+
+        modalManager.warning(`Encara no han passat 3 mesos des de la teva última donació.\n\nPodràs tornar a donar a partir del:\n${formattedDate}\n\nGràcies per la teva paciència i solidaritat!`, 'No pots registrar una donació encara');
         return; // No obrir el modal
     }
-    
+
     const modal = document.getElementById('codeModal');
     const form = document.getElementById('codeForm');
     const errorDiv = document.getElementById('codeError');
@@ -313,11 +365,7 @@ function handleCodeFormSubmit(e) {
 }
 
 function showCodeSuccessMessage(donation) {
-    alert(`✅ Donació registrada correctament amb codi!\n\n` +
-        `Codi: ${donation.code}\n` +
-        `Centre: ${donation.center}\n` +
-        `Data: ${new Date(donation.date).toLocaleDateString('ca-ES')}\n\n` +
-        `Gràcies per la teva col·laboració solidària!`);
+    modalManager.success(`Codi: ${donation.code}\nCentre: ${donation.center}\nData: ${new Date(donation.date).toLocaleDateString('ca-ES')}\n\nGràcies per la teva col·laboració solidària!`, '✅ Donació registrada amb codi!');
 }
 
 // Funcions auxiliars
@@ -328,7 +376,7 @@ function saveDonation(donation) {
     // Comprovar si hi ha hagut un error de validació
     if (result && !result.success) {
         // Mostrar error a l'usuari
-        alert(`❌ Error en registrar la donació\n\n${result.error}`);
+        modalManager.error(result.error, 'ERROR en registrar la donació');
         return false;
     }
 

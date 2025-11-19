@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('saveName').addEventListener('click', () => {
         const name = document.getElementById('nameInput').value.trim();
-        if (!name) return alert('Introdueix un nom vàlid');
+        if (!name) return modalManager.warning('Si us plau, introdueix un nom vàlid.', '⚠️ Nom buit');
         const p = getProfile();
         p.name = name;
         saveProfile(p);

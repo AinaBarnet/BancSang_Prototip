@@ -326,7 +326,7 @@ function handleEventSubmit(e) {
     closeEventModal();
 
     // Mostrar confirmació
-    alert(`✅ Cita afegida correctament!\n\nData: ${new Date(date).toLocaleDateString('ca-ES')}\nHora: ${time}\nCentre: ${center}`);
+    modalManager.success(`Data: ${new Date(date).toLocaleDateString('ca-ES')}\nHora: ${time}\nCentre: ${center}`, '✅ Cita afegida correctament!');
 }
 
 // Mostrar detalls d'un esdeveniment
@@ -445,5 +445,5 @@ function deleteCurrentEvent() {
     // Tancar modal
     closeEventDetails();
 
-    alert('✅ Cita eliminada correctament');
+    modalManager.success('La cita s\'ha eliminat correctament del teu calendari.', '✅ Cita eliminada');
 }

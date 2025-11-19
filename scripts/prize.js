@@ -67,7 +67,7 @@ function setupEventListeners() {
                 url: window.location.href
             }).catch(err => console.log('Error sharing:', err));
         } else {
-            alert('Comparteix aquest premi amb els teus amics:\n\n🎁 Samsung Galaxy Book4 i3 + Funda\n\nDona sang i participa al sorteig!');
+            modalManager.alert('Comparteix aquest premi amb els teus amics:\n\n🎁 Samsung Galaxy Book4 i3 + Funda\n\nDona sang i participa al sorteig!', 'Compartir');
         }
     });
 

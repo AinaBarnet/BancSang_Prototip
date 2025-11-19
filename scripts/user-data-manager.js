@@ -209,16 +209,16 @@ const UserDataManager = {
         const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
         const nextAvailableDate = new Date(lastDate);
         nextAvailableDate.setMonth(nextAvailableDate.getMonth() + 3);
-        
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         nextAvailableDate.setHours(0, 0, 0, 0);
-        
+
         // Si ja pot donar, retornar null
         if (today >= nextAvailableDate) {
             return null;
         }
-        
+
         return nextAvailableDate;
     },
 

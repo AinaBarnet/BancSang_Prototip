@@ -19,7 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         // Redirigir a home.html
         window.location.href = 'home.html';
     } else {
-        alert(result.message);
+        modalManager.error(result.message, 'Error d\'autenticació');
     }
 });
 

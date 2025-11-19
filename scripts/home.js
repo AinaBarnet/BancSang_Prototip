@@ -123,7 +123,7 @@ function addDonation() {
             celebrateGoalReached();
         }
     } else {
-        alert('¡Ja hem assolit l\'objectiu de 33.000 donacions del mes! 🎉\n\nEl sorteig es realitzarà aviat.');
+        modalManager.success('¡Ja hem assolit l\'objectiu de 33.000 donacions del mes! 🎉\n\nEl sorteig es realitzarà aviat.');
     }
 }
 
@@ -142,7 +142,7 @@ function updatePrizeInfo() {
 // Celebrar cuando se alcanza la meta
 function celebrateGoalReached() {
     // Mostrar mensaje de celebración
-    alert('🎉 FELICITATS! 🎉\n\n¡Hem assolit les 33.000 donacions del mes!\n\nEl sorteig del premi es realitzarà aviat.');
+    modalManager.success('¡Hem assolit les 33.000 donacions del mes!\n\nEl sorteig del premi es realitzarà aviat.', '🎉 FELICITATS! 🎉');
 }
 
 // Configurar event listeners
@@ -237,7 +237,7 @@ function setupEventListeners() {
     if (filterLocationsBtn) {
         filterLocationsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            alert('Filtres de localitzacions:\n- Per distància\n- Per tipus de centre\n- Només oberts ara\n\n(Funcionalitat en desenvolupament)');
+            modalManager.alert('Filtres de localitzacions:\n- Per distància\n- Per tipus de centre\n- Només oberts ara\n\n(Funcionalitat en desenvolupament)');
         });
     }
 

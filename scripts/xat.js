@@ -1333,7 +1333,7 @@ function handleContextMenuAction(e) {
 // Mostrar informació del contacte
 function showContactInfo() {
     const contact = ChatManager.getContact(currentChatId);
-    alert(`Contacte: ${contact.name}\nRol: ${contact.role}\nEstat: ${contact.online ? 'En línia' : 'Fora de línia'}`);
+    modalManager.alert(`Contacte: ${contact.name}\nRol: ${contact.role}\nEstat: ${contact.online ? 'En línia' : 'Fora de línia'}`, 'Informació del contacte');
 }
 
 // Silenciar conversa
