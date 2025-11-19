@@ -514,13 +514,14 @@ const UserDataManager = {
         if (!userData) return;
 
         const donationDate = new Date(donation.date || donation.timestamp);
+        const donationDateStr = this.dateToLocalString(donationDate);
 
         // Crear esdeveniment de donació al calendari
         const donationEvent = {
             id: `donation-${donation.timestamp}`,
             type: 'donation',
             title: `Donació de ${donation.type || 'sang'}`,
-            date: donationDate.toISOString().split('T')[0],
+            date: donationDateStr,
             time: '10:00',
             center: donation.center,
             donationType: donation.type || 'Sang',
@@ -529,8 +530,7 @@ const UserDataManager = {
 
         // Afegir només si no existeix ja
         const exists = userData.calendar.appointments.some(e =>
-            e.type === 'donation' &&
-            new Date(e.date).toDateString() === donationDate.toDateString()
+            e.type === 'donation' && e.date === donationDateStr
         );
 
         if (!exists) {
@@ -548,11 +548,12 @@ const UserDataManager = {
 
         // Afegir només si és futur
         if (nextAvailable > new Date()) {
+            const nextAvailableDateStr = this.dateToLocalString(nextAvailable);
             const availableEvent = {
                 id: `available-${nextAvailable.getTime()}`,
                 type: 'available',
                 title: 'Ja pots tornar a donar!',
-                date: nextAvailable.toISOString().split('T')[0],
+                date: nextAvailableDateStr,
                 time: '00:00',
                 center: 'Qualsevol centre',
                 notes: 'Han passat 3 mesos des de la teva última donació'
@@ -743,6 +744,14 @@ const UserDataManager = {
     },
 
     // Carregar donacions i cites al calendari (per compatibilitat amb calendari.js)
+    // Funció auxiliar per convertir una data a format YYYY-MM-DD en zona horària local
+    dateToLocalString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    },
+
     loadDonationsToCalendar() {
         const userData = this.getCurrentUserData();
         if (!userData) return [];
@@ -752,10 +761,10 @@ const UserDataManager = {
         // Afegir donacions com a esdeveniments si no existeixen
         userData.donations.list.forEach(donation => {
             const donationDate = new Date(donation.date || donation.timestamp);
+            const dateStr = this.dateToLocalString(donationDate);
 
             const exists = events.some(e =>
-                e.type === 'donation' &&
-                new Date(e.date).toDateString() === donationDate.toDateString()
+                e.type === 'donation' && e.date === dateStr
             );
 
             if (!exists) {
@@ -763,41 +772,35 @@ const UserDataManager = {
                     id: `donation-${donation.timestamp}`,
                     type: 'donation',
                     title: `Donació de ${donation.type || 'sang'}`,
-                    date: donationDate.toISOString().split('T')[0],
+                    date: dateStr,
                     time: '10:00',
                     center: donation.center,
                     donationType: donation.type || 'Sang',
                     notes: donation.observations || ''
                 });
             }
-        });
 
-        // Calcular propera data disponible
-        if (userData.donations.list.length > 0) {
-            const lastDonation = userData.donations.list[userData.donations.list.length - 1];
-            const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
-            const nextAvailable = new Date(lastDate);
+            // Crear esdeveniment de "disponible" 3 mesos després de CADA donació
+            const nextAvailable = new Date(donationDate);
             nextAvailable.setMonth(nextAvailable.getMonth() + 3);
+            const availableDateStr = this.dateToLocalString(nextAvailable);
 
-            if (nextAvailable > new Date()) {
-                const exists = events.some(e =>
-                    e.type === 'available' &&
-                    new Date(e.date).toDateString() === nextAvailable.toDateString()
-                );
+            const availableExists = events.some(e =>
+                e.type === 'available' && e.date === availableDateStr
+            );
 
-                if (!exists) {
-                    events.push({
-                        id: `available-${nextAvailable.getTime()}`,
-                        type: 'available',
-                        title: 'Ja pots tornar a donar!',
-                        date: nextAvailable.toISOString().split('T')[0],
-                        time: '00:00',
-                        center: 'Qualsevol centre',
-                        notes: 'Han passat 3 mesos des de la teva última donació'
-                    });
-                }
+            if (!availableExists) {
+                events.push({
+                    id: `available-${donation.timestamp}`,
+                    type: 'available',
+                    title: 'Ja pots tornar a donar!',
+                    date: availableDateStr,
+                    time: '00:00',
+                    center: 'Qualsevol centre',
+                    notes: 'Han passat 3 mesos des de la teva última donació'
+                });
             }
-        }
+        });
 
         return events;
     }

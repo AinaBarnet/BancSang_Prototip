@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Carregar esdeveniments del localStorage (ara per usuari)
 function loadEvents() {
     events = UserDataManager.loadDonationsToCalendar();
+    console.log('Esdeveniments carregats:', events.length);
 }
 
 // Guardar esdeveniments al localStorage (ara per usuari)
@@ -167,7 +168,12 @@ function isToday(date) {
 
 // Obtenir esdeveniments d'un dia
 function getDayEvents(date) {
-    const dateStr = date.toISOString().split('T')[0];
+    // Utilitzar format local per evitar problemes amb UTC
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
     return events.filter(event => event.date === dateStr)
         .sort((a, b) => a.time.localeCompare(b.time));
 }
@@ -200,7 +206,9 @@ function updateEventsList() {
         const eventCard = document.createElement('div');
         eventCard.className = `event-card ${event.type}`;
 
-        const eventDate = new Date(event.date);
+        // Parsejar la data correctament en format local (YYYY-MM-DD)
+        const [year, month, day] = event.date.split('-').map(Number);
+        const eventDate = new Date(year, month - 1, day);
         const dateStr = eventDate.toLocaleDateString('ca-ES', {
             day: 'numeric',
             month: 'long',
@@ -223,16 +231,19 @@ function setupEventListeners() {
     // Navegació del calendari
     prevMonthBtn.addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
+        loadEvents(); // Recarregar esdeveniments
         generateCalendar();
     });
 
     nextMonthBtn.addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() + 1);
+        loadEvents(); // Recarregar esdeveniments
         generateCalendar();
     });
 
     todayBtn.addEventListener('click', () => {
         currentDate = new Date();
+        loadEvents(); // Recarregar esdeveniments
         generateCalendar();
     });
 
@@ -269,13 +280,12 @@ function setupEventListeners() {
 function openEventModal() {
     eventForm.reset();
 
-    // Establir data seleccionada
-    if (selectedDate) {
-        const dateStr = selectedDate.toISOString().split('T')[0];
-        document.getElementById('eventDate').value = dateStr;
-    } else {
-        document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
-    }
+    // Establir data seleccionada (format local)
+    const dateToUse = selectedDate || new Date();
+    const year = dateToUse.getFullYear();
+    const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
+    const day = String(dateToUse.getDate()).padStart(2, '0');
+    document.getElementById('eventDate').value = `${year}-${month}-${day}`;
 
     // Establir hora per defecte
     document.getElementById('eventTime').value = '10:00';
@@ -316,8 +326,8 @@ function handleEventSubmit(e) {
     // Afegir amb UserDataManager per crear notificació
     UserDataManager.addCalendarAppointment(newEvent);
 
-    // Actualitzar events local
-    events.push(newEvent);
+    // Recarregar tots els esdeveniments
+    loadEvents();
 
     // Actualitzar calendari
     generateCalendar();
@@ -335,7 +345,9 @@ let currentEventForDeletion = null;
 function showEventDetails(event) {
     currentEventForDeletion = event;
 
-    const eventDate = new Date(event.date);
+    // Parsejar la data correctament en format local (YYYY-MM-DD)
+    const [year, month, day] = event.date.split('-').map(Number);
+    const eventDate = new Date(year, month - 1, day);
     const dateStr = eventDate.toLocaleDateString('ca-ES', {
         weekday: 'long',
         day: 'numeric',
@@ -436,8 +448,8 @@ function deleteCurrentEvent() {
     // Eliminar esdeveniment amb UserDataManager
     UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
 
-    // Eliminar de la llista local
-    events = events.filter(e => e.id !== currentEventForDeletion.id);
+    // Recarregar tots els esdeveniments
+    loadEvents();
 
     // Actualitzar calendari
     generateCalendar();

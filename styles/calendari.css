@@ -124,6 +124,8 @@ main {
     padding: 3rem 2.5rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     animation: slideUp 0.6s ease-out;
+    min-width: 0;
+    width: 100%;
 }
 
 @keyframes slideUp {
@@ -209,6 +211,8 @@ main {
 /* Calendar view */
 .calendar-view {
     margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
 }
 
 .weekdays {
@@ -229,7 +233,10 @@ main {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, minmax(120px, 120px));
     gap: 8px;
+    height: auto;
+    width: 100%;
 }
 
 .calendar-day {
@@ -237,10 +244,13 @@ main {
     border: 2px solid #e0e0e0;
     border-radius: 10px;
     padding: 0.8rem;
-    min-height: 100px;
+    height: 100%;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .calendar-day:hover {
