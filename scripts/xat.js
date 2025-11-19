@@ -178,6 +178,30 @@ const ChatManager = {
         return newMessage;
     },
 
+    // Afegir un missatge d'un sender específic (útil per grups mock)
+    addMessageFromSender(contactId, senderId, text) {
+        const conversations = this.getAllConversations();
+
+        if (!conversations[contactId]) {
+            conversations[contactId] = [];
+        }
+
+        const newMessage = {
+            id: `msg-${Date.now()}`,
+            text: text,
+            sender: senderId,
+            timestamp: Date.now(),
+            read: false,
+            sent: false,
+            delivered: true
+        };
+
+        conversations[contactId].push(newMessage);
+        this.saveAllConversations(conversations);
+
+        return newMessage;
+    },
+
     // Marcar missatges com llegits
     markAsRead(contactId) {
         const conversations = this.getAllConversations();
@@ -245,7 +269,7 @@ const ChatManager = {
     },
 
     // Simular resposta automàtica (per proves)
-    simulateResponse(contactId, delay = 2000) {
+    simulateResponse(contactId, delay = 2000, senderId = null) {
         const responses = [
             'D\'acord, entenc.',
             'Moltes gràcies per la informació!',
@@ -257,7 +281,12 @@ const ChatManager = {
 
         setTimeout(() => {
             const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-            this.addMessage(contactId, randomResponse, false);
+            if (senderId) {
+                // If a specific senderId is provided, add message from that sender (useful for groups)
+                this.addMessageFromSender(contactId, senderId, randomResponse);
+            } else {
+                this.addMessage(contactId, randomResponse, false);
+            }
 
             // Trigger event per actualitzar la UI
             window.dispatchEvent(new CustomEvent('newMessage', {
@@ -410,8 +439,60 @@ const addContactModal = document.getElementById('addContactModal');
 const closeAddContactModal = document.getElementById('closeAddContactModal');
 const saveContactBtn = document.getElementById('saveContactBtn');
 const cancelContactBtn = document.getElementById('cancelContactBtn');
+const searchGroupsBtn = document.getElementById('searchGroupsBtn');
+const searchGroupsModal = document.getElementById('searchGroupsModal');
+const closeSearchGroupsModal = document.getElementById('closeSearchGroupsModal');
+const groupsList = document.getElementById('groupsList');
 
 let selectedGroupContacts = [];
+
+// Key to persist groups
+const GROUPS_STORAGE_KEY = 'bancSang_groups';
+
+// Mock groups default list
+const defaultMockGroups = [
+    {
+        id: 'group-amantes-deporte',
+        name: 'amantes del deporte',
+        avatar: '🏃',
+        messages: [
+            { sender: 'system', text: 'Benvinguts al grup d\'amants de l\'esport!', time: '08:00' },
+            { sender: 'ana', text: 'Quedem diumenge per córrer?', time: '08:05' }
+        ],
+        members: []
+    },
+    {
+        id: 'group-gamers',
+        name: 'gamers',
+        avatar: '🎮',
+        messages: [
+            { sender: 'system', text: 'Sala de jocs oberta!', time: '20:00' },
+            { sender: 'marc', text: 'Algu pot fer una partida?', time: '20:10' }
+        ],
+        members: []
+    }
+];
+
+function getSavedGroups() {
+    try {
+        const raw = localStorage.getItem(GROUPS_STORAGE_KEY);
+        if (!raw) return defaultMockGroups.slice();
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return defaultMockGroups.slice();
+        return parsed;
+    } catch (e) {
+        console.error('Error reading saved groups', e);
+        return defaultMockGroups.slice();
+    }
+}
+
+function saveGroups(groups) {
+    try {
+        localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(groups));
+    } catch (e) {
+        console.error('Error saving groups', e);
+    }
+}
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
@@ -531,6 +612,13 @@ function setupEventListeners() {
         }
     });
 
+    // Buscar grups (mock)
+    if (searchGroupsBtn) searchGroupsBtn.addEventListener('click', openSearchGroupsModal);
+    if (closeSearchGroupsModal) closeSearchGroupsModal.addEventListener('click', closeSearchGroupsModalFunc);
+    if (searchGroupsModal) searchGroupsModal.addEventListener('click', (e) => {
+        if (e.target === searchGroupsModal) closeSearchGroupsModalFunc();
+    });
+
     // Cerca de contactes per grup
     groupContactSearchInput.addEventListener('click', (e) => {
         filterGroupContacts(e.target.value);
@@ -579,9 +667,18 @@ function createConversationItem(conv) {
     div.className = `conversation-item${conv.unreadCount > 0 ? ' unread' : ''}`;
     div.dataset.contactId = conv.contact.id;
 
-    const lastMessageText = conv.lastMessage.sender === 'me'
-        ? `Tu: ${conv.lastMessage.text}`
-        : conv.lastMessage.text;
+    let lastMessageText = '';
+    try {
+        if (conv.contact && conv.contact.role === 'Grup' && conv.lastMessage && conv.lastMessage.sender !== 'me') {
+            lastMessageText = `${getSenderDisplayName(conv.lastMessage.sender)}: ${conv.lastMessage.text}`;
+        } else if (conv.lastMessage && conv.lastMessage.sender === 'me') {
+            lastMessageText = `Tu: ${conv.lastMessage.text}`;
+        } else if (conv.lastMessage) {
+            lastMessageText = conv.lastMessage.text;
+        }
+    } catch (e) {
+        lastMessageText = conv.lastMessage ? conv.lastMessage.text : '';
+    }
 
     const timeStr = ChatManager.formatTime(conv.lastMessage.timestamp);
 
@@ -696,19 +793,32 @@ function createDateSeparator(timestamp) {
 // Crear element de missatge
 function createMessageElement(msg) {
     const div = document.createElement('div');
-    div.className = `message ${msg.sender === 'me' ? 'sent' : 'received'}`;
+    const isSent = msg.sender === 'me';
+    div.className = `message ${isSent ? 'sent' : 'received'}`;
 
     const time = new Date(msg.timestamp).toLocaleTimeString('ca-ES', {
         hour: '2-digit',
         minute: '2-digit'
     });
 
-    const status = msg.sender === 'me'
-        ? `<span class="message-status">${msg.read ? '✓✓' : '✓'}</span>`
-        : '';
+    const status = isSent ? `<span class="message-status">${msg.read ? '✓✓' : '✓'}</span>` : '';
+
+    // Determine if current chat is a group
+    const currentContact = ChatManager.getContact(currentChatId);
+    const isGroup = currentContact && currentContact.role === 'Grup';
+
+    // For group chats, show sender name for messages not from 'me'
+    let senderHtml = '';
+    if (isGroup && !isSent) {
+        const senderName = getSenderDisplayName(msg.sender);
+        if (senderName) {
+            senderHtml = `<div class="message-sender">${escapeHtml(senderName)}</div>`;
+        }
+    }
 
     div.innerHTML = `
         <div class="message-bubble">
+            ${senderHtml}
             <p>${escapeHtml(msg.text)}</p>
             <div class="message-footer">
                 <span class="message-time">${time}</span>
@@ -726,8 +836,30 @@ function sendMessage() {
 
     if (!text || !currentChatId) return;
 
-    // Afegir missatge
+    const contact = ChatManager.getContact(currentChatId);
+
+    // Always create the user's own message as 'me'
     ChatManager.addMessage(currentChatId, text, true);
+    window.dispatchEvent(new CustomEvent('newMessage', { detail: { contactId: currentChatId, isFromMe: true } }));
+
+    // If chat is a group, schedule a mocked reply from a random group member
+    if (contact && contact.role === 'Grup') {
+        const groups = getSavedGroups();
+        const group = groups.find(g => g.id === currentChatId);
+        let replySenderId = null;
+        if (group && Array.isArray(group.members) && group.members.length > 0) {
+            // choose a random member (could be any; optionally exclude 'me' if member ids include it)
+            const idx = Math.floor(Math.random() * group.members.length);
+            replySenderId = group.members[idx];
+        } else {
+            const contacts = ChatManager.getContacts();
+            replySenderId = (contacts && contacts.length) ? contacts[0].id : 'suport';
+        }
+
+        // show typing and simulate response from that member
+        showTypingIndicator(currentChatId, 1200);
+        ChatManager.simulateResponse(currentChatId, 2000, replySenderId);
+    }
 
     // Netejar input
     messageInput.value = '';
@@ -739,8 +871,10 @@ function sendMessage() {
     scrollToBottom();
 
     // Simular resposta automàtica (per proves)
-    const contact = ChatManager.getContact(currentChatId);
-    if (contact && Math.random() > 0.3) { // 70% de probabilitat
+    const simContact = ChatManager.getContact(currentChatId);
+    // Only trigger the generic simulateResponse for non-group chats.
+    // Group replies are handled above (simulated from a random member), so skip here for groups.
+    if (simContact && simContact.role !== 'Grup' && Math.random() > 0.3) { // 70% de probabilitat
         showTypingIndicator(currentChatId, 2000);
         ChatManager.simulateResponse(currentChatId, 3000);
     }
@@ -813,10 +947,102 @@ function closeNewGroupModalFunc() {
     updateSelectedContactsList();
 }
 
+// Obrir modal de buscar grups mock
+function openSearchGroupsModal() {
+    if (!searchGroupsModal) return;
+    searchGroupsModal.style.display = 'flex';
+    // Carregar grups mock
+    loadMockGroups();
+}
+
+// Tancar modal de buscar grups
+function closeSearchGroupsModalFunc() {
+    if (!searchGroupsModal) return;
+    searchGroupsModal.style.display = 'none';
+}
+
+// Renderitza la llista de grups mock
+function loadMockGroups() {
+    if (!groupsList) return;
+    groupsList.innerHTML = '';
+
+    const groups = getSavedGroups();
+
+    groups.forEach(g => {
+        const item = document.createElement('div');
+        item.className = 'group-item';
+        item.dataset.groupId = g.id;
+        const lastText = (g.messages && g.messages.length) ? g.messages[g.messages.length - 1].text : '';
+        const membersCount = Array.isArray(g.members) ? g.members.length : 0;
+        item.innerHTML = `
+            <div class="group-avatar">${g.avatar || '👥'}</div>
+            <div class="group-info">
+                <h4>${escapeHtml(g.name)}</h4>
+                <p class="group-preview">${escapeHtml(lastText)}</p>
+            </div>
+            ${membersCount > 0 ? `<div class="group-badge">${membersCount}</div>` : ''}
+        `;
+
+        item.addEventListener('click', () => {
+            showMockGroupChat(g.id);
+            closeSearchGroupsModalFunc();
+        });
+
+        groupsList.appendChild(item);
+    });
+}
+
+// Mostrar xat d'un grup mock i integrar-lo amb ChatManager (persisteix)
+function showMockGroupChat(groupId) {
+    const groups = getSavedGroups();
+    const group = groups.find(g => g.id === groupId);
+    if (!group) return;
+
+    // Afegir el grup com a contacte si no existeix
+    const contacts = ChatManager.getContacts();
+    if (!contacts.find(c => c.id === group.id)) {
+        contacts.push({
+            id: group.id,
+            name: group.name,
+            avatar: group.avatar || '👥',
+            role: 'Grup',
+            online: false,
+            lastSeen: Date.now()
+        });
+        ChatManager.saveContacts(contacts);
+    }
+
+    // Afegir converses mock si no existeixen
+    const conversations = ChatManager.getAllConversations();
+    if (!conversations[group.id]) {
+        conversations[group.id] = (group.messages || []).map((m, idx) => ({
+            id: `msg-${group.id}-${Date.now()}-${idx}`,
+            text: m.text,
+            sender: m.sender === 'me' ? 'me' : (m.sender || group.id),
+            timestamp: Date.now() - ((group.messages.length - idx) * 60000),
+            read: false,
+            sent: m.sender === 'me',
+            delivered: true
+        }));
+        ChatManager.saveAllConversations(conversations);
+    }
+
+    // Actualitzar UI i obrir la conversa com una conversa normal
+    loadConversations();
+    openChat(group.id);
+}
+
 // Carregar llista de contactes per grup
 function loadGroupContactsList() {
-    const contacts = ChatManager.getContacts();
+    // Only show contacts that are not groups (role !== 'Grup') so you can't add a group as a member
+    const allContacts = ChatManager.getContacts();
+    const contacts = Array.isArray(allContacts) ? allContacts.filter(c => c.role !== 'Grup') : [];
     groupContactsList.innerHTML = '';
+
+    if (contacts.length === 0) {
+        groupContactsList.innerHTML = `<div class="empty-contacts">No hi ha contactes disponibles per afegir al grup</div>`;
+        return;
+    }
 
     contacts.forEach(contact => {
         const item = document.createElement('div');
@@ -911,9 +1137,59 @@ function handleCreateGroup() {
         return;
     }
 
-    // Aquí podries crear el grup al ChatManager
+    // Crear objecte del grup i persistir-lo
+    const groups = getSavedGroups();
+    const newGroup = {
+        id: `group-${Date.now()}`,
+        name: groupName,
+        description: groupDescription,
+        avatar: '👥',
+        messages: [],
+        members: selectedGroupContacts.slice()
+    };
+
+    groups.push(newGroup);
+    saveGroups(groups);
+
     showFeedback(`Grup "${groupName}" creat amb ${selectedGroupContacts.length} participants!`);
     closeNewGroupModalFunc();
+
+    // Si la modal de buscar grups està oberta, recarregar la llista per mostrar el nou grup
+    if (searchGroupsModal && searchGroupsModal.style.display === 'flex') {
+        loadMockGroups();
+    }
+
+    // Add the new group as a contact in ChatManager so it appears in the conversations selector
+    const contacts = ChatManager.getContacts();
+    if (!contacts.find(c => c.id === newGroup.id)) {
+        contacts.push({
+            id: newGroup.id,
+            name: newGroup.name,
+            avatar: newGroup.avatar || '👥',
+            role: 'Grup',
+            online: false,
+            lastSeen: Date.now()
+        });
+        ChatManager.saveContacts(contacts);
+    }
+
+    // Ensure there's a conversation entry for the group (empty or with initial messages)
+    const conversations = ChatManager.getAllConversations();
+    if (!conversations[newGroup.id]) {
+        conversations[newGroup.id] = (newGroup.messages || []).map((m, idx) => ({
+            id: `msg-${newGroup.id}-${Date.now()}-${idx}`,
+            text: m.text,
+            sender: m.sender === 'me' ? 'me' : (m.sender || newGroup.id),
+            timestamp: Date.now() - ((newGroup.messages.length - idx) * 60000),
+            read: false,
+            sent: m.sender === 'me',
+            delivered: true
+        }));
+        ChatManager.saveAllConversations(conversations);
+    }
+
+    // Refresh conversations list so the new group appears immediately
+    loadConversations();
 }
 
 // Obrir modal d'afegir contacte
@@ -1130,6 +1406,22 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Mostrar nom d'un sender: si és un id de contacte, recuperar nom; si és 'me' -> 'Tu'; si és text pla, capitalitzar
+function getSenderDisplayName(sender) {
+    if (!sender) return '';
+    if (sender === 'me') return 'Tu';
+    // Si és id d'un contacte existent
+    const contact = ChatManager.getContact(sender);
+    if (contact) return contact.name;
+    // Si és 'system'
+    if (sender === 'system') return 'Sistema';
+    // Si és una cadena normal, tornar-la amb capitalització simple
+    if (typeof sender === 'string') {
+        return sender.charAt(0).toUpperCase() + sender.slice(1);
+    }
+    return String(sender);
+}
+
 // Afegir estils d'animació
 const style = document.createElement('style');
 style.textContent = `
@@ -1153,6 +1445,49 @@ style.textContent = `
             opacity: 0;
             transform: translate(-50%, 20px);
         }
+    }
+    /* Styles per la llista de grups (Buscar grups) */
+    .groups-list .group-item {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.03);
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: background 0.12s ease, transform 0.08s ease;
+    }
+    .groups-list .group-item:hover {
+        background: rgba(0,0,0,0.06);
+        transform: translateY(-1px);
+    }
+    .groups-list .group-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f0;
+        font-size: 20px;
+    }
+    .groups-list .group-info h4 {
+        margin: 0 0 4px 0;
+        font-size: 15px;
+    }
+    .groups-list .group-info .group-preview {
+        margin: 0;
+        color: #666;
+        font-size: 13px;
+    }
+    .groups-list .group-item .group-badge {
+        font-size: 11px;
+        color: #fff;
+        background: #6b6cff;
+        padding: 2px 6px;
+        border-radius: 6px;
+        margin-left: auto;
     }
 `;
 document.head.appendChild(style);

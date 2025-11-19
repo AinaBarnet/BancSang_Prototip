@@ -37,6 +37,13 @@
                 </svg>
             </button>
 
+            <!-- Buscar grupos (mock) -->
+            <button class="icon-btn" id="searchGroupsBtn" title="Buscar grups">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="6"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
             <!-- Perfil (nuevo) -->
             <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -282,6 +289,22 @@
                 <div class="modal-actions">
                     <button class="btn-secondary" id="cancelGroupBtn">Cancel·lar</button>
                     <button class="btn-primary" id="createGroupBtn">Crear grup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal per buscar grups (mock) -->
+    <div class="modal-overlay" id="searchGroupsModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Buscar grups</h2>
+                <button class="modal-close" id="closeSearchGroupsModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Grups disponibles (mock):</p>
+                <div class="groups-list" id="groupsList">
+                    <!-- Grups mock carregats dinàmicament -->
                 </div>
             </div>
         </div>
