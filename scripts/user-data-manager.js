@@ -130,7 +130,29 @@ const UserDataManager = {
     // Afegir una donació a l'usuari actual
     addDonation(donation) {
         const userData = this.getCurrentUserData();
-        if (!userData) return;
+        if (!userData) return { success: false, error: 'No hi ha usuari autenticat' };
+
+        // VALIDACIÓ: Comprovar que han passat 3 mesos des de l'última donació
+        if (userData.donations.list.length > 0) {
+            const lastDonation = userData.donations.list[0]; // Ja està ordenat per data
+            const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
+            const newDonationDate = new Date(donation.date || Date.now());
+
+            // Calcular propera data disponible (3 mesos després)
+            const nextAvailableDate = new Date(lastDate);
+            nextAvailableDate.setMonth(nextAvailableDate.getMonth() + 3);
+
+            if (newDonationDate < nextAvailableDate) {
+                const formattedNextDate = this.formatDate(nextAvailableDate.toISOString());
+                const formattedLastDate = this.formatDate(lastDate.toISOString());
+                return {
+                    success: false,
+                    error: `No pots donar sang encara. L'última donació va ser el ${formattedLastDate}. Podràs tornar a donar a partir del ${formattedNextDate} (3 mesos després).`,
+                    nextAvailableDate: formattedNextDate,
+                    lastDonationDate: formattedLastDate
+                };
+            }
+        }
 
         // Afegir timestamp si no existeix
         if (!donation.timestamp) {
@@ -154,16 +176,12 @@ const UserDataManager = {
         userData.profile.lastDonation = this.formatDate(userData.donations.lastDonationDate);
         userData.profile.donations = userData.donations.totalCount;
 
-        // Actualitzar comptador diari
-        const today = new Date().toDateString();
-        const lastDate = userData.donations.lastDonationDateString || '';
-
-        if (lastDate === today) {
-            userData.donations.todayCount++;
-        } else {
-            userData.donations.todayCount = 1;
-            userData.donations.lastDonationDateString = today;
-        }
+        // Actualitzar comptador diari: comptar només donacions amb data d'AVUI
+        const todayStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        userData.donations.todayCount = userData.donations.list.filter(d => {
+            const donationDateStr = d.date ? d.date.split('T')[0] : new Date(d.timestamp).toISOString().split('T')[0];
+            return donationDateStr === todayStr;
+        }).length;
 
         this.saveCurrentUserData(userData);
 
@@ -171,13 +189,37 @@ const UserDataManager = {
         this.syncDonationToCalendar(donation);
         this.createDonationNotifications(donation);
 
-        return userData.donations;
+        return { success: true, donations: userData.donations };
     },
 
     // Obtenir donacions de l'usuari actual
     getDonations() {
         const userData = this.getCurrentUserData();
         return userData ? userData.donations : null;
+    },
+
+    // Obtenir la propera data disponible per donar (null si ja pot donar)
+    getNextAvailableDonationDate() {
+        const userData = this.getCurrentUserData();
+        if (!userData || userData.donations.list.length === 0) {
+            return null; // Primera donació, pot donar quan vulgui
+        }
+
+        const lastDonation = userData.donations.list[0]; // Ja està ordenat
+        const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
+        const nextAvailableDate = new Date(lastDate);
+        nextAvailableDate.setMonth(nextAvailableDate.getMonth() + 3);
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        nextAvailableDate.setHours(0, 0, 0, 0);
+        
+        // Si ja pot donar, retornar null
+        if (today >= nextAvailableDate) {
+            return null;
+        }
+        
+        return nextAvailableDate;
     },
 
     // Afegir notificació a l'usuari actual

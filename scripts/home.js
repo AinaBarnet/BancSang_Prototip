@@ -46,20 +46,13 @@ function loadDonations() {
 
     if (userDonations) {
         totalDonations = userDonations.totalCount || 0;
-        todayDonations = userDonations.todayCount || 0;
 
-        // Verificar si és un nou dia
-        const today = new Date().toDateString();
-        const lastDate = userDonations.lastDonationDateString || '';
-
-        if (lastDate !== today) {
-            // Nou dia, resetear contador diari
-            todayDonations = 0;
-            const userData = UserDataManager.getCurrentUserData();
-            userData.donations.todayCount = 0;
-            userData.donations.lastDonationDateString = today;
-            UserDataManager.saveCurrentUserData(userData);
-        }
+        // Comptar només donacions amb data d'AVUI
+        const todayStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        todayDonations = userDonations.list.filter(d => {
+            const donationDateStr = d.date ? d.date.split('T')[0] : new Date(d.timestamp).toISOString().split('T')[0];
+            return donationDateStr === todayStr;
+        }).length;
     } else {
         // Si no hi ha dades, inicialitzar
         totalDonations = 0;
@@ -73,8 +66,7 @@ function saveDonations() {
     if (!userData) return;
 
     userData.donations.totalCount = totalDonations;
-    userData.donations.todayCount = todayDonations;
-    userData.donations.lastDonationDateString = new Date().toDateString();
+    // todayCount es calcula automàticament en addDonation i loadDonations
 
     UserDataManager.saveCurrentUserData(userData);
 }

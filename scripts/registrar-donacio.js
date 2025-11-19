@@ -85,6 +85,24 @@ function setupEventListeners() {
 
 // Funcions per modal de formulari manual
 function openDonationModal() {
+    // Comprovar si l'usuari pot donar
+    const nextAvailableDate = UserDataManager.getNextAvailableDonationDate();
+    
+    if (nextAvailableDate) {
+        // L'usuari encara no pot donar
+        const formattedDate = nextAvailableDate.toLocaleDateString('ca-ES', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        alert(`⚠️ No pots donar sang encara\n\n` +
+              `Encara no han passat 3 mesos des de la teva última donació.\n\n` +
+              `Podràs tornar a donar a partir del:\n${formattedDate}\n\n` +
+              `Gràcies per la teva paciència i solidaritat!`);
+        return; // No obrir el modal
+    }
+    
     const modal = document.getElementById('donationModal');
     const form = document.getElementById('donationForm');
 
@@ -92,10 +110,24 @@ function openDonationModal() {
     form.reset();
     document.getElementById('otherCenterGroup').style.display = 'none';
 
-    // Establir data d'avui per defecte
+    // Configurar dates del calendari
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('donationDate').value = today;
-    document.getElementById('donationDate').max = today; // No permetre dates futures
+    const dateInput = document.getElementById('donationDate');
+    
+    // Establir data màxima (avui) i mínima (si hi ha donació anterior, 3 mesos després)
+    dateInput.max = today;
+    
+    // Si hi ha donacions prèvies, establir data mínima
+    const userDonations = UserDataManager.getDonations();
+    if (userDonations && userDonations.list.length > 0) {
+        const lastDonation = userDonations.list[0];
+        const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
+        const minDate = new Date(lastDate);
+        minDate.setMonth(minDate.getMonth() + 3);
+        dateInput.min = minDate.toISOString().split('T')[0];
+    }
+    
+    dateInput.value = today;
 
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -130,7 +162,12 @@ function handleDonationFormSubmit(e) {
     };
 
     // Guardar donació
-    saveDonation(donation);
+    const success = saveDonation(donation);
+
+    // Només continuar si s'ha guardat correctament
+    if (!success) {
+        return; // No tancar el modal, deixar que l'usuari corregeixi
+    }
 
     // Actualitzar visualització
     loadLastDonation();
@@ -161,6 +198,24 @@ function showSuccessMessage(donation) {
 
 // Funcions per modal de codi
 function openCodeModal() {
+    // Comprovar si l'usuari pot donar
+    const nextAvailableDate = UserDataManager.getNextAvailableDonationDate();
+    
+    if (nextAvailableDate) {
+        // L'usuari encara no pot donar
+        const formattedDate = nextAvailableDate.toLocaleDateString('ca-ES', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        
+        alert(`⚠️ No pots registrar una donació encara\n\n` +
+              `Encara no han passat 3 mesos des de la teva última donació.\n\n` +
+              `Podràs tornar a donar a partir del:\n${formattedDate}\n\n` +
+              `Gràcies per la teva paciència i solidaritat! 🩸`);
+        return; // No obrir el modal
+    }
+    
     const modal = document.getElementById('codeModal');
     const form = document.getElementById('codeForm');
     const errorDiv = document.getElementById('codeError');
@@ -235,12 +290,17 @@ function handleCodeFormSubmit(e) {
         timestamp: Date.now()
     };
 
-    // Guardar codi com a utilitzat
+    // Guardar donació (validar primer)
+    const success = saveDonation(donation);
+
+    // Només continuar si s'ha guardat correctament
+    if (!success) {
+        return; // No tancar el modal ni guardar el codi com a utilitzat
+    }
+
+    // Guardar codi com a utilitzat DESPRÉS de validar
     usedCodes.push(code);
     localStorage.setItem('usedDonationCodes', JSON.stringify(usedCodes));
-
-    // Guardar donació
-    saveDonation(donation);
 
     // Actualitzar visualització
     loadLastDonation();
@@ -263,7 +323,16 @@ function showCodeSuccessMessage(donation) {
 // Funcions auxiliars
 function saveDonation(donation) {
     // Guardar la donació amb UserDataManager
-    UserDataManager.addDonation(donation);
+    const result = UserDataManager.addDonation(donation);
+
+    // Comprovar si hi ha hagut un error de validació
+    if (result && !result.success) {
+        // Mostrar error a l'usuari
+        alert(`❌ Error en registrar la donació\n\n${result.error}`);
+        return false;
+    }
+
+    return true;
 }
 
 function loadLastDonation() {
