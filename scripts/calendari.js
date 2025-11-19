@@ -266,7 +266,6 @@ function setupEventListeners() {
 
     // Modal de detalls
     document.getElementById('closeDetailsBtn').addEventListener('click', closeEventDetails);
-    document.getElementById('closeDetailsActionBtn').addEventListener('click', closeEventDetails);
 
     eventDetailsModal.addEventListener('click', (e) => {
         if (e.target === eventDetailsModal) closeEventDetails();
@@ -356,28 +355,42 @@ function showEventDetails(event) {
     });
 
     const content = document.getElementById('eventDetailsContent');
+    const modalHeader = document.querySelector('#eventDetailsModal .modal-header');
+    const modalTitle = document.getElementById('detailsTitle');
 
-    let typeIcon = '📅';
+    // Configurar modal segons el tipus d'esdeveniment
     let typeLabel = 'Cita programada';
+    let headerClass = 'appointment';
+    let titleText = 'Detalls de la cita';
+    let showCenter = true;
+    let showDonationType = true;
 
     if (event.type === 'donation') {
-        typeIcon = '🩸';
         typeLabel = 'Donació realitzada';
+        headerClass = 'donation';
+        titleText = 'Donació completada';
+        showCenter = true;
+        showDonationType = true;
     } else if (event.type === 'available') {
-        typeIcon = '✅';
-        typeLabel = 'Disponible per donar';
+        typeLabel = 'Ja pots tornar a donar!';
+        headerClass = 'available';
+        titleText = 'Recordatori de disponibilitat';
+        showCenter = false;
+        showDonationType = false;
     }
+
+    // Actualitzar títol i estil del header
+    modalTitle.textContent = titleText;
+    modalHeader.className = `modal-header ${headerClass}`;
 
     content.innerHTML = `
         <div class="event-detail-item">
-            <div class="event-detail-icon">${typeIcon}</div>
             <div class="event-detail-info">
                 <h4>Tipus</h4>
                 <p>${typeLabel}</p>
             </div>
         </div>
         <div class="event-detail-item">
-            <div class="event-detail-icon">📅</div>
             <div class="event-detail-info">
                 <h4>Data</h4>
                 <p>${dateStr}</p>
@@ -385,23 +398,22 @@ function showEventDetails(event) {
         </div>
         ${event.time !== '00:00' ? `
         <div class="event-detail-item">
-            <div class="event-detail-icon">🕐</div>
             <div class="event-detail-info">
                 <h4>Hora</h4>
                 <p>${event.time}</p>
             </div>
         </div>
         ` : ''}
+        ${showCenter ? `
         <div class="event-detail-item">
-            <div class="event-detail-icon">🏥</div>
             <div class="event-detail-info">
                 <h4>Centre</h4>
                 <p>${event.center || 'No especificat'}</p>
             </div>
         </div>
-        ${event.donationType ? `
+        ` : ''}
+        ${showDonationType && event.donationType ? `
         <div class="event-detail-item">
-            <div class="event-detail-icon">💉</div>
             <div class="event-detail-info">
                 <h4>Tipus de donació</h4>
                 <p>${event.donationType}</p>
@@ -410,7 +422,6 @@ function showEventDetails(event) {
         ` : ''}
         ${event.notes ? `
         <div class="event-detail-item">
-            <div class="event-detail-icon">📝</div>
             <div class="event-detail-info">
                 <h4>Notes</h4>
                 <p>${event.notes}</p>
@@ -419,10 +430,12 @@ function showEventDetails(event) {
         ` : ''}
     `;
 
-    // Mostrar botó eliminar només per cites (no per donacions passades)
+    // Mostrar botó eliminar per cites i esdeveniments de disponibilitat (no per donacions reals)
     const deleteBtn = document.getElementById('deleteEventBtn');
-    if (event.type === 'appointment') {
+    if (event.type === 'appointment' || event.type === 'available') {
         deleteBtn.style.display = 'block';
+        // Canviar text del botó segons el tipus
+        deleteBtn.textContent = event.type === 'available' ? 'Eliminar recordatori' : 'Eliminar';
     } else {
         deleteBtn.style.display = 'none';
     }
@@ -442,20 +455,37 @@ function closeEventDetails() {
 function deleteCurrentEvent() {
     if (!currentEventForDeletion) return;
 
-    const confirmed = confirm('Estàs segur que vols eliminar aquesta cita?');
-    if (!confirmed) return;
+    // Personalitzar el missatge segons el tipus d'esdeveniment
+    let confirmMessage = 'Estàs segur que vols eliminar aquesta cita?';
+    let successMessage = 'La cita s\'ha eliminat correctament del teu calendari.';
 
-    // Eliminar esdeveniment amb UserDataManager
-    UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
+    if (currentEventForDeletion.type === 'available') {
+        confirmMessage = 'Vols eliminar aquest recordatori de disponibilitat?';
+        successMessage = 'El recordatori s\'ha eliminat correctament.';
+    }
 
-    // Recarregar tots els esdeveniments
-    loadEvents();
+    // Utilitzar modal de confirmació
+    modalManager.confirm(
+        confirmMessage,
+        '🗑️ Confirmar eliminació',
+        () => {
+            // Si l'usuari confirma, eliminar l'esdeveniment
+            UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
 
-    // Actualitzar calendari
-    generateCalendar();
+            // Recarregar tots els esdeveniments
+            loadEvents();
 
-    // Tancar modal
-    closeEventDetails();
+            // Actualitzar calendari
+            generateCalendar();
 
-    modalManager.success('La cita s\'ha eliminat correctament del teu calendari.', '✅ Cita eliminada');
+            // Tancar modal de detalls
+            closeEventDetails();
+
+            // Mostrar missatge d'èxit
+            modalManager.success(successMessage, '✅ Eliminat correctament');
+        },
+        () => {
+            // Si l'usuari cancel·la, no fer res
+        }
+    );
 }
