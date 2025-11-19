@@ -262,48 +262,26 @@ function showCodeSuccessMessage(donation) {
 
 // Funcions auxiliars
 function saveDonation(donation) {
-    // Guardar en l'array de donacions de l'usuari
-    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
-    donations.push(donation);
-    localStorage.setItem('userDonations', JSON.stringify(donations));
-
-    // Actualitzar comptador global
-    updateGlobalCounter();
-
-    // Actualitzar comptador diari
-    updateDailyCounter();
-}
-
-function updateGlobalCounter() {
-    let totalDonations = parseInt(localStorage.getItem('totalDonations') || '0');
-    totalDonations++;
-    localStorage.setItem('totalDonations', totalDonations.toString());
-}
-
-function updateDailyCounter() {
-    const today = new Date().toDateString();
-    const savedDate = localStorage.getItem('lastDonationDate');
-
-    if (savedDate === today) {
-        let todayDonations = parseInt(localStorage.getItem('todayDonations') || '0');
-        todayDonations++;
-        localStorage.setItem('todayDonations', todayDonations.toString());
-    } else {
-        localStorage.setItem('todayDonations', '1');
-        localStorage.setItem('lastDonationDate', today);
-    }
+    // Guardar la donació amb UserDataManager
+    UserDataManager.addDonation(donation);
 }
 
 function loadLastDonation() {
-    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
+    const userDonations = UserDataManager.getDonations();
     const lastDonationInfo = document.getElementById('lastDonationInfo');
 
-    if (donations.length === 0) {
+    if (!userDonations || userDonations.list.length === 0) {
         lastDonationInfo.innerHTML = '<p>Encara no has registrat cap donació</p>';
         return;
     }
 
-    const lastDonation = donations[donations.length - 1];
+    // Obtenir la donació més recent per data
+    const sortedDonations = [...userDonations.list].sort((a, b) => {
+        const dateA = new Date(a.date || a.timestamp);
+        const dateB = new Date(b.date || b.timestamp);
+        return dateB - dateA;
+    });
+    const lastDonation = sortedDonations[0];
     const date = new Date(lastDonation.date || lastDonation.timestamp);
     const formattedDate = date.toLocaleDateString('ca-ES', {
         day: 'numeric',

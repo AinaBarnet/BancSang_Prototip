@@ -34,76 +34,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
-// Carregar esdeveniments del localStorage
+// Carregar esdeveniments del localStorage (ara per usuari)
 function loadEvents() {
-    const savedEvents = localStorage.getItem('calendarEvents');
-    if (savedEvents) {
-        events = JSON.parse(savedEvents);
-    }
+    events = UserDataManager.loadDonationsToCalendar();
 }
 
-// Guardar esdeveniments al localStorage
+// Guardar esdeveniments al localStorage (ara per usuari)
 function saveEvents() {
-    localStorage.setItem('calendarEvents', JSON.stringify(events));
+    UserDataManager.saveCalendarAppointments(events);
 }
 
-// Carregar donacions històriques i crear esdeveniments
+// Carregar donacions històriques i crear esdeveniments (ja gestionat per UserDataManager)
 function loadDonations() {
-    const donations = JSON.parse(localStorage.getItem('userDonations') || '[]');
-
-    // Afegir donacions passades com a esdeveniments
-    donations.forEach(donation => {
-        const donationDate = new Date(donation.date || donation.timestamp);
-
-        // Verificar si ja existeix aquest esdeveniment
-        const exists = events.some(e =>
-            e.type === 'donation' &&
-            new Date(e.date).toDateString() === donationDate.toDateString()
-        );
-
-        if (!exists) {
-            events.push({
-                id: `donation-${donation.timestamp}`,
-                type: 'donation',
-                title: `Donació de ${donation.type || 'sang'}`,
-                date: donationDate.toISOString().split('T')[0],
-                time: '10:00',
-                center: donation.center,
-                donationType: donation.type || 'Sang',
-                notes: donation.observations || ''
-            });
-        }
-    });
-
-    // Calcular propera data disponible per donar (3 mesos després de l'última donació)
-    if (donations.length > 0) {
-        const lastDonation = donations[donations.length - 1];
-        const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
-        const nextAvailable = new Date(lastDate);
-        nextAvailable.setMonth(nextAvailable.getMonth() + 3);
-
-        // Afegir només si és futur i no existeix ja
-        if (nextAvailable > new Date()) {
-            const exists = events.some(e =>
-                e.type === 'available' &&
-                new Date(e.date).toDateString() === nextAvailable.toDateString()
-            );
-
-            if (!exists) {
-                events.push({
-                    id: `available-${nextAvailable.getTime()}`,
-                    type: 'available',
-                    title: 'Ja pots tornar a donar!',
-                    date: nextAvailable.toISOString().split('T')[0],
-                    time: '00:00',
-                    center: 'Qualsevol centre',
-                    notes: 'Han passat 3 mesos des de la teva última donació'
-                });
-            }
-        }
-    }
-
-    saveEvents();
+    // Aquest mètode ara és gestionat per UserDataManager.loadDonationsToCalendar()
+    // que ja s'executa a loadEvents()
 }
 
 // Generar calendari
@@ -369,8 +313,11 @@ function handleEventSubmit(e) {
         notes: notes
     };
 
+    // Afegir amb UserDataManager per crear notificació
+    UserDataManager.addCalendarAppointment(newEvent);
+
+    // Actualitzar events local
     events.push(newEvent);
-    saveEvents();
 
     // Actualitzar calendari
     generateCalendar();
@@ -486,9 +433,11 @@ function deleteCurrentEvent() {
     const confirmed = confirm('Estàs segur que vols eliminar aquesta cita?');
     if (!confirmed) return;
 
-    // Eliminar esdeveniment de la llista
+    // Eliminar esdeveniment amb UserDataManager
+    UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
+
+    // Eliminar de la llista local
     events = events.filter(e => e.id !== currentEventForDeletion.id);
-    saveEvents();
 
     // Actualitzar calendari
     generateCalendar();

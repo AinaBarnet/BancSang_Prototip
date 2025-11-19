@@ -110,25 +110,28 @@ const ChatManager = {
         ]
     },
 
-    // Inicialitzar el sistema
+    // Inicialitzar el sistema (ara per usuari)
     init() {
-        if (!localStorage.getItem(this.CONTACTS_KEY)) {
+        const contacts = UserDataManager.getChatContacts();
+        const conversations = UserDataManager.getChatConversations();
+
+        if (contacts.length === 0) {
             this.saveContacts(this.defaultContacts);
         }
-        if (!localStorage.getItem(this.STORAGE_KEY)) {
+        if (Object.keys(conversations).length === 0) {
             this.saveAllConversations(this.defaultMessages);
         }
     },
 
-    // Obtenir tots els contactes
+    // Obtenir tots els contactes (ara per usuari)
     getContacts() {
-        const stored = localStorage.getItem(this.CONTACTS_KEY);
-        return stored ? JSON.parse(stored) : this.defaultContacts;
+        const contacts = UserDataManager.getChatContacts();
+        return contacts.length > 0 ? contacts : this.defaultContacts;
     },
 
-    // Guardar contactes
+    // Guardar contactes (ara per usuari)
     saveContacts(contacts) {
-        localStorage.setItem(this.CONTACTS_KEY, JSON.stringify(contacts));
+        UserDataManager.saveChatContacts(contacts);
     },
 
     // Obtenir un contacte per ID
@@ -137,15 +140,15 @@ const ChatManager = {
         return contacts.find(c => c.id === contactId);
     },
 
-    // Obtenir totes les converses
+    // Obtenir totes les converses (ara per usuari)
     getAllConversations() {
-        const stored = localStorage.getItem(this.STORAGE_KEY);
-        return stored ? JSON.parse(stored) : this.defaultMessages;
+        const conversations = UserDataManager.getChatConversations();
+        return Object.keys(conversations).length > 0 ? conversations : this.defaultMessages;
     },
 
-    // Guardar totes les converses
+    // Guardar totes les converses (ara per usuari)
     saveAllConversations(conversations) {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(conversations));
+        UserDataManager.saveChatConversations(conversations);
     },
 
     // Obtenir missatges d'una conversa

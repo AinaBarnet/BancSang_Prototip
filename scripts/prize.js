@@ -1,3 +1,8 @@
+// Protegir la pàgina - requerir autenticació
+if (!AuthManager.requireAuth()) {
+    throw new Error('Accés no autoritzat');
+}
+
 // Variables
 const maxDonations = 33000;
 let totalDonations = 0;

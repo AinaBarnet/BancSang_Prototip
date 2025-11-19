@@ -8,11 +8,10 @@ if (typeof AuthManager !== 'undefined' && !AuthManager.isAuthenticated()) {
 // ============================================================
 
 const NotificationsManager = {
-    STORAGE_KEY: 'bancSang_notifications',
-    TRASH_KEY: 'bancSang_notificationTrash',
-    PREFERENCES_KEY: 'bancSang_notificationPreferences',
+    // NOTA: Ara les notificacions s'emmagatzemen per usuari via UserDataManager
+    // Aquest objecte manté la compatibilitat amb el codi existent
 
-    // Notificacions per defecte
+    // Notificacions per defecte (ja no s'usen directament)
     defaultNotifications: [
         {
             id: 1,
@@ -146,19 +145,15 @@ const NotificationsManager = {
         }
     ],
 
-    // Inicialitzar notificacions
+    // Inicialitzar notificacions (ara per usuari)
     init() {
-        // Només inicialitzar si no existeixen notificacions guardades
-        const stored = localStorage.getItem(this.STORAGE_KEY);
-        if (!stored) {
-            this.saveNotifications(this.defaultNotifications);
-        }
+        // Les notificacions ara s'inicialitzen per usuari via UserDataManager
+        // Aquest mètode es manté per compatibilitat
     },
 
-    // Obtenir totes les notificacions
+    // Obtenir totes les notificacions (ara de l'usuari actual)
     getAll() {
-        const stored = localStorage.getItem(this.STORAGE_KEY);
-        return stored ? JSON.parse(stored) : this.defaultNotifications;
+        return UserDataManager.getNotifications();
     },
 
     // Obtenir notificacions no llegides
@@ -218,9 +213,9 @@ const NotificationsManager = {
         this.saveNotifications(notifications);
     },
 
-    // Guardar notificacions
+    // Guardar notificacions (ara per usuari)
     saveNotifications(notifications) {
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(notifications));
+        UserDataManager.saveNotifications(notifications);
         // Disparar event per actualitzar totes les vistes
         window.dispatchEvent(new CustomEvent('notificationsUpdated'));
     },
@@ -259,7 +254,7 @@ const NotificationsManager = {
         };
     },
 
-    // Moure a la paperera
+    // Moure a la paperera (ara per usuari)
     moveToTrash(id) {
         const notifications = this.getAll();
         const notification = notifications.find(n => n.id === id);
@@ -269,7 +264,7 @@ const NotificationsManager = {
             const trash = this.getTrash();
             notification.deletedAt = Date.now();
             trash.push(notification);
-            localStorage.setItem(this.TRASH_KEY, JSON.stringify(trash));
+            UserDataManager.saveNotificationTrash(trash);
 
             // Eliminar de les notificacions actives
             const updated = notifications.filter(n => n.id !== id);
@@ -279,7 +274,7 @@ const NotificationsManager = {
         }
     },
 
-    // Restaurar de la paperera
+    // Restaurar de la paperera (ara per usuari)
     restoreFromTrash(id) {
         const trash = this.getTrash();
         const notification = trash.find(n => n.id === id);
@@ -287,7 +282,7 @@ const NotificationsManager = {
         if (notification) {
             // Eliminar de la paperera
             const updatedTrash = trash.filter(n => n.id !== id);
-            localStorage.setItem(this.TRASH_KEY, JSON.stringify(updatedTrash));
+            UserDataManager.saveNotificationTrash(updatedTrash);
 
             // Afegir de nou a les notificacions
             delete notification.deletedAt;
@@ -299,15 +294,14 @@ const NotificationsManager = {
         }
     },
 
-    // Obtenir paperera
+    // Obtenir paperera (ara per usuari)
     getTrash() {
-        const stored = localStorage.getItem(this.TRASH_KEY);
-        return stored ? JSON.parse(stored) : [];
+        return UserDataManager.getNotificationTrash();
     },
 
-    // Buidar paperera
+    // Buidar paperera (ara per usuari)
     emptyTrash() {
-        localStorage.setItem(this.TRASH_KEY, JSON.stringify([]));
+        UserDataManager.saveNotificationTrash([]);
         window.dispatchEvent(new CustomEvent('trashEmptied'));
     },
 
@@ -322,22 +316,14 @@ const NotificationsManager = {
         }
     },
 
-    // Obtenir preferències
+    // Obtenir preferències (ara per usuari)
     getPreferences() {
-        const stored = localStorage.getItem(this.PREFERENCES_KEY);
-        return stored ? JSON.parse(stored) : {
-            enableEvents: true,
-            enableReminders: true,
-            enableAchievements: true,
-            enableInfo: true,
-            autoDeleteOld: false,
-            daysToKeep: 7
-        };
+        return UserDataManager.getNotificationPreferences();
     },
 
-    // Guardar preferències
+    // Guardar preferències (ara per usuari)
     savePreferences(prefs) {
-        localStorage.setItem(this.PREFERENCES_KEY, JSON.stringify(prefs));
+        UserDataManager.saveNotificationPreferences(prefs);
         window.dispatchEvent(new CustomEvent('preferencesUpdated'));
     },
 
@@ -373,16 +359,8 @@ const NotificationsManager = {
         return toTrash.length;
     },
 
-    // Afegir nova notificació
+    // Afegir nova notificació (ara per usuari)
     addNotification(notification) {
-        const notifications = this.getAll();
-
-        // Generar ID únic
-        const maxId = notifications.reduce((max, n) => Math.max(max, n.id), 0);
-        notification.id = maxId + 1;
-        notification.timestamp = Date.now();
-        notification.unread = true;
-
         // Afegir prioritat per defecte si no existeix
         if (!notification.priority) {
             notification.priority = 'low';
@@ -393,10 +371,8 @@ const NotificationsManager = {
             notification.actions = [];
         }
 
-        notifications.unshift(notification);
-        this.saveNotifications(notifications);
-
-        window.dispatchEvent(new CustomEvent('newNotification', { detail: notification }));
+        // Usar el mètode de UserDataManager que ja gestiona l'ID i timestamp
+        UserDataManager.addNotification(notification);
     },
 
     // Simular notificacions en temps real (per demo)

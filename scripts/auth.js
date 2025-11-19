@@ -19,6 +19,11 @@ const AuthManager = {
                 }
             ];
             localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+            // Migrar dades existents per l'usuari demo
+            if (typeof UserDataManager !== 'undefined') {
+                UserDataManager.migrateExistingData(1);
+            }
         }
     },
 
@@ -49,6 +54,17 @@ const AuthManager = {
         users.push(newUser);
         localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
 
+        // Inicialitzar dades per al nou usuari
+        if (typeof UserDataManager !== 'undefined') {
+            const userData = UserDataManager.getUserData(newUser.id);
+            userData.profile.name = newUser.name;
+            userData.profile.email = newUser.email;
+            UserDataManager.saveUserData(newUser.id, userData);
+
+            // Afegir notificacions de benvinguda
+            UserDataManager.initializeDefaultNotifications(newUser.id);
+        }
+
         return { success: true, message: 'Usuari registrat correctament', user: newUser };
     },
 
@@ -70,6 +86,18 @@ const AuthManager = {
         };
 
         localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+
+        // Assegurar-se que l'usuari té les seves dades inicialitzades
+        if (typeof UserDataManager !== 'undefined') {
+            const userData = UserDataManager.getUserData(user.id);
+
+            // Actualitzar nom i email del perfil si cal
+            if (!userData.profile.name || userData.profile.name === '') {
+                userData.profile.name = user.name;
+                userData.profile.email = user.email;
+                UserDataManager.saveUserData(user.id, userData);
+            }
+        }
 
         return { success: true, message: 'Sessió iniciada correctament', user: session };
     },

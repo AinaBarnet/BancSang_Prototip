@@ -1,3 +1,8 @@
+// Protegir la pàgina - requerir autenticació
+if (!AuthManager.requireAuth()) {
+    throw new Error('Accés no autoritzat');
+}
+
 // Inicialització
 document.addEventListener('DOMContentLoaded', () => {
     setupSearchFunctionality();

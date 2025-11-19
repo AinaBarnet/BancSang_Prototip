@@ -28,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDonations();
     updateDisplay();
     setupEventListeners();
+
+    // Verificar si l'usuari ja pot tornar a donar
+    checkIfCanDonateAgain();
+
     // Actualitzar badge de notificacions quan es carrega la pàgina
     // Petit retard per assegurar que NotificationsManager està inicialitzat
     setTimeout(() => {
@@ -35,36 +39,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 10);
 });
 
-// Cargar donaciones desde localStorage
+// Cargar donaciones desde localStorage (ara per usuari)
 function loadDonations() {
-    const savedDonations = localStorage.getItem('totalDonations');
-    if (savedDonations !== null) {
-        totalDonations = parseInt(savedDonations, 10);
-    }
+    // Obtenir donacions de l'usuari actual
+    const userDonations = UserDataManager.getDonations();
 
-    // Cargar donaciones del día
-    const savedDate = localStorage.getItem('lastDonationDate');
-    const today = new Date().toDateString();
+    if (userDonations) {
+        totalDonations = userDonations.totalCount || 0;
+        todayDonations = userDonations.todayCount || 0;
 
-    if (savedDate === today) {
-        // Mismo día, cargar donaciones del día
-        const savedTodayDonations = localStorage.getItem('todayDonations');
-        if (savedTodayDonations !== null) {
-            todayDonations = parseInt(savedTodayDonations, 10);
+        // Verificar si és un nou dia
+        const today = new Date().toDateString();
+        const lastDate = userDonations.lastDonationDateString || '';
+
+        if (lastDate !== today) {
+            // Nou dia, resetear contador diari
+            todayDonations = 0;
+            const userData = UserDataManager.getCurrentUserData();
+            userData.donations.todayCount = 0;
+            userData.donations.lastDonationDateString = today;
+            UserDataManager.saveCurrentUserData(userData);
         }
     } else {
-        // Nuevo día, resetear contador diario
+        // Si no hi ha dades, inicialitzar
+        totalDonations = 0;
         todayDonations = 0;
-        localStorage.setItem('lastDonationDate', today);
-        localStorage.setItem('todayDonations', '0');
     }
 }
 
-// Guardar donaciones en localStorage
+// Guardar donaciones en localStorage (ara per usuari)
 function saveDonations() {
-    localStorage.setItem('totalDonations', totalDonations.toString());
-    localStorage.setItem('todayDonations', todayDonations.toString());
-    localStorage.setItem('lastDonationDate', new Date().toDateString());
+    const userData = UserDataManager.getCurrentUserData();
+    if (!userData) return;
+
+    userData.donations.totalCount = totalDonations;
+    userData.donations.todayCount = todayDonations;
+    userData.donations.lastDonationDateString = new Date().toDateString();
+
+    UserDataManager.saveCurrentUserData(userData);
 }
 
 // Actualizar la visualización
@@ -330,22 +342,21 @@ function sortLocationsByDistance() {
     prizeInfoEl.style.cursor = 'pointer';
 }
 
-// Actualizar badge de notificaciones
+// Actualizar badge de notificaciones (ara per usuari)
 function updateNotificationBadge() {
-    // Verificar que NotificationsManager existeix
-    if (typeof NotificationsManager === 'undefined') {
-        console.warn('NotificationsManager no disponible encara');
-        return;
-    }
-
     const badge = document.getElementById('notificationBadge');
     if (!badge) {
         console.warn('Element notificationBadge no trobat');
         return;
     }
 
-    const unreadCount = NotificationsManager.getUnreadCount();
-    const urgentCount = NotificationsManager.getUrgent().length;
+    // Obtenir notificacions de l'usuari actual
+    const notifications = UserDataManager.getNotifications();
+    const unreadNotifications = notifications.filter(n => n.unread);
+    const urgentNotifications = notifications.filter(n => n.priority === 'high' && n.unread);
+
+    const unreadCount = unreadNotifications.length;
+    const urgentCount = urgentNotifications.length;
 
     console.log('Actualitzant badge - Notificacions no llegides:', unreadCount);
 
@@ -374,6 +385,50 @@ function resetCounter() {
     todayDonations = 0;
     saveDonations();
     updateDisplay();
+}
+
+// Verificar si l'usuari ja pot tornar a donar sang
+function checkIfCanDonateAgain() {
+    const userData = UserDataManager.getCurrentUserData();
+    if (!userData || userData.donations.list.length === 0) return;
+
+    // Obtenir la donació més recent per data
+    const sortedDonations = [...userData.donations.list].sort((a, b) => {
+        const dateA = new Date(a.date || a.timestamp);
+        const dateB = new Date(b.date || b.timestamp);
+        return dateB - dateA;
+    });
+    const lastDonation = sortedDonations[0];
+    const lastDate = new Date(lastDonation.date || lastDonation.timestamp);
+    const nextAvailable = new Date(lastDate);
+    nextAvailable.setMonth(nextAvailable.getMonth() + 3);
+    const today = new Date();
+
+    // Comprovar si ja es pot donar i no s'ha notificat avui
+    const lastNotificationCheck = localStorage.getItem(`lastDonationCheck_${userData.profile.email}`);
+    const todayStr = today.toDateString();
+
+    if (nextAvailable <= today && lastNotificationCheck !== todayStr) {
+        // Verificar si ja hi ha una notificació de tipus "available"
+        const hasAvailableNotification = userData.notifications.list.some(n =>
+            n.type === 'reminders' &&
+            n.title.includes('tornar a donar') &&
+            n.unread
+        );
+
+        if (!hasAvailableNotification) {
+            // Crear notificació
+            UserDataManager.createAvailableToDonateNotification();
+
+            // Guardar que ja s'ha comprovat avui
+            localStorage.setItem(`lastDonationCheck_${userData.profile.email}`, todayStr);
+
+            // Actualitzar badge
+            setTimeout(() => {
+                updateNotificationBadge();
+            }, 100);
+        }
+    }
 }
 
 // Les funcions de registre de donació ara estan a registrar-donacio.js
