@@ -1,4 +1,10 @@
 /* Estilos para el sistema de modals personalitzats */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 #customModalContainer {
     position: fixed;
     top: 0;
@@ -7,6 +13,7 @@
     height: 100%;
     pointer-events: none;
     z-index: 10000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .custom-modal-overlay {
@@ -36,7 +43,7 @@
     padding: 30px;
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 40px rgba(183, 28, 52, 0.2);
     transform: scale(0.9) translateY(-20px);
     transition: transform 0.3s ease;
     text-align: center;
@@ -47,9 +54,11 @@
 }
 
 .custom-modal-icon {
-    font-size: 48px;
     margin-bottom: 15px;
     line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .custom-modal-icon.success {
@@ -68,18 +77,104 @@
     color: #17a2b8;
 }
 
+/* Icona de check (tick) amb CSS */
+.modal-icon-check {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #28a745;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-icon-check::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 35px;
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    transform: rotate(45deg);
+    margin-bottom: 5px;
+}
+
+/* Icona d'error amb CSS */
+.modal-icon-error {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-icon-error::before,
+.modal-icon-error::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 35px;
+    background: white;
+    border-radius: 2px;
+}
+
+.modal-icon-error::before {
+    transform: rotate(45deg);
+}
+
+.modal-icon-error::after {
+    transform: rotate(-45deg);
+}
+
+/* Icona de warning amb CSS */
+.modal-icon-warning {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-icon-warning::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 22px;
+    background: white;
+    border-radius: 2px;
+    top: 14px;
+}
+
+.modal-icon-warning::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+    bottom: 12px;
+}
+
 .custom-modal-title {
     margin: 0 0 15px 0;
     font-size: 20px;
-    font-weight: 600;
-    color: #333;
+    font-weight: 700;
+    color: #333333;
+    letter-spacing: 0.3px;
 }
 
 .custom-modal-message {
     margin-bottom: 25px;
     font-size: 15px;
     line-height: 1.6;
-    color: #666;
+    color: #666666;
     white-space: pre-line;
 }
 
@@ -90,38 +185,45 @@
 }
 
 .custom-modal-btn {
-    padding: 12px 30px;
+    padding: 14px 32px;
     border: none;
-    border-radius: 8px;
+    border-radius: 50px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     flex: 1;
     max-width: 150px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .custom-modal-btn-confirm {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #b71c34;
     color: white;
+    box-shadow: 0 4px 8px rgba(183, 28, 52, 0.2);
 }
 
 .custom-modal-btn-confirm:hover {
+    background: #9a1829;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 12px rgba(183, 28, 52, 0.3);
 }
 
 .custom-modal-btn-cancel {
-    background: #f0f0f0;
-    color: #666;
+    background: #e8e8e8;
+    color: #333333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .custom-modal-btn-cancel:hover {
-    background: #e0e0e0;
+    background: #d0d0d0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .custom-modal-btn:active {
     transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive */

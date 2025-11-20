@@ -100,29 +100,29 @@ class ModalManager {
         });
     }
 
-    success(message, title = '✅ Èxit') {
+    success(message, title = 'Èxit') {
         return this.show({
             title,
             message,
-            icon: '✅',
+            icon: '<div class="modal-icon-check"></div>',
             type: 'success'
         });
     }
 
-    error(message, title = '❌ Error') {
+    error(message, title = 'Error') {
         return this.show({
             title,
             message,
-            icon: '❌',
+            icon: '<div class="modal-icon-error"></div>',
             type: 'error'
         });
     }
 
-    warning(message, title = '⚠️ Avís') {
+    warning(message, title = 'Avís') {
         return this.show({
             title,
             message,
-            icon: '⚠️',
+            icon: '<div class="modal-icon-warning"></div>',
             type: 'warning'
         });
     }

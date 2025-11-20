@@ -304,6 +304,26 @@ const UserDataManager = {
         return userData && userData.profile.groups ? userData.profile.groups : [];
     },
 
+    // Afegir amic
+    addFriend(friend) {
+        const userId = this.getCurrentUser();
+        if (!userId) return;
+
+        const userData = this.getUserData(userId);
+        if (!userData.profile.friends) {
+            userData.profile.friends = [];
+        }
+
+        userData.profile.friends.push(friend);
+        this.saveUserData(userId, userData);
+    },
+
+    // Obtenir amics de l'usuari actual
+    getFriends() {
+        const userData = this.getCurrentUserData();
+        return userData && userData.profile.friends ? userData.profile.friends : [];
+    },
+
     // Guardar contactes de xat
     saveChatContacts(contacts) {
         const userId = this.getCurrentUser();
@@ -654,12 +674,54 @@ const UserDataManager = {
         const dateStr = this.formatDate(appointmentDate);
         const timeStr = appointment.time || '10:00';
 
+        let description = `Tens una cita programada per ${dateStr} a les ${timeStr} a ${appointment.center}. Recorda portar el DNI, esmorzar bé i hidratar-te.`;
+        let title = 'Recordatori de cita';
+        let icon = '📅';
+
+        // Personalitzar per a esdeveniments socials
+        if (appointment.isSocial && appointment.socialData) {
+            title = `${appointment.socialData.activityLabel} + Donació`;
+            icon = '✨';
+            description = `Tens un esdeveniment social programat per ${dateStr}! `;
+
+            if (appointment.socialData.time) {
+                description += `Activitat a les ${appointment.socialData.time}`;
+                if (appointment.socialData.location) {
+                    description += ` a ${appointment.socialData.location}`;
+                }
+                description += `. `;
+            }
+
+            description += `Després anireu a donar sang a les ${timeStr} a ${appointment.center}.`;
+
+            if (appointment.isGroup && appointment.groupData) {
+                description += ` Grup: ${appointment.groupData.name}.`;
+                if (appointment.groupData.participants && appointment.groupData.participants.length > 0) {
+                    description += ` Participants: ${appointment.groupData.participants.join(', ')}.`;
+                }
+            }
+
+            description += ' Gaudiu de l\'experiència junts i feu una acció solidària!';
+        }
+        // Personalitzar per a donacions en grup (sense component social)
+        else if (appointment.isGroup && appointment.groupData) {
+            title = `Donació en grup: ${appointment.groupData.name}`;
+            icon = '👥';
+            description = `Tens una donació en grup programada amb "${appointment.groupData.name}" per ${dateStr} a les ${timeStr} a ${appointment.center}.`;
+
+            if (appointment.groupData.participants && appointment.groupData.participants.length > 0) {
+                description += ` Participants: ${appointment.groupData.participants.join(', ')}.`;
+            }
+
+            description += ' Animeu-vos mútuament i gaudiu de l\'experiència junts!';
+        }
+
         this.addNotification({
             type: 'events',
-            icon: '📅',
+            icon: icon,
             iconClass: 'new-event',
-            title: 'Recordatori de cita',
-            description: `Tens una cita programada per ${dateStr} a les ${timeStr} a ${appointment.center}. Recorda portar el DNI, esmorzar bé i hidratar-te.`,
+            title: title,
+            description: description,
             time: 'Ara mateix',
             date: 'Avui',
             category: 'Cita',

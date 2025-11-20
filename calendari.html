@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El meu calendari - Banc de Sang</title>
-    <link rel="stylesheet" href="styles/calendari.css">
     <link rel="stylesheet" href="styles/modal.css">
+    <link rel="stylesheet" href="styles/calendari.css">
 </head>
 
 <body>
@@ -21,11 +21,12 @@
         </div>
         <h1 class="header-title">El meu calendari</h1>
         <div class="header-right">
-            <button class="icon-btn" id="addEventBtn" title="Afegir cita">
+            <button class="create-btn" id="addEventBtn" title="Crear">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
+                <span>Crear</span>
             </button>
 
             <!-- Perfil (nuevo) -->
@@ -88,6 +89,14 @@
                         <span>Cites programades</span>
                     </div>
                     <div class="legend-item">
+                        <span class="legend-color" style="background: #ff9800;"></span>
+                        <span>Donació en grup</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #9c27b0;"></span>
+                        <span>Esdeveniment social</span>
+                    </div>
+                    <div class="legend-item">
                         <span class="legend-color" style="background: #388e3c;"></span>
                         <span>Ja pots tornar a donar</span>
                     </div>
@@ -106,9 +115,8 @@
 
     <!-- Modal per afegir/editar cita -->
     <div class="modal" id="eventModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Afegir cita de donació</h3>
+        <div class="modal-content google-style">
+            <div class="modal-header-google">
                 <button class="close-btn" id="closeModalBtn">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -116,46 +124,112 @@
                     </svg>
                 </button>
             </div>
-            <form id="eventForm">
-                <div class="form-group">
-                    <label for="eventDate">Data *</label>
-                    <input type="date" id="eventDate" required>
+            <form id="eventForm" class="google-form">
+                <!-- Títol de l'esdeveniment -->
+                <div class="form-row title-row">
+                    <input type="text" id="eventTitle" placeholder="Títol de l'esdeveniment" class="event-title-input"
+                        required>
                 </div>
-                <div class="form-group">
-                    <label for="eventTime">Hora *</label>
-                    <input type="time" id="eventTime" required>
+                <!-- Categoria de l'esdeveniment -->
+                <div class="form-row icon-row">
+                    <div class="icon-container">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <input type="text" id="eventCategory" placeholder="Categoria (opcional)" class="inline-input"
+                        style="flex: 1;">
                 </div>
-                <div class="form-group">
-                    <label for="eventCenter">Centre de donació *</label>
-                    <select id="eventCenter" required>
-                        <option value="">Selecciona un centre</option>
-                        <option value="Banc de Sang i Teixits - Barcelona">Banc de Sang i Teixits - Barcelona</option>
-                        <option value="Hospital Universitari Vall d'Hebron - Barcelona">Hospital Universitari Vall
-                            d'Hebron - Barcelona</option>
-                        <option value="Hospital de la Santa Creu i Sant Pau - Barcelona">Hospital de la Santa Creu i
-                            Sant Pau - Barcelona</option>
-                        <option value="Hospital Clínic - Barcelona">Hospital Clínic - Barcelona</option>
-                        <option value="Hospital Germans Trias i Pujol - Badalona">Hospital Germans Trias i Pujol -
-                            Badalona</option>
-                        <option value="Hospital Universitari de Bellvitge - L'Hospitalet">Hospital Universitari de
-                            Bellvitge - L'Hospitalet</option>
-                    </select>
+
+                <!-- Data i hora -->
+                <div class="form-row icon-row">
+                    <div class="icon-container">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <div class="datetime-inputs">
+                        <input type="date" id="eventDate" required class="inline-input">
+                        <span class="time-separator">⋅</span>
+                        <input type="time" id="eventTime" required class="inline-input time-input">
+                        <span class="duration-text" id="durationText">–</span>
+                        <input type="time" id="eventEndTime" class="inline-input time-input">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="eventType">Tipus de donació</label>
-                    <select id="eventType">
-                        <option value="Sang">Sang</option>
-                        <option value="Plasma">Plasma</option>
-                        <option value="Plaquetes">Plaquetes</option>
-                    </select>
+                <!-- Centre de donació -->
+                <div class="form-row icon-row">
+                    <div class="icon-container">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </div>
+                    <input type="text" id="eventCenter" placeholder="Afegeix ubicació" class="inline-input"
+                        style="flex: 1;" required>
                 </div>
-                <div class="form-group">
-                    <label for="eventNotes">Notes</label>
-                    <textarea id="eventNotes" rows="3" placeholder="Notes o recordatoris..."></textarea>
+
+                <!-- Secció de col·laboradors -->
+                <div class="form-section" id="collaboratorsSection" style="margin-top: 1rem;">
+                    <div class="form-row">
+                        <button type="button" id="toggleCollaboratorsBtn" class="btn-text"
+                            style="padding: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>👥 Afegir col·laboradors</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel·lar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
+
+                <div class="form-section" id="collaboratorsFieldsContainer" style="display: none;">
+                    <div class="section-header">
+                        <span class="section-icon">👥</span>
+                        <span class="section-title">Selecciona els teus amics</span>
+                    </div>
+                    <div id="friendsListContainer" class="friends-list-container">
+                        <!-- Llista d'amics generada dinàmicament -->
+                    </div>
+                    <div class="form-row" style="margin-top: 0.5rem;">
+                        <button type="button" id="addNewFriendBtn" class="btn-text" style="padding: 0.5rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2"
+                                style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Afegir nou amic
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-row icon-row">
+                    <div class="icon-container">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </div>
+                    <textarea id="eventNotes" rows="2" placeholder="Afegeix una descripció"
+                        class="inline-textarea"></textarea>
+                </div>
+
+                <!-- Botons d'acció estil Google -->
+                <div class="modal-actions-google">
+                    <button type="button" class="btn-text" id="cancelBtn">Cancel·lar</button>
+                    <button type="submit" class="btn-google-primary">Desa</button>
                 </div>
             </form>
         </div>
@@ -178,6 +252,14 @@
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-danger" id="deleteEventBtn" style="display: none;">Eliminar</button>
+                <button type="button" class="btn-secondary" id="editEventBtn" style="display: none;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="margin-right: 0.5rem;">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Editar
+                </button>
             </div>
         </div>
     </div>

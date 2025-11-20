@@ -92,6 +92,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 0.5rem;
 }
 
 .icon-btn:hover {
@@ -102,6 +103,38 @@ header {
 .icon-btn:active {
     transform: translateY(-1px);
     box-shadow: 0 3px 6px rgba(183, 28, 52, 0.2);
+}
+
+/* Bot\u00f3 Crear estil Google */
+.create-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    color: #b71c34;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 28px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.create-btn:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+}
+
+.create-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.create-btn span {
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 /* Main layout */
@@ -318,6 +351,19 @@ main {
     box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
 }
 
+.day-event.group-appointment {
+    background: linear-gradient(135deg, #ff9800 0%, #ffa726 100%);
+    box-shadow: 0 2px 4px rgba(255, 152, 0, 0.3);
+    font-weight: 700;
+}
+
+.day-event.social,
+.day-event.social-group {
+    background: linear-gradient(135deg, #9c27b0 0%, #ab47bc 100%);
+    box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
+    font-weight: 700;
+}
+
 .day-event-count {
     background: var(--text-secondary);
     color: white;
@@ -437,6 +483,30 @@ main {
 .event-card.available:hover {
     box-shadow: 0 6px 20px rgba(76, 175, 80, 0.2);
     border-color: rgba(76, 175, 80, 0.3);
+}
+
+.event-card.group-appointment {
+    border-left-color: #ff9800;
+    border-color: rgba(255, 152, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+}
+
+.event-card.group-appointment:hover {
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.2);
+    border-color: rgba(255, 152, 0, 0.3);
+}
+
+.event-card.social,
+.event-card.social-group {
+    border-left-color: #9c27b0;
+    border-color: rgba(156, 39, 176, 0.15);
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.1);
+}
+
+.event-card.social:hover,
+.event-card.social-group:hover {
+    box-shadow: 0 6px 20px rgba(156, 39, 176, 0.2);
+    border-color: rgba(156, 39, 176, 0.3);
 }
 
 .event-date {
@@ -613,6 +683,57 @@ main {
     min-height: 80px;
 }
 
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-primary);
+    user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #ff9800;
+}
+
+.checkbox-label span {
+    font-weight: 600;
+}
+
+#groupFieldsContainer {
+    background: linear-gradient(135deg, #fff9f0 0%, #fffbf5 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 152, 0, 0.2);
+    margin-top: 0.5rem;
+}
+
+#newGroupContainer {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 152, 0, 0.3);
+}
+
+#socialFieldsContainer {
+    background: linear-gradient(135deg, #f3e5f5 0%, #faf5fb 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid rgba(156, 39, 176, 0.2);
+    margin-top: 0.5rem;
+}
+
+#customActivityContainer {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px dashed rgba(156, 39, 176, 0.3);
+}
+
 .modal-actions {
     display: flex;
     gap: 1rem;
@@ -653,12 +774,21 @@ main {
     background: #f5f5f5;
     color: #666;
     border: 2px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-secondary:hover {
-    background: #e8e8e8;
-    border-color: #ccc;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-color: #2196f3;
+    color: #1976d2;
     transform: translateY(-1px);
+}
+
+.btn-secondary svg {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .btn-danger {
@@ -717,6 +847,509 @@ main {
     font-size: 1rem;
     font-weight: 700;
     color: #333;
+}
+
+.event-detail-item.group-highlight {
+    background: linear-gradient(135deg, #fff9f0 0%, #fffbf5 100%);
+    border: 2px solid rgba(255, 152, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.15);
+}
+
+.event-detail-item.group-highlight:hover {
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
+}
+
+.participants-list {
+    margin-top: 0.5rem;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #666 !important;
+    font-style: italic;
+}
+
+.event-detail-item.social-highlight {
+    background: linear-gradient(135deg, #f3e5f5 0%, #faf5fb 100%);
+    border: 2px solid rgba(156, 39, 176, 0.3);
+    box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
+}
+
+.event-detail-item.social-highlight:hover {
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.25);
+}
+
+.social-time,
+.social-location,
+.social-custom {
+    margin-top: 0.4rem;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #666 !important;
+}
+
+.modal-header.social {
+    background: linear-gradient(135deg, #9c27b0 0%, #ab47bc 100%);
+}
+
+/* ========================================
+   ESTILS GOOGLE CALENDAR
+   ======================================== */
+
+/* Modal estil Google */
+.modal-content.google-style {
+    max-width: 650px;
+    max-height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(183, 28, 52, 0.15), 0 0 0 1px rgba(183, 28, 52, 0.05);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content.google-style::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content.google-style::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 0 16px 16px 0;
+}
+
+.modal-content.google-style::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.modal-content.google-style::-webkit-scrollbar-thumb:hover {
+    background: #b71c34;
+}
+
+.modal-header-google {
+    padding: 1.5rem 1.5rem 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+    border-bottom: none;
+    background: white;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header-google .close-btn {
+    background: none;
+    border: none;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.modal-header-google .close-btn:hover {
+    background: rgba(183, 28, 52, 0.1);
+    color: #b71c34;
+    transform: rotate(90deg);
+}
+
+/* Formulari estil Google */
+.google-form {
+    padding: 0 1.8rem 1rem;
+    flex: 1;
+}
+
+.form-row {
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.title-row {
+    margin-bottom: 2rem;
+}
+
+.event-title-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 0.8rem 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #333;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.event-title-input:focus {
+    outline: none;
+    border-bottom-color: #b71c34;
+    color: #202124;
+}
+
+.event-title-input::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+.icon-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-container {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    color: #b71c34;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.form-row:hover .icon-container {
+    transform: scale(1.1);
+}
+
+.datetime-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.inline-input,
+.inline-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    color: #333;
+    background: #fafafa;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.inline-input:hover,
+.inline-select:hover {
+    border-color: #ccc;
+    background: #f5f5f5;
+}
+
+.inline-input:focus,
+.inline-select:focus {
+    outline: none;
+    border-color: #b71c34;
+    box-shadow: 0 0 0 3px rgba(183, 28, 52, 0.1);
+    background: white;
+}
+
+.inline-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%235f6368' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+    flex: 1;
+}
+
+.time-input {
+    width: 100px;
+}
+
+.time-separator {
+    color: #5f6368;
+    font-size: 1.2rem;
+    font-weight: 300;
+}
+
+.duration-text {
+    color: #5f6368;
+    font-size: 0.9rem;
+    margin: 0 0.25rem;
+}
+
+.inline-label {
+    display: block;
+    color: #5f6368;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+}
+
+.inline-textarea {
+    width: 100%;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    color: #333;
+    background: #fafafa;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.inline-textarea:hover {
+    border-color: #ccc;
+    background: #f5f5f5;
+}
+
+.inline-textarea:focus {
+    outline: none;
+    border-color: #b71c34;
+    box-shadow: 0 0 0 3px rgba(183, 28, 52, 0.1);
+    background: white;
+}
+
+/* Checkbox estil Google */
+.checkbox-label-google {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem 0;
+}
+
+.checkbox-label-google input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkbox-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f6368;
+    transition: color 0.2s ease;
+}
+
+.checkbox-icon rect {
+    transition: fill 0.2s ease;
+}
+
+.checkbox-icon .checkmark {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.checkbox-label-google input[type="checkbox"]:checked+.checkbox-icon {
+    color: #1a73e8;
+}
+
+.checkbox-label-google input[type="checkbox"]:checked+.checkbox-icon rect {
+    fill: #1a73e8;
+}
+
+.checkbox-label-google input[type="checkbox"]:checked+.checkbox-icon .checkmark {
+    opacity: 1;
+    stroke: white;
+}
+
+.checkbox-label-google:hover .checkbox-icon {
+    color: #1a73e8;
+}
+
+/* Botó d'afegir col·laboradors */
+#toggleCollaboratorsBtn {
+    width: 100%;
+    justify-content: flex-start;
+    color: #b71c34;
+    font-weight: 600;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    padding: 0.8rem 1rem !important;
+}
+
+#toggleCollaboratorsBtn:hover {
+    background: linear-gradient(135deg, #ffe6eb 0%, #fff0f3 100%);
+    border-color: #b71c34;
+    transform: translateY(-2px);
+}
+
+#toggleCollaboratorsBtn svg {
+    color: #b71c34;
+}
+
+/* Llista d'amics per seleccionar */
+.friends-list-container {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0.75rem;
+    background: white;
+    margin-top: 0.75rem;
+}
+
+.friends-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.friends-list-container::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 3px;
+}
+
+.friends-list-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.friends-list-container::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.friend-checkbox-item {
+    display: flex;
+    align-items: center;
+    padding: 0.85rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.friend-checkbox-item:hover {
+    background-color: linear-gradient(135deg, #fffcf0 0%, #fff8dc 100%);
+    border-color: rgba(183, 28, 52, 0.2);
+}
+
+.friend-checkbox-item input[type="checkbox"] {
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #b71c34;
+}
+
+.friend-checkbox-item label {
+    cursor: pointer;
+    flex: 1;
+    user-select: none;
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+#addNewFriendBtn {
+    color: #b71c34;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#addNewFriendBtn:hover {
+    background: linear-gradient(135deg, #ffe6eb 0%, #fff0f3 100%);
+}
+
+#addNewFriendBtn svg {
+    stroke: #b71c34;
+}
+
+/* Seccions */
+.form-section {
+    margin-top: 0.5rem;
+}
+
+#collaboratorsFieldsContainer {
+    background: linear-gradient(135deg, #fffaf0 0%, #fffbf5 100%);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-top: 0.75rem;
+    border: 2px solid rgba(183, 28, 52, 0.15);
+    box-shadow: 0 2px 8px rgba(183, 28, 52, 0.08);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.section-icon {
+    font-size: 1.35rem;
+}
+
+.section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.2px;
+}
+
+/* Botons d'acció estil Google */
+.modal-actions-google {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid #f0f0f0;
+    background: white;
+    flex-shrink: 0;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #666;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.btn-text:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.btn-google-primary {
+    background: linear-gradient(135deg, #b71c34 0%, #d32f2f 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(183, 28, 52, 0.3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-google-primary:hover {
+    box-shadow: 0 6px 20px rgba(183, 28, 52, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-google-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(183, 28, 52, 0.3);
 }
 
 /* Responsive */

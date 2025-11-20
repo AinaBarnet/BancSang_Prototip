@@ -7,6 +7,8 @@ if (!AuthManager.requireAuth()) {
 let currentDate = new Date();
 let selectedDate = null;
 let events = [];
+let userFriends = [];
+let editingEvent = null;
 
 // Elements del DOM
 const calendarGrid = document.getElementById('calendarGrid');
@@ -30,6 +32,7 @@ const monthNames = [
 document.addEventListener('DOMContentLoaded', () => {
     loadEvents();
     loadDonations();
+    loadFriends();
     generateCalendar();
     setupEventListeners();
 });
@@ -49,6 +52,71 @@ function saveEvents() {
 function loadDonations() {
     // Aquest mètode ara és gestionat per UserDataManager.loadDonationsToCalendar()
     // que ja s'executa a loadEvents()
+}
+
+// Carregar amics de l'usuari
+function loadFriends() {
+    try {
+        userFriends = UserDataManager.getFriends() || [];
+        console.log('Amics carregats:', userFriends.length);
+    } catch (error) {
+        console.error('Error carregant amics:', error);
+        userFriends = [];
+    }
+}
+
+// Renderitzar llista d'amics amb checkboxes
+function renderFriendsList() {
+    const container = document.getElementById('friendsListContainer');
+
+    if (userFriends.length === 0) {
+        container.innerHTML = '<p style="color: #5f6368; padding: 1rem; text-align: center;">Encara no tens amics afegits. Afegeix-ne un!</p>';
+        return;
+    }
+
+    container.innerHTML = userFriends.map(friend => `
+        <div class="friend-checkbox-item">
+            <input type="checkbox" id="friend-${friend.id}" value="${friend.id}" class="friend-checkbox">
+            <label for="friend-${friend.id}">${friend.name}</label>
+        </div>
+    `).join('');
+}
+
+// Afegir nou amic
+function addNewFriend() {
+    const friendName = prompt('Nom del nou amic:');
+
+    if (friendName && friendName.trim()) {
+        const newFriend = {
+            id: `friend-${Date.now()}`,
+            name: friendName.trim(),
+            createdAt: Date.now()
+        };
+
+        userFriends.push(newFriend);
+        UserDataManager.addFriend(newFriend);
+        renderFriendsList();
+
+        modalManager.success(`${friendName} afegit com a amic!`, 'Amic afegit');
+    }
+}
+
+// Obtenir amics seleccionats
+function getSelectedFriends() {
+    try {
+        const checkboxes = document.querySelectorAll('.friend-checkbox:checked');
+        if (!checkboxes || checkboxes.length === 0) {
+            return [];
+        }
+        return Array.from(checkboxes).map(cb => {
+            const friendId = cb.value;
+            const friend = userFriends.find(f => f.id === friendId);
+            return friend ? friend.name : null;
+        }).filter(name => name !== null);
+    } catch (error) {
+        console.error('Error obtenint amics seleccionats:', error);
+        return [];
+    }
 }
 
 // Generar calendari
@@ -264,6 +332,35 @@ function setupEventListeners() {
     // Formulari d'esdeveniment
     eventForm.addEventListener('submit', handleEventSubmit);
 
+    // Actualitzar hora final automàticament (1 hora després)
+    document.getElementById('eventTime').addEventListener('change', (e) => {
+        const startTime = e.target.value;
+        if (startTime) {
+            const [hours, minutes] = startTime.split(':').map(Number);
+            const endHours = (hours + 1) % 24;
+            const endTime = `${String(endHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            document.getElementById('eventEndTime').value = endTime;
+            updateDurationText();
+        }
+    });
+
+    // Actualitzar text de duració
+    document.getElementById('eventEndTime').addEventListener('change', updateDurationText);
+
+    // Toggle camps de col·laboradors
+    document.getElementById('toggleCollaboratorsBtn').addEventListener('click', () => {
+        const collaboratorsFieldsContainer = document.getElementById('collaboratorsFieldsContainer');
+        if (collaboratorsFieldsContainer.style.display === 'none' || !collaboratorsFieldsContainer.style.display) {
+            collaboratorsFieldsContainer.style.display = 'block';
+            renderFriendsList();
+        } else {
+            collaboratorsFieldsContainer.style.display = 'none';
+        }
+    });
+
+    // Botó afegir nou amic
+    document.getElementById('addNewFriendBtn').addEventListener('click', addNewFriend);
+
     // Modal de detalls
     document.getElementById('closeDetailsBtn').addEventListener('click', closeEventDetails);
 
@@ -271,23 +368,95 @@ function setupEventListeners() {
         if (e.target === eventDetailsModal) closeEventDetails();
     });
 
-    // Botó eliminar
+    // Botons d'editar i eliminar
+    document.getElementById('editEventBtn').addEventListener('click', editCurrentEvent);
     document.getElementById('deleteEventBtn').addEventListener('click', deleteCurrentEvent);
 }
 
+// Actualitzar text de duració
+function updateDurationText() {
+    const startTime = document.getElementById('eventTime').value;
+    const endTime = document.getElementById('eventEndTime').value;
+    const durationText = document.getElementById('durationText');
+
+    if (startTime && endTime) {
+        const [startH, startM] = startTime.split(':').map(Number);
+        const [endH, endM] = endTime.split(':').map(Number);
+
+        let duration = (endH * 60 + endM) - (startH * 60 + startM);
+        if (duration < 0) duration += 24 * 60; // Si travessa mitjanit
+
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+
+        if (hours > 0 && minutes > 0) {
+            durationText.textContent = `(${hours}h ${minutes}min)`;
+        } else if (hours > 0) {
+            durationText.textContent = `(${hours}h)`;
+        } else if (minutes > 0) {
+            durationText.textContent = `(${minutes}min)`;
+        }
+    } else {
+        durationText.textContent = '–';
+    }
+}
+
 // Obrir modal d'esdeveniment
-function openEventModal() {
-    eventForm.reset();
+function openEventModal(eventToEdit = null) {
+    editingEvent = eventToEdit;
 
-    // Establir data seleccionada (format local)
-    const dateToUse = selectedDate || new Date();
-    const year = dateToUse.getFullYear();
-    const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
-    const day = String(dateToUse.getDate()).padStart(2, '0');
-    document.getElementById('eventDate').value = `${year}-${month}-${day}`;
+    if (eventToEdit) {
+        // Mode edició: carregar dades de l'esdeveniment
+        document.getElementById('eventTitle').value = eventToEdit.title || '';
+        document.getElementById('eventCategory').value = eventToEdit.category || '';
+        document.getElementById('eventDate').value = eventToEdit.date || '';
+        document.getElementById('eventTime').value = eventToEdit.time || '10:00';
+        document.getElementById('eventEndTime').value = eventToEdit.endTime || '11:00';
+        document.getElementById('eventCenter').value = eventToEdit.center || '';
+        document.getElementById('eventNotes').value = eventToEdit.notes || '';
 
-    // Establir hora per defecte
-    document.getElementById('eventTime').value = '10:00';
+        // Mostrar col·laboradors si n'hi ha
+        if (eventToEdit.hasCollaborators && eventToEdit.collaboratorsData && eventToEdit.collaboratorsData.list) {
+            document.getElementById('collaboratorsFieldsContainer').style.display = 'block';
+            renderFriendsList();
+
+            // Marcar els amics seleccionats
+            setTimeout(() => {
+                eventToEdit.collaboratorsData.list.forEach(friendName => {
+                    const friend = userFriends.find(f => f.name === friendName);
+                    if (friend) {
+                        const checkbox = document.getElementById(`friend-${friend.id}`);
+                        if (checkbox) checkbox.checked = true;
+                    }
+                });
+            }, 100);
+        } else {
+            document.getElementById('collaboratorsFieldsContainer').style.display = 'none';
+        }
+
+        updateDurationText();
+    } else {
+        // Mode creació: valors per defecte
+        eventForm.reset();
+
+        // Establir data seleccionada (format local)
+        const dateToUse = selectedDate || new Date();
+        const year = dateToUse.getFullYear();
+        const month = String(dateToUse.getMonth() + 1).padStart(2, '0');
+        const day = String(dateToUse.getDate()).padStart(2, '0');
+        document.getElementById('eventDate').value = `${year}-${month}-${day}`;
+
+        // Establir hora per defecte
+        document.getElementById('eventTime').value = '10:00';
+        document.getElementById('eventEndTime').value = '11:00';
+        updateDurationText();
+
+        // Netejar títol
+        document.getElementById('eventTitle').value = '';
+
+        // Amagar camps de col·laboradors per defecte
+        document.getElementById('collaboratorsFieldsContainer').style.display = 'none';
+    }
 
     eventModal.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -298,44 +467,130 @@ function closeEventModal() {
     eventModal.classList.remove('active');
     document.body.style.overflow = '';
     selectedDate = null;
+    editingEvent = null;
 }
 
 // Gestionar enviament del formulari
 function handleEventSubmit(e) {
     e.preventDefault();
 
+    console.log('Formulari enviat');
+
+    const eventTitle = document.getElementById('eventTitle').value.trim();
+    const eventCategory = document.getElementById('eventCategory').value.trim();
     const date = document.getElementById('eventDate').value;
     const time = document.getElementById('eventTime').value;
-    const center = document.getElementById('eventCenter').value;
-    const type = document.getElementById('eventType').value;
-    const notes = document.getElementById('eventNotes').value;
+    const endTime = document.getElementById('eventEndTime').value;
+    const center = document.getElementById('eventCenter').value.trim();
+    const notes = document.getElementById('eventNotes').value.trim();
+    const selectedFriends = getSelectedFriends();
+    const hasCollaborators = selectedFriends.length > 0;
 
-    // Crear nou esdeveniment
-    const newEvent = {
-        id: `event-${Date.now()}`,
-        type: 'appointment',
-        title: `Cita: ${type}`,
-        date: date,
-        time: time,
-        center: center,
-        donationType: type,
-        notes: notes
-    };
+    console.log('Dades recollides:', { eventTitle, center, date, time });
 
-    // Afegir amb UserDataManager per crear notificació
-    UserDataManager.addCalendarAppointment(newEvent);
+    // Validar títol
+    if (!eventTitle) {
+        modalManager.error('Si us plau, introdueix un títol per l\'esdeveniment.', 'Error');
+        document.getElementById('eventTitle').focus();
+        return;
+    }
 
-    // Recarregar tots els esdeveniments
-    loadEvents();
+    // Validar centre
+    if (!center) {
+        modalManager.error('Si us plau, introdueix una ubicació.', 'Error');
+        document.getElementById('eventCenter').focus();
+        return;
+    }
 
-    // Actualitzar calendari
-    generateCalendar();
+    let collaboratorsData = null;
 
-    // Tancar modal
-    closeEventModal();
+    // Processar dades de col·laboradors
+    if (hasCollaborators) {
+        collaboratorsData = {
+            list: selectedFriends
+        };
+    }
 
-    // Mostrar confirmació
-    modalManager.success(`Data: ${new Date(date).toLocaleDateString('ca-ES')}\nHora: ${time}\nCentre: ${center}`, '✅ Cita afegida correctament!');
+    if (editingEvent) {
+        // Mode edició: actualitzar esdeveniment existent
+        const updatedEvent = {
+            ...editingEvent,
+            title: eventTitle,
+            category: eventCategory || '',
+            date: date,
+            time: time,
+            endTime: endTime,
+            center: center,
+            notes: notes,
+            hasCollaborators: hasCollaborators,
+            collaboratorsData: collaboratorsData,
+            type: hasCollaborators ? 'group-appointment' : editingEvent.type === 'group-appointment' ? 'appointment' : editingEvent.type
+        };
+
+        // Eliminar l'esdeveniment antic i afegir l'actualitzat
+        UserDataManager.removeCalendarAppointment(editingEvent.id);
+        UserDataManager.addCalendarAppointment(updatedEvent);
+
+        // Recarregar tots els esdeveniments
+        loadEvents();
+
+        // Actualitzar calendari
+        generateCalendar();
+
+        // Tancar modal
+        closeEventModal();
+
+        // Mostrar confirmació
+        let confirmMessage = `Data: ${new Date(date).toLocaleDateString('ca-ES')}\nHora: ${time}\nCentre: ${center}`;
+        if (eventCategory) {
+            confirmMessage += `\nCategoria: ${eventCategory}`;
+        }
+        if (hasCollaborators && collaboratorsData && collaboratorsData.list) {
+            confirmMessage += `\n\nCol·laboradors: ${collaboratorsData.list.join(', ')}`;
+        }
+
+        modalManager.success(confirmMessage, 'Esdeveniment actualitzat correctament!');
+    } else {
+        // Mode creació: crear nou esdeveniment
+        let eventType = hasCollaborators ? 'group-appointment' : 'appointment';
+
+        const newEvent = {
+            id: `event-${Date.now()}`,
+            type: eventType,
+            title: eventTitle,
+            category: eventCategory || '',
+            date: date,
+            time: time,
+            endTime: endTime,
+            center: center,
+            notes: notes,
+            hasCollaborators: hasCollaborators,
+            collaboratorsData: collaboratorsData
+        };
+
+        // Afegir amb UserDataManager per crear notificació
+        UserDataManager.addCalendarAppointment(newEvent);
+
+        // Recarregar tots els esdeveniments
+        loadEvents();
+
+        // Actualitzar calendari
+        generateCalendar();
+
+        // Tancar modal
+        closeEventModal();
+
+        // Mostrar confirmació
+        let confirmMessage = `Data: ${new Date(date).toLocaleDateString('ca-ES')}\nHora: ${time}\nCentre: ${center}`;
+        if (eventCategory) {
+            confirmMessage += `\nCategoria: ${eventCategory}`;
+        }
+        if (hasCollaborators && collaboratorsData && collaboratorsData.list) {
+            confirmMessage += `\n\nCol·laboradors: ${collaboratorsData.list.join(', ')}`;
+        }
+
+        modalManager.success(confirmMessage, 'Esdeveniment afegit correctament!');
+    }
 }
 
 // Mostrar detalls d'un esdeveniment
@@ -361,16 +616,17 @@ function showEventDetails(event) {
     // Configurar modal segons el tipus d'esdeveniment
     let typeLabel = 'Cita programada';
     let headerClass = 'appointment';
-    let titleText = 'Detalls de la cita';
+    let titleText = 'Detalls de l\'esdeveniment';
     let showCenter = true;
     let showDonationType = true;
 
-    if (event.type === 'donation') {
+    if (event.type === 'group-appointment') {
+        typeLabel = 'Esdeveniment amb col·laboradors';
+        headerClass = 'group';
+    } else if (event.type === 'donation') {
         typeLabel = 'Donació realitzada';
         headerClass = 'donation';
         titleText = 'Donació completada';
-        showCenter = true;
-        showDonationType = true;
     } else if (event.type === 'available') {
         typeLabel = 'Ja pots tornar a donar!';
         headerClass = 'available';
@@ -390,6 +646,22 @@ function showEventDetails(event) {
                 <p>${typeLabel}</p>
             </div>
         </div>
+        ${event.category ? `
+        <div class="event-detail-item">
+            <div class="event-detail-info">
+                <h4>Categoria</h4>
+                <p>${event.category}</p>
+            </div>
+        </div>
+        ` : ''}
+        ${event.hasCollaborators && event.collaboratorsData && event.collaboratorsData.list ? `
+        <div class="event-detail-item group-highlight">
+            <div class="event-detail-info">
+                <h4>Col·laboradors</h4>
+                <p class="participants-list">${event.collaboratorsData.list.join(', ')}</p>
+            </div>
+        </div>
+        ` : ''}
         <div class="event-detail-item">
             <div class="event-detail-info">
                 <h4>Data</h4>
@@ -430,14 +702,18 @@ function showEventDetails(event) {
         ` : ''}
     `;
 
-    // Mostrar botó eliminar per cites i esdeveniments de disponibilitat (no per donacions reals)
+    // Mostrar botons editar i eliminar per cites i esdeveniments de disponibilitat (no per donacions reals)
     const deleteBtn = document.getElementById('deleteEventBtn');
-    if (event.type === 'appointment' || event.type === 'available') {
+    const editBtn = document.getElementById('editEventBtn');
+
+    if (event.type === 'appointment' || event.type === 'group-appointment' || event.type === 'available') {
         deleteBtn.style.display = 'block';
+        editBtn.style.display = 'flex';
         // Canviar text del botó segons el tipus
         deleteBtn.textContent = event.type === 'available' ? 'Eliminar recordatori' : 'Eliminar';
     } else {
         deleteBtn.style.display = 'none';
+        editBtn.style.display = 'none';
     }
 
     eventDetailsModal.classList.add('active');
@@ -449,6 +725,20 @@ function closeEventDetails() {
     eventDetailsModal.classList.remove('active');
     document.body.style.overflow = '';
     currentEventForDeletion = null;
+}
+
+// Editar esdeveniment actual
+function editCurrentEvent() {
+    if (!currentEventForDeletion) return;
+
+    // Guardar referència de l'esdeveniment abans de tancar
+    const eventToEdit = currentEventForDeletion;
+
+    // Tancar modal de detalls
+    closeEventDetails();
+
+    // Obrir modal d'edició amb les dades de l'esdeveniment
+    openEventModal(eventToEdit);
 }
 
 // Eliminar esdeveniment actual
@@ -467,7 +757,7 @@ function deleteCurrentEvent() {
     // Utilitzar modal de confirmació
     modalManager.confirm(
         confirmMessage,
-        '🗑️ Confirmar eliminació',
+        'Confirmar eliminació',
         () => {
             // Si l'usuari confirma, eliminar l'esdeveniment
             UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
@@ -482,7 +772,7 @@ function deleteCurrentEvent() {
             closeEventDetails();
 
             // Mostrar missatge d'èxit
-            modalManager.success(successMessage, '✅ Eliminat correctament');
+            modalManager.success(successMessage, 'Eliminat correctament');
         },
         () => {
             // Si l'usuari cancel·la, no fer res
