@@ -127,13 +127,15 @@ class ModalManager {
         });
     }
 
-    confirm(message, title = 'Confirmar') {
+    confirm(message, title = 'Confirmar', onConfirm = null, onCancel = null) {
         return this.show({
             title,
             message,
             type: 'info',
             confirmText: 'Acceptar',
-            cancelText: 'Cancel·lar'
+            cancelText: 'Cancel·lar',
+            onConfirm,
+            onCancel
         });
     }
 }

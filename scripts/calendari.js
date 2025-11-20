@@ -9,6 +9,25 @@ let selectedDate = null;
 let events = [];
 let userFriends = [];
 let editingEvent = null;
+let legendCategories = [];
+
+// Categories de llegenda per defecte
+const DEFAULT_LEGEND_CATEGORIES = [
+    { id: 'donation', label: 'Donació realitzada', color: '#d32f2f', visible: true, editable: false, deletable: false },
+    { id: 'available', label: 'Notificació per tornar a donar', color: '#388e3c', visible: true, editable: false, deletable: false }
+];
+
+// Paleta de colors predefinits
+const COLOR_PALETTE = [
+    '#d32f2f', '#c62828', '#b71c1c', // Vermells
+    '#1976d2', '#1565c0', '#0d47a1', // Blaus
+    '#388e3c', '#2e7d32', '#1b5e20', // Verds
+    '#ff9800', '#f57c00', '#e65100', // Taronges
+    '#9c27b0', '#7b1fa2', '#4a148c', // Morats
+    '#00796b', '#004d40', '#009688', // Verds marins
+    '#e91e63', '#c2185b', '#880e4f', // Roses
+    '#795548', '#5d4037', '#3e2723'  // Marrons
+];
 
 // Elements del DOM
 const calendarGrid = document.getElementById('calendarGrid');
@@ -30,9 +49,11 @@ const monthNames = [
 
 // Inicialitzar l'aplicació
 document.addEventListener('DOMContentLoaded', () => {
+    loadLegendCategories();
     loadEvents();
     loadDonations();
     loadFriends();
+    renderLegend();
     generateCalendar();
     setupEventListeners();
 });
@@ -195,6 +216,12 @@ function createDayElement(day, className, date) {
             dayEvents.slice(0, 2).forEach(event => {
                 const eventEl = document.createElement('div');
                 eventEl.className = `day-event ${event.type}`;
+
+                // Aplicar color personalitzat de la llegenda
+                const color = getCategoryColor(event.type);
+                eventEl.style.background = `linear-gradient(135deg, ${color} 0%, ${adjustColorBrightness(color, 20)} 100%)`;
+                eventEl.style.boxShadow = `0 3px 6px ${color}66`;
+
                 eventEl.textContent = event.title;
                 eventEl.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -274,6 +301,12 @@ function updateEventsList() {
         const eventCard = document.createElement('div');
         eventCard.className = `event-card ${event.type}`;
 
+        // Aplicar color personalitzat de la llegenda
+        const color = getCategoryColor(event.type);
+        eventCard.style.borderLeftColor = color;
+        eventCard.style.borderColor = `${color}26`;
+        eventCard.style.boxShadow = `0 2px 8px ${color}1A`;
+
         // Parsejar la data correctament en format local (YYYY-MM-DD)
         const [year, month, day] = event.date.split('-').map(Number);
         const eventDate = new Date(year, month - 1, day);
@@ -290,6 +323,18 @@ function updateEventsList() {
         `;
 
         eventCard.addEventListener('click', () => showEventDetails(event));
+
+        // Efecte hover amb color personalitzat
+        eventCard.addEventListener('mouseenter', () => {
+            eventCard.style.boxShadow = `0 6px 20px ${color}33`;
+            eventCard.style.borderColor = `${color}4D`;
+        });
+
+        eventCard.addEventListener('mouseleave', () => {
+            eventCard.style.boxShadow = `0 2px 8px ${color}1A`;
+            eventCard.style.borderColor = `${color}26`;
+        });
+
         eventsList.appendChild(eventCard);
     });
 }
@@ -371,6 +416,18 @@ function setupEventListeners() {
     // Botons d'editar i eliminar
     document.getElementById('editEventBtn').addEventListener('click', editCurrentEvent);
     document.getElementById('deleteEventBtn').addEventListener('click', deleteCurrentEvent);
+
+    // Llegenda personalitzable
+    document.getElementById('editLegendBtn').addEventListener('click', openLegendModal);
+    document.getElementById('closeLegendModalBtn').addEventListener('click', closeLegendModal);
+    document.getElementById('saveLegendBtn').addEventListener('click', saveLegendCategories);
+    document.getElementById('resetLegendBtn').addEventListener('click', resetLegendToDefault);
+    document.getElementById('addLegendItemBtn').addEventListener('click', addNewLegendCategory);
+
+    const legendModal = document.getElementById('legendModal');
+    legendModal.addEventListener('click', (e) => {
+        if (e.target === legendModal) closeLegendModal();
+    });
 }
 
 // Actualitzar text de duració
@@ -628,7 +685,7 @@ function showEventDetails(event) {
         headerClass = 'donation';
         titleText = 'Donació completada';
     } else if (event.type === 'available') {
-        typeLabel = 'Ja pots tornar a donar!';
+        typeLabel = 'Notificació per tornar a donar';
         headerClass = 'available';
         titleText = 'Recordatori de disponibilitat';
         showCenter = false;
@@ -778,4 +835,283 @@ function deleteCurrentEvent() {
             // Si l'usuari cancel·la, no fer res
         }
     );
+}
+// ============================================
+// FUNCIONS PER GESTIONAR LA LLEGENDA
+// ============================================
+
+// Carregar categories de llegenda
+function loadLegendCategories() {
+    try {
+        const stored = localStorage.getItem('legendCategories');
+        if (stored) {
+            legendCategories = JSON.parse(stored);
+
+            // Migració de dades: afegir propietat deletable i actualitzar noms
+            legendCategories = legendCategories.map(cat => {
+                if (cat.deletable === undefined) {
+                    // Categories del sistema no es poden eliminar
+                    if (cat.id === 'donation' || cat.id === 'available') {
+                        cat.deletable = false;
+                    } else {
+                        // Resta de categories sí es poden eliminar
+                        cat.deletable = true;
+                    }
+                }
+
+                // Actualitzar noms de categories del sistema
+                if (cat.id === 'donation' && cat.label !== 'Donació realitzada') {
+                    cat.label = 'Donació realitzada';
+                }
+                if (cat.id === 'available' && cat.label !== 'Notificació per tornar a donar') {
+                    cat.label = 'Notificació per tornar a donar';
+                }
+
+                return cat;
+            });
+
+            // Guardar la migració
+            saveLegendToStorage();
+        } else {
+            legendCategories = JSON.parse(JSON.stringify(DEFAULT_LEGEND_CATEGORIES));
+            saveLegendToStorage();
+        }
+    } catch (error) {
+        console.error('Error carregant categories de llegenda:', error);
+        legendCategories = JSON.parse(JSON.stringify(DEFAULT_LEGEND_CATEGORIES));
+    }
+}
+
+// Guardar categories al localStorage
+function saveLegendToStorage() {
+    try {
+        localStorage.setItem('legendCategories', JSON.stringify(legendCategories));
+    } catch (error) {
+        console.error('Error guardant categories de llegenda:', error);
+    }
+}
+
+// Renderitzar llegenda
+function renderLegend() {
+    const container = document.getElementById('legendItems');
+    if (!container) return;
+
+    const visibleCategories = legendCategories.filter(cat => cat.visible);
+
+    if (visibleCategories.length === 0) {
+        container.innerHTML = '<p style="color: #999; text-align: center; padding: 1rem;">No hi ha categories visibles</p>';
+        return;
+    }
+
+    container.innerHTML = visibleCategories.map(category => `
+        <div class="legend-item" data-category-id="${category.id}">
+            <span class="legend-color" style="background: ${category.color};"></span>
+            <span>${category.label}</span>
+        </div>
+    `).join('');
+}
+
+// Obrir modal d'edició de llegenda
+function openLegendModal() {
+    renderLegendEditItems();
+    document.getElementById('legendModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Tancar modal de llegenda
+function closeLegendModal() {
+    document.getElementById('legendModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Renderitzar items editables de llegenda
+function renderLegendEditItems() {
+    const container = document.getElementById('legendEditContainer');
+
+    container.innerHTML = legendCategories.map((category, index) => `
+        <div class="legend-edit-item ${!category.visible ? 'hidden' : ''}" data-index="${index}">
+            <div class="legend-color-picker-wrapper">
+                <input type="color" 
+                       value="${category.color}" 
+                       class="legend-color-picker" 
+                       data-index="${index}"
+                       ${!category.editable ? 'disabled' : ''}>
+            </div>
+            <input type="text" 
+                   value="${category.label}" 
+                   class="legend-edit-input" 
+                   data-index="${index}"
+                   ${!category.editable ? 'disabled' : ''}
+                   placeholder="Nom de la categoria">
+            <div class="legend-actions">
+                <button type="button" class="legend-action-btn hidden-btn ${category.visible ? '' : 'active'}" 
+                        data-index="${index}" 
+                        title="${category.visible ? 'Amagar' : 'Mostrar'}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        ${category.visible ?
+            '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>' :
+            '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+        }
+                    </svg>
+                </button>
+                ${category.deletable !== false ? `
+                <button type="button" class="legend-action-btn delete-btn" 
+                        data-index="${index}"
+                        title="Eliminar categoria">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
+
+    // Afegir event listeners
+    container.querySelectorAll('.legend-color-picker').forEach(picker => {
+        picker.addEventListener('change', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            legendCategories[index].color = e.target.value;
+        });
+    });
+
+    container.querySelectorAll('.legend-edit-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            legendCategories[index].label = e.target.value;
+        });
+    });
+
+    container.querySelectorAll('.hidden-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.dataset.index);
+            legendCategories[index].visible = !legendCategories[index].visible;
+            renderLegendEditItems();
+        });
+    });
+
+    container.querySelectorAll('.delete-btn').forEach((btn, btnIndex) => {
+        console.log(`Botó eliminar ${btnIndex} afegit per categoria amb index:`, btn.dataset.index);
+
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const index = parseInt(this.dataset.index);
+            const category = legendCategories[index];
+
+            console.log('Clic al botó eliminar. Index:', index, 'Categoria:', category);
+
+            if (!category) {
+                console.error('Categoria no trobada!');
+                modalManager.error('Error: categoria no trobada', 'Error');
+                return;
+            }
+
+            if (category.deletable === false) {
+                modalManager.error('Aquesta categoria del sistema no es pot eliminar. Pots amagar-la amb el botó de l\'ull.', 'Categoria protegida');
+                return;
+            }
+
+            const categoryLabel = category.label;
+
+            modalManager.confirm(
+                `Estàs segur que vols eliminar la categoria "${categoryLabel}"?`,
+                'Confirmar eliminació',
+                () => {
+                    console.log('Confirmada eliminació de categoria:', categoryLabel);
+                    legendCategories.splice(index, 1);
+                    saveLegendToStorage();
+                    renderLegendEditItems();
+                    modalManager.success(`La categoria "${categoryLabel}" s'ha eliminat correctament.`, 'Eliminada');
+                },
+                () => {
+                    console.log('Cancel·lada eliminació de categoria:', categoryLabel);
+                }
+            );
+        });
+    });
+}
+
+// Afegir nova categoria de llegenda
+function addNewLegendCategory() {
+    const newCategory = {
+        id: `custom-${Date.now()}`,
+        label: 'Nova categoria',
+        color: COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)],
+        visible: true,
+        editable: true,
+        deletable: true
+    };
+
+    legendCategories.push(newCategory);
+    renderLegendEditItems();
+
+    // Scroll fins al final
+    const container = document.getElementById('legendEditContainer');
+    setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+        // Focus al darrer input
+        const inputs = container.querySelectorAll('.legend-edit-input');
+        if (inputs.length > 0) {
+            inputs[inputs.length - 1].focus();
+            inputs[inputs.length - 1].select();
+        }
+    }, 100);
+}
+
+// Guardar canvis de la llegenda
+function saveLegendCategories() {
+    // Validar que totes les categories tinguin nom
+    const invalidCategories = legendCategories.filter(cat => !cat.label.trim());
+    if (invalidCategories.length > 0) {
+        modalManager.error('Totes les categories han de tenir un nom.', 'Error de validació');
+        return;
+    }
+
+    saveLegendToStorage();
+    renderLegend();
+    generateCalendar();
+    closeLegendModal();
+    modalManager.success('Les categories s\'han desat correctament!', 'Llegenda actualitzada');
+}
+
+// Restaurar llegenda per defecte
+function resetLegendToDefault() {
+    modalManager.confirm(
+        'Això restaurarà la llegenda als valors per defecte i eliminarà les teves categories personalitzades. Estàs segur?',
+        'Restaurar llegenda',
+        () => {
+            legendCategories = JSON.parse(JSON.stringify(DEFAULT_LEGEND_CATEGORIES));
+            saveLegendToStorage();
+            renderLegendEditItems();
+            modalManager.success('La llegenda s\'ha restaurat correctament.', 'Restaurada');
+        }
+    );
+}
+
+// Obtenir color d'una categoria
+function getCategoryColor(categoryId) {
+    const category = legendCategories.find(cat => cat.id === categoryId);
+    return category ? category.color : '#999999';
+}
+
+// Ajustar brillantor d'un color (útil per gradients)
+function adjustColorBrightness(hex, percent) {
+    // Convertir hex a RGB
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = (num >> 16) + percent;
+    const g = ((num >> 8) & 0x00FF) + percent;
+    const b = (num & 0x0000FF) + percent;
+
+    // Assegurar que els valors estiguin entre 0-255
+    const newR = Math.max(0, Math.min(255, r));
+    const newG = Math.max(0, Math.min(255, g));
+    const newB = Math.max(0, Math.min(255, b));
+
+    // Convertir de nou a hex
+    return '#' + ((newR << 16) | (newG << 8) | newB).toString(16).padStart(6, '0');
 }
