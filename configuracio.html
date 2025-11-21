@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuració - Banc de Sang i Teixits</title>
+    <link rel="stylesheet" href="styles/home.css">
+    <link rel="stylesheet" href="styles/configuracio.css">
+    <link rel="stylesheet" href="styles/modal.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <button class="icon-btn" onclick="location.href='home.html'" aria-label="Tornar">
+                ←
+            </button>
+        </div>
+
+        <div class="header-title">Configuració</div>
+
+        <div class="header-right">
+            <div class="user-menu">
+                <button class="user-menu-btn">
+                    <span class="user-name" id="headerUserName">Usuari</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="config-container">
+            <!-- Secció de perfil de l'usuari -->
+            <section class="config-section profile-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <h2>Perfil de l'usuari</h2>
+                </div>
+                <div class="profile-info-config">
+                    <div class="profile-avatar-config" id="profileAvatar">U</div>
+                    <div class="profile-details">
+                        <h3 id="profileName">Usuari</h3>
+                        <p class="profile-email" id="profileEmail">usuari@exemple.com</p>
+                        <p class="profile-stats">
+                            <span><strong id="profileDonations">0</strong> donacions</span>
+                            <span class="separator">•</span>
+                            <span>Última donació: <strong id="profileLastDonation">--</strong></span>
+                        </p>
+                    </div>
+                </div>
+                <button class="config-btn" onclick="location.href='personalizacion.html'">
+                    Gestionar el meu perfil
+                </button>
+            </section>
+
+            <!-- Secció de notificacions -->
+            <section class="config-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <h2>Notificacions</h2>
+                </div>
+                <div class="config-options">
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Activar notificacions</div>
+                            <div class="option-description">Rebre notificacions push de l'aplicació</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notificationsEnabled">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Esdeveniments i cites</div>
+                            <div class="option-description">Notificacions sobre cites programades i esdeveniments</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifEvents">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Recordatoris</div>
+                            <div class="option-description">Recordatoris per tornar a donar sang</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifReminders">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Assoliments</div>
+                            <div class="option-description">Notificacions quan aconsegueixes nous assoliments</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifAchievements">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Informació general</div>
+                            <div class="option-description">Novetats, campanyes i informació rellevant</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="notifInfo">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secció de preferències d'idioma -->
+            <section class="config-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                    <h2>Preferències d'idioma</h2>
+                </div>
+                <div class="config-options">
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Idioma de l'aplicació</div>
+                            <div class="option-description">Selecciona l'idioma per a la interfície</div>
+                        </div>
+                        <select class="config-select" id="languageSelect">
+                            <option value="ca">Català</option>
+                            <option value="es">Castellà</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secció de privacitat i seguretat -->
+            <section class="config-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <h2>Privacitat i seguretat</h2>
+                </div>
+                <div class="config-options">
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Perfil públic</div>
+                            <div class="option-description">Permet que altres usuaris vegin el teu perfil</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="publicProfile">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Mostrar estadístiques</div>
+                            <div class="option-description">Comparteix el teu nombre de donacions amb altres</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showStats">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <button class="config-btn secondary" id="changePasswordBtn">
+                        Canviar contrasenya
+                    </button>
+                </div>
+            </section>
+
+            <!-- Secció de preferències generals -->
+            <section class="config-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m8.66-9l-5.2 3M8.54 14l-5.2 3m13.32 0l-5.2-3M8.54 10l-5.2-3"></path>
+                    </svg>
+                    <h2>Preferències generals</h2>
+                </div>
+                <div class="config-options">
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Tema de l'aplicació</div>
+                            <div class="option-description">Selecciona el tema visual</div>
+                        </div>
+                        <select class="config-select" id="themeSelect">
+                            <option value="light">Clar</option>
+                            <option value="dark">Fosc</option>
+                            <option value="auto">Automàtic</option>
+                        </select>
+                    </div>
+                    <div class="config-option">
+                        <div class="option-info">
+                            <div class="option-title">Mostrar tutorials</div>
+                            <div class="option-description">Mostrar consells i ajuda en utilitzar l'aplicació</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showTutorials">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secció d'informació i ajuda -->
+            <section class="config-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <h2>Informació i ajuda</h2>
+                </div>
+                <div class="config-options">
+                    <button class="config-btn secondary" id="aboutBtn">
+                        Sobre l'aplicació
+                    </button>
+                    <button class="config-btn secondary" id="helpBtn">
+                        Centre d'ajuda
+                    </button>
+                    <button class="config-btn secondary" id="termsBtn">
+                        Termes i condicions
+                    </button>
+                    <button class="config-btn secondary" id="privacyBtn">
+                        Política de privacitat
+                    </button>
+                </div>
+            </section>
+
+            <!-- Secció de compte -->
+            <section class="config-section danger-section">
+                <div class="section-header">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <h2>Gestió del compte</h2>
+                </div>
+                <div class="config-options">
+                    <button class="config-btn danger" id="deleteAccountBtn">
+                        Eliminar compte
+                    </button>
+                </div>
+            </section>
+
+            <!-- Versió de l'app -->
+            <div class="app-version">
+                <p>BancSang v1.0.0</p>
+                <p class="version-info">© 2025 Banc de Sang i Teixits</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="scripts/user-data-manager.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/modal.js"></script>
+    <script src="scripts/configuracio.js"></script>
+</body>
+
+</html>

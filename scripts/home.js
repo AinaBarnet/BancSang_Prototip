@@ -157,9 +157,7 @@ function setupEventListeners() {
     const configMenuItem = document.getElementById('configMenuItem');
     configMenuItem.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('Configuración desde menú - Por implementar');
-        // TODO: Navegar a página de configuración
-        alert('⚙️ Configuració\n\nAquí podràs:\n• Gestionar el teu perfil\n• Configurar notificacions\n• Preferències d\'idioma\n• Privacitat i seguretat\n\n(En desenvolupament)');
+        window.location.href = 'configuracio.html';
     });
 
     // Botó de tancar sessió
