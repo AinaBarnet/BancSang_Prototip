@@ -596,8 +596,6 @@ const UserDataManager = {
             iconClass: 'achievement',
             title: 'Gràcies per salvar vides!',
             description: `Donació completada amb èxit el ${this.formatDate(donationDate)} a ${centerName}. La teva sang arribarà a qui més ho necessita i pot salvar fins a 3 vides.`,
-            time: 'Ara mateix',
-            date: 'Avui',
             category: 'Assoliment',
             priority: 'medium',
             actions: [
@@ -620,8 +618,6 @@ const UserDataManager = {
                 iconClass: 'info',
                 title: 'Propera donació disponible',
                 description: `Podràs tornar a donar sang a partir del ${nextAvailableStr}. T'enviarem un recordatori quan s'apropi la data.`,
-                time: 'Ara mateix',
-                date: 'Avui',
                 category: 'Informació',
                 priority: 'low',
                 actions: [
@@ -657,8 +653,6 @@ const UserDataManager = {
                 iconClass: 'achievement',
                 title: `Felicitats, ${achievement.title}`,
                 description: `Has completat la teva ${totalDonations}ª donació i has salvat fins a ${achievement.lives} vides. Ets un exemple de solidaritat. Continua així!`,
-                time: 'Ara mateix',
-                date: 'Avui',
                 category: 'Assoliment',
                 priority: 'high',
                 actions: [
@@ -722,8 +716,6 @@ const UserDataManager = {
             iconClass: 'new-event',
             title: title,
             description: description,
-            time: 'Ara mateix',
-            date: 'Avui',
             category: 'Cita',
             priority: 'high',
             actions: [
@@ -751,8 +743,6 @@ const UserDataManager = {
                 iconClass: 'reminder',
                 title: 'Ja pots tornar a donar sang!',
                 description: 'Han passat 3 mesos des de la teva última donació. La teva ajuda és valuosa. ¿Reservem una cita?',
-                time: 'Ara mateix',
-                date: 'Avui',
                 category: 'Recordatori',
                 priority: 'high',
                 actions: [

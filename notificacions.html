@@ -44,8 +44,8 @@
 
             <!-- Accions ràpides -->
             <div class="quick-actions">
-                <button class="quick-action-btn" id="settingsBtn" title="Preferències">
-                    ⚙️ Preferències
+                <button class="quick-action-btn" id="markAllReadBtnQuick" title="Marcar tot com a llegit">
+                    ✓ Marcar tot com a llegit
                 </button>
                 <button class="quick-action-btn" id="viewTrashBtn" title="Veure paperera">
                     🗑️ Paperera (<span id="trashCount">0</span>)
@@ -100,64 +100,6 @@
         </div>
     </main>
 
-    <!-- Modal de preferències -->
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Preferències de notificacions</h2>
-                <button class="modal-close" id="closeSettingsModal">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-section">
-                    <h3>Tipus de notificacions:</h3>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="enableEvents">
-                            <span>Notificacions de cites</span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="enableReminders">
-                            <span>Recordatoris</span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="enableAchievements">
-                            <span>Assoliments</span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="enableInfo">
-                            <span>Informació general</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Neteja automàtica:</h3>
-                    <div class="setting-item">
-                        <label>
-                            <input type="checkbox" id="autoDeleteOld">
-                            <span>Eliminar de manera automàtica les notificacions antigues</span>
-                        </label>
-                    </div>
-                    <div class="setting-item">
-                        <label for="daysToKeep">Dies a mantenir:</label>
-                        <input type="number" id="daysToKeep" min="1" max="365" placeholder="30">
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="cancelSettings">Cancel·lar</button>
-                    <button class="btn-primary" id="saveSettings">Guardar les preferències</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal de Paperera -->
     <div class="modal-overlay" id="trashModal">
         <div class="modal-content">
@@ -172,6 +114,23 @@
                 <div class="modal-actions">
                     <button class="btn-secondary" id="closeTrash">Tancar</button>
                     <button class="btn-danger" id="emptyTrashBtn">Buidar paperera</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmació per netejar notificacions antigues -->
+    <div class="modal-overlay" id="cleanOldModal">
+        <div class="modal-content modal-confirm">
+            <div class="modal-header">
+                <h2>Advertència</h2>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-message">Vols netejar les notificacions antigues?</p>
+                <p class="confirm-description">Això mourà les notificacions antigues a la paperera.</p>
+                <div class="modal-actions">
+                    <button class="btn-accept" id="acceptCleanOld">Aceptar</button>
+                    <button class="btn-cancel" id="cancelCleanOld">Cancel·lar</button>
                 </div>
             </div>
         </div>

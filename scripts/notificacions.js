@@ -1,4 +1,4 @@
-// Protegir la pàgina - requerir autenticació
+﻿// Protegir la pàgina - requerir autenticació
 if (typeof AuthManager !== 'undefined' && !AuthManager.isAuthenticated()) {
     AuthManager.requireAuth();
 }
@@ -424,9 +424,8 @@ const NotificationsManager = {
 
                 const notification = {
                     type: type,
-                    time: 'Ara mateix',
-                    date: 'Avui',
                     ...samples[type]
+                    // time i date es calculen dinàmicament des del timestamp
                 };
 
                 this.addNotification(notification);
@@ -459,6 +458,17 @@ if (window.location.pathname.includes('notificacions.html')) {
     let lastDeleted = null;
     let deleteTimeout = null;
 
+    // Actualitzar els temps de les notificacions visibles
+    function updateNotificationTimes() {
+        const timeElements = document.querySelectorAll('.notification-time');
+        timeElements.forEach(timeEl => {
+            const timestamp = parseInt(timeEl.dataset.timestamp);
+            if (timestamp) {
+                timeEl.textContent = getTimeAgoFromTimestamp(timestamp);
+            }
+        });
+    }
+
     // Inicialitzar
     document.addEventListener('DOMContentLoaded', () => {
         loadAllNotifications();
@@ -466,6 +476,9 @@ if (window.location.pathname.includes('notificacions.html')) {
         updateEmptyState();
         displayStats();
         checkForNewNotifications();
+
+        // Actualitzar els temps cada 30 segons
+        setInterval(updateNotificationTimes, 30000);
     });
 
     // Mostrar estadístiques
@@ -495,6 +508,35 @@ if (window.location.pathname.includes('notificacions.html')) {
         displayStats();
     }
 
+    // Calcular el temps transcorregut
+    function getTimeAgoFromTimestamp(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+
+        if (seconds < 60) return 'Ara mateix';
+        if (seconds < 120) return 'Fa 1 minut';
+        if (seconds < 3600) return `Fa ${Math.floor(seconds / 60)} minuts`;
+        if (seconds < 7200) return 'Fa 1 hora';
+        if (seconds < 86400) return `Fa ${Math.floor(seconds / 3600)} hores`;
+        if (seconds < 172800) return 'Ahir';
+        if (seconds < 604800) return `Fa ${Math.floor(seconds / 86400)} dies`;
+        if (seconds < 1209600) return 'Fa 1 setmana';
+        if (seconds < 2592000) return `Fa ${Math.floor(seconds / 604800)} setmanes`;
+        if (seconds < 5184000) return 'Fa 1 mes';
+        return `Fa ${Math.floor(seconds / 2592000)} mesos`;
+    }
+
+    // Calcular la categoria de data per agrupació
+    function getDateCategory(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        const days = Math.floor(seconds / 86400);
+
+        if (days === 0) return 'Avui';
+        if (days === 1) return 'Ahir';
+        if (days <= 7) return 'Aquesta setmana';
+        if (days <= 30) return 'Aquest mes';
+        return 'Més antic';
+    }
+
     // Renderitzar notificacions agrupades per dates
     function renderNotifications(notifications) {
         notificationsList.innerHTML = '';
@@ -502,24 +544,21 @@ if (window.location.pathname.includes('notificacions.html')) {
         // Ordenar per timestamp de més nou a més antic
         const sortedNotifications = [...notifications].sort((a, b) => b.timestamp - a.timestamp);
 
-        // Agrupar per dates
-        const grouped = {
-            'Avui': [],
-            'Ahir': [],
-            'Fa 3 dies': [],
-            'Fa 5 dies': [],
-            'Fa 1 setmana': []
-        };
+        // Agrupar per dates dinàmicament
+        const grouped = {};
 
         sortedNotifications.forEach(n => {
-            if (grouped[n.date]) {
-                grouped[n.date].push(n);
+            const category = getDateCategory(n.timestamp);
+            if (!grouped[category]) {
+                grouped[category] = [];
             }
+            grouped[category].push(n);
         });
 
-        // Crear grups de dates
-        Object.keys(grouped).forEach(date => {
-            if (grouped[date].length > 0) {
+        // Crear grups de dates en l'ordre correcte
+        const dateOrder = ['Avui', 'Ahir', 'Aquesta setmana', 'Aquest mes', 'Més antic'];
+        dateOrder.forEach(date => {
+            if (grouped[date] && grouped[date].length > 0) {
                 const dateGroup = createDateGroup(date, grouped[date]);
                 notificationsList.appendChild(dateGroup);
             }
@@ -572,8 +611,11 @@ if (window.location.pathname.includes('notificacions.html')) {
         }
 
         const priorityBadge = notification.priority === 'high' ? '<span class="priority-badge high">Urgent</span>' : '';
-        const readStatusIcon = notification.unread ? '✓' : '⟲';
-        const readStatusTitle = notification.unread ? 'Marcar com llegida' : 'Marcar com pendent';
+        const readStatusIcon = notification.unread ? '📕' : '📖';
+        const readStatusTitle = notification.unread ? 'Marcar com llegida' : 'Marcar com no llegida';
+
+        // Calcular el temps dinàmicament des del timestamp
+        const timeAgo = getTimeAgoFromTimestamp(notification.timestamp);
 
         card.innerHTML = `
         <div class="notification-icon ${notification.iconClass}">${notification.icon}</div>
@@ -585,7 +627,7 @@ if (window.location.pathname.includes('notificacions.html')) {
             <p>${notification.description}</p>
             ${actionsHTML}
             <div class="notification-meta">
-                <span class="notification-time">${notification.time}</span>
+                <span class="notification-time" data-timestamp="${notification.timestamp}">${timeAgo}</span>
                 <span class="notification-category">${notification.category}</span>
             </div>
         </div>
@@ -623,14 +665,22 @@ if (window.location.pathname.includes('notificacions.html')) {
 
     // Gestionar accions de les notificacions
     function handleAction(action, url, data, notification) {
+        // Marcar com llegida quan es fa click en una acció
+        NotificationsManager.markAsRead(notification.id);
+
         switch (action) {
             case 'reserveAppointment':
             case 'findLocations':
             case 'viewAchievements':
             case 'viewPrize':
             case 'participate':
+            case 'viewCalendar':
+            case 'viewDetails':
+                // Redirigir a la URL proporcionada
                 if (url) {
                     window.location.href = url;
+                } else {
+                    console.warn('No s\'ha proporcionat URL per l\'acció:', action);
                 }
                 break;
 
@@ -643,7 +693,12 @@ if (window.location.pathname.includes('notificacions.html')) {
                 break;
 
             default:
-                console.log('Acció no implementada:', action);
+                // Per a qualsevol altra acció, si hi ha URL, redirigir
+                if (url) {
+                    window.location.href = url;
+                } else {
+                    console.log('Acció no implementada:', action);
+                }
         }
     }
 
@@ -750,51 +805,45 @@ if (window.location.pathname.includes('notificacions.html')) {
         }
 
         if (cleanOldBtn) {
-            cleanOldBtn.addEventListener('click', () => {
-                if (confirm('Vols netejar les notificacions antigues?\n\nAixò mourà les notificacions antigues a la paperera.')) {
-                    const count = NotificationsManager.cleanOldNotifications();
-                    loadAllNotifications();
-                    updateEmptyState();
-                    updateTrashCount();
-                    if (count > 0) {
-                        showFeedback(`✅ ${count} notificació${count > 1 ? 's' : ''} moguda${count > 1 ? 'es' : ''} a la paperera`);
-                    } else {
-                        showFeedback('✅ No hi ha notificacions antigues per netejar');
-                    }
+            cleanOldBtn.addEventListener('click', openCleanOldModal);
+        }
+
+        // Modal de netejar notificacions antigues
+        const acceptCleanOld = document.getElementById('acceptCleanOld');
+        const cancelCleanOld = document.getElementById('cancelCleanOld');
+        const cleanOldModal = document.getElementById('cleanOldModal');
+
+        if (acceptCleanOld) {
+            acceptCleanOld.addEventListener('click', () => {
+                closeCleanOldModal();
+                const count = NotificationsManager.cleanOldNotifications();
+                loadAllNotifications();
+                updateEmptyState();
+                updateTrashCount();
+                if (count > 0) {
+                    showFeedback(`✅ ${count} notificació${count > 1 ? 's' : ''} moguda${count > 1 ? 'es' : ''} a la paperera`);
+                } else {
+                    showFeedback('✅ No hi ha notificacions antigues per netejar');
                 }
             });
         }
 
-        // Botó de configuració
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsModal = document.getElementById('settingsModal');
-        const closeSettingsModal = document.getElementById('closeSettingsModal');
-        const cancelSettings = document.getElementById('cancelSettings');
-        const saveSettings = document.getElementById('saveSettings');
-
-        if (settingsBtn) {
-            settingsBtn.addEventListener('click', openSettingsModal);
+        if (cancelCleanOld) {
+            cancelCleanOld.addEventListener('click', closeCleanOldModal);
         }
 
-        if (closeSettingsModal) {
-            closeSettingsModal.addEventListener('click', closeSettings);
-        }
-
-        if (cancelSettings) {
-            cancelSettings.addEventListener('click', closeSettings);
-        }
-
-        if (saveSettings) {
-            saveSettings.addEventListener('click', savePreferences);
-        }
-
-        // Tancar modal clicant fora
-        if (settingsModal) {
-            settingsModal.addEventListener('click', (e) => {
-                if (e.target === settingsModal) {
-                    closeSettings();
+        if (cleanOldModal) {
+            cleanOldModal.addEventListener('click', (e) => {
+                if (e.target === cleanOldModal) {
+                    closeCleanOldModal();
                 }
             });
+        }
+
+        // Botó de marcar tot com llegit (accions ràpides)
+        const markAllReadBtnQuick = document.getElementById('markAllReadBtnQuick');
+        if (markAllReadBtnQuick) {
+            markAllReadBtnQuick.addEventListener('click', markAllAsRead);
         }
 
         // Modal de paperera
@@ -824,39 +873,6 @@ if (window.location.pathname.includes('notificacions.html')) {
         }
     }
 
-    // Gestió del modal de configuració
-    function openSettingsModal() {
-        const prefs = NotificationsManager.getPreferences();
-
-        document.getElementById('enableEvents').checked = prefs.enableEvents;
-        document.getElementById('enableReminders').checked = prefs.enableReminders;
-        document.getElementById('enableAchievements').checked = prefs.enableAchievements;
-        document.getElementById('enableInfo').checked = prefs.enableInfo;
-        document.getElementById('autoDeleteOld').checked = prefs.autoDeleteOld;
-        document.getElementById('daysToKeep').value = prefs.daysToKeep;
-
-        document.getElementById('settingsModal').classList.add('active');
-    }
-
-    function closeSettings() {
-        document.getElementById('settingsModal').classList.remove('active');
-    }
-
-    function savePreferences() {
-        const prefs = {
-            enableEvents: document.getElementById('enableEvents').checked,
-            enableReminders: document.getElementById('enableReminders').checked,
-            enableAchievements: document.getElementById('enableAchievements').checked,
-            enableInfo: document.getElementById('enableInfo').checked,
-            autoDeleteOld: document.getElementById('autoDeleteOld').checked,
-            daysToKeep: parseInt(document.getElementById('daysToKeep').value) || 30
-        };
-
-        NotificationsManager.savePreferences(prefs);
-        closeSettings();
-        showFeedback('✅ Preferències guardades correctament');
-    }
-
     // Gestió del modal de paperera
     function openTrashModal() {
         const trash = NotificationsManager.getTrash();
@@ -877,6 +893,14 @@ if (window.location.pathname.includes('notificacions.html')) {
 
     function closeTrashModalFn() {
         document.getElementById('trashModal').classList.remove('active');
+    }
+
+    function openCleanOldModal() {
+        document.getElementById('cleanOldModal').classList.add('active');
+    }
+
+    function closeCleanOldModal() {
+        document.getElementById('cleanOldModal').classList.remove('active');
     }
 
     function createTrashCard(notification) {
@@ -918,12 +942,8 @@ if (window.location.pathname.includes('notificacions.html')) {
     }
 
     function getTimeAgo(date) {
-        const seconds = Math.floor((Date.now() - date) / 1000);
-
-        if (seconds < 60) return 'fa uns segons';
-        if (seconds < 3600) return `fa ${Math.floor(seconds / 60)} minuts`;
-        if (seconds < 86400) return `fa ${Math.floor(seconds / 3600)} hores`;
-        return `fa ${Math.floor(seconds / 86400)} dies`;
+        // Utilitzar la funció principal de càlcul de temps
+        return getTimeAgoFromTimestamp(date).toLowerCase();
     }
 
     function updateTrashCount() {
@@ -938,7 +958,7 @@ if (window.location.pathname.includes('notificacions.html')) {
     function markAllAsRead() {
         NotificationsManager.markAllAsRead();
         loadAllNotifications();
-        showFeedback('Totes les notificacions marcades com llegides');
+        showFeedback('Totes les notificacions han estat marcades com llegides');
     }
 
     // Alternar estat de lectura
@@ -949,16 +969,16 @@ if (window.location.pathname.includes('notificacions.html')) {
         // Actualitzar classe de la targeta
         if (isNowUnread) {
             card.classList.add('unread');
-            showFeedback('📬 Marcada com pendent de lectura');
+            showFeedback('Marcada com a pendent de lectura');
         } else {
             card.classList.remove('unread');
-            showFeedback('✓ Marcada com llegida');
+            showFeedback('Marcada com a llegida');
         }
 
         // Actualitzar botó
         const readToggleBtn = card.querySelector('.notification-read-toggle');
-        readToggleBtn.textContent = isNowUnread ? '✓' : '⟲';
-        readToggleBtn.title = isNowUnread ? 'Marcar com llegida' : 'Marcar com pendent';
+        readToggleBtn.textContent = isNowUnread ? '📕' : '📖';
+        readToggleBtn.title = isNowUnread ? 'Marcar com llegida' : 'Marcar com no llegida';
 
         card.style.animation = 'flash 0.5s ease';
 
@@ -1107,13 +1127,15 @@ if (window.location.pathname.includes('notificacions.html')) {
         top: 100px;
         left: 50%;
         transform: translateX(-50%);
-        background: #4caf50;
-        color: white;
+        background: white;
+        color: #333;
         padding: 1rem 2rem;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        border: 3px solid #b71c34;
+        box-shadow: 0 4px 12px rgba(183, 28, 52, 0.2);
         z-index: 1000;
         animation: slideDown 0.3s ease;
+        font-weight: 600;
     `;
 
         document.body.appendChild(feedback);
