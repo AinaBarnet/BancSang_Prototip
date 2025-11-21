@@ -96,7 +96,8 @@ function openDonationModal() {
             year: 'numeric'
         });
 
-        modalManager.warning(`Encara no han passat 3 mesos des de la teva última donació.\n\nPodràs tornar a donar a partir del:\n${formattedDate}\n\nGràcies per la teva paciència i solidaritat! 🩸`, '⚠️ No pots donar sang encara');
+        const message = `Encara no han passat <strong>3 mesos</strong> des de la teva última donació.<br><br><span class="date-highlight">Podràs tornar a donar a partir del:<br>${formattedDate}`;
+        modalManager.warning(message, 'No pots donar sang encara');
         return; // No obrir el modal
     }
 
@@ -264,7 +265,8 @@ function openCodeModal() {
             year: 'numeric'
         });
 
-        modalManager.warning(`Encara no han passat 3 mesos des de la teva última donació.\n\nPodràs tornar a donar a partir del:\n${formattedDate}\n\nGràcies per la teva paciència i solidaritat!`, 'No pots registrar una donació encara');
+        const message = `Encara no han passat <strong>3 mesos</strong> des de la teva última donació.<br><br><span class="date-highlight">Podràs tornar a donar a partir del:<br>${formattedDate}`;
+        modalManager.warning(message, 'No pots registrar una donació encara');
         return; // No obrir el modal
     }
 

@@ -43,7 +43,7 @@ class ModalManager {
                 <div class="custom-modal">
                     ${iconHtml}
                     ${title ? `<h3 class="custom-modal-title">${title}</h3>` : ''}
-                    <div class="custom-modal-message">${message.replace(/\n/g, '<br>')}</div>
+                    <div class="custom-modal-message">${message}</div>
                     <div class="custom-modal-buttons">
                         ${cancelButton}
                         <button class="custom-modal-btn custom-modal-btn-confirm">${confirmText}</button>

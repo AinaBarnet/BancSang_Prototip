@@ -68,15 +68,14 @@ function checkAutoLocation() {
         setTimeout(() => {
             useCurrentLocation();
         }, 500);
-        return;
-    }
+    } return;
+}
 
-    // Si no hi ha cerca prèvia, preguntar si vol usar la ubicació
-    const searchInput = document.getElementById('searchInput');
-    if (!searchInput.value && 'geolocation' in navigator) {
-        // Mostrar suggeriment per usar ubicació
-        showLocationSuggestion();
-    }
+// Si no hi ha cerca prèvia, preguntar si vol usar la ubicació
+const searchInput = document.getElementById('searchInput');
+if (!searchInput.value && 'geolocation' in navigator) {
+    // Mostrar suggeriment per usar ubicació
+    showLocationSuggestion();
 }
 
 // Mostrar suggeriment per usar la ubicació actual
@@ -87,7 +86,7 @@ function showLocationSuggestion() {
         if (!searchInput.value) {
             modalManager.confirm(
                 'Vols que busquem els centres de donació més propers a la teva ubicació actual?',
-                '📍 Usar la meva ubicació',
+                'Podem conèixer la teva ubicació?',
                 () => {
                     useCurrentLocation();
                 },
