@@ -129,8 +129,10 @@
                             <circle cx="12" cy="12" r="3" />
                         </svg>
                     </div>
-                    <input type="text" id="eventCategory" placeholder="Categoria (opcional)" class="inline-input"
-                        style="flex: 1;">
+                    <select id="eventCategory" class="inline-select" style="flex: 1;">
+                        <option value="">Sense categoria</option>
+                        <!-- Opcions generades dinàmicament -->
+                    </select>
                 </div>
 
                 <!-- Data i hora -->
@@ -161,8 +163,19 @@
                             <circle cx="12" cy="10" r="3"></circle>
                         </svg>
                     </div>
-                    <input type="text" id="eventCenter" placeholder="Afegeix ubicació" class="inline-input"
-                        style="flex: 1;" required>
+                    <div class="location-input-container">
+                        <input type="text" id="eventCenter" placeholder="Afegeix ubicació" class="inline-input"
+                            style="flex: 1;" required>
+                        <button type="button" class="btn-current-location" id="useCurrentLocationBtn"
+                            title="Usar la meva ubicació actual">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Secció de col·laboradors -->
@@ -227,9 +240,8 @@
 
     <!-- Modal per veure detalls d'un esdeveniment -->
     <div class="modal" id="eventDetailsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="detailsTitle">Detalls de l'esdeveniment</h3>
+        <div class="modal-content modal-content-details">
+            <div class="modal-header-details">
                 <button class="close-btn" id="closeDetailsBtn">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -240,16 +252,8 @@
             <div class="event-details-content" id="eventDetailsContent">
                 <!-- Contingut generat dinàmicament -->
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-danger" id="deleteEventBtn" style="display: none;">Eliminar</button>
-                <button type="button" class="btn-secondary" id="editEventBtn" style="display: none;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        style="margin-right: 0.5rem;">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    Editar
-                </button>
+            <div class="modal-actions-details">
+                <button type="button" class="btn-accept" id="acceptDetailsBtn">Acceptar</button>
             </div>
         </div>
     </div>

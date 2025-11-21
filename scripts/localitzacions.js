@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLocationButton();
     setupHospitalButtons();
     setupModalListeners();
+
+    // Comprovar si cal usar ubicació automàtica
+    checkAutoLocation();
 });
 
 // Configurar funcionalitat de cerca
@@ -55,29 +58,101 @@ function filterLocations(searchTerm) {
     }
 }
 
+// Comprovar si s'ha d'usar ubicació automàtica
+function checkAutoLocation() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoLocate = urlParams.get('auto');
+
+    // Si ve amb paràmetre auto=true, usar ubicació automàticament
+    if (autoLocate === 'true') {
+        setTimeout(() => {
+            useCurrentLocation();
+        }, 500);
+        return;
+    }
+
+    // Si no hi ha cerca prèvia, preguntar si vol usar la ubicació
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput.value && 'geolocation' in navigator) {
+        // Mostrar suggeriment per usar ubicació
+        showLocationSuggestion();
+    }
+}
+
+// Mostrar suggeriment per usar la ubicació actual
+function showLocationSuggestion() {
+    // Esperar 1 segon abans de mostrar el suggeriment
+    setTimeout(() => {
+        const searchInput = document.getElementById('searchInput');
+        if (!searchInput.value) {
+            modalManager.confirm(
+                'Vols que busquem els centres de donació més propers a la teva ubicació actual?',
+                '📍 Usar la meva ubicació',
+                () => {
+                    useCurrentLocation();
+                },
+                () => {
+                    // L\'usuari ha dit que no
+                    console.log('Usuari ha rebutjat usar ubicació');
+                }
+            );
+        }
+    }, 1000);
+}
+
+// Usar ubicació actual
+function useCurrentLocation() {
+    if ('geolocation' in navigator) {
+        const useLocationBtn = document.getElementById('useLocationBtn');
+        useLocationBtn.classList.add('loading');
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                findNearestCity(latitude, longitude);
+                useLocationBtn.classList.remove('loading');
+
+                // Mostrar missatge d'èxit
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput.value) {
+                    modalManager.success(
+                        `Hem trobat centres de donació prop de ${searchInput.value}.`,
+                        '✓ Ubicació detectada'
+                    );
+                }
+            },
+            (error) => {
+                console.error('Error obtenint ubicació:', error);
+
+                let errorMessage = 'No s\'ha pogut obtenir la teva ubicació.';
+                if (error.code === error.PERMISSION_DENIED) {
+                    errorMessage = 'Has denegat l\'accés a la ubicació. Si vols usar aquesta funció, activa els permisos d\'ubicació al teu navegador.';
+                } else if (error.code === error.POSITION_UNAVAILABLE) {
+                    errorMessage = 'La informació d\'ubicació no està disponible en aquest moment.';
+                } else if (error.code === error.TIMEOUT) {
+                    errorMessage = 'La sol·licitud d\'ubicació ha excedit el temps d\'espera.';
+                }
+
+                showAlert('⚠️ Error d\'ubicació', errorMessage);
+                useLocationBtn.classList.remove('loading');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5 minuts de caché
+            }
+        );
+    } else {
+        showAlert('⚠️ No disponible', 'El teu navegador no suporta geolocalització.');
+    }
+}
+
 // Configurar botó d'ubicació
 function setupLocationButton() {
     const useLocationBtn = document.getElementById('useLocationBtn');
 
     useLocationBtn.addEventListener('click', () => {
-        if ('geolocation' in navigator) {
-            useLocationBtn.classList.add('loading');
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    findNearestCity(latitude, longitude);
-                    useLocationBtn.classList.remove('loading');
-                },
-                (error) => {
-                    console.error('Error obtenint ubicació:', error);
-                    showAlert('⚠️ Error d\'ubicació', 'No s\'ha pogut obtenir la teva ubicació.\n\nSi us plau, assegura\'t que has donat permís al navegador per accedir a la teva ubicació.');
-                    useLocationBtn.classList.remove('loading');
-                }
-            );
-        } else {
-            showAlert('⚠️ No disponible', 'El teu navegador no suporta geolocalització.');
-        }
+        useCurrentLocation();
     });
 }
 
@@ -111,14 +186,24 @@ function findNearestCity(lat, lon) {
     if (nearestCity) {
         const searchInput = document.getElementById('searchInput');
         searchInput.value = nearestCity;
+
+        // Afegir una animació subtil al input
+        searchInput.style.transition = 'all 0.3s ease';
+        searchInput.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+            searchInput.style.transform = 'scale(1)';
+        }, 300);
+
         filterLocations(nearestCity.toLowerCase());
 
-        // Scroll a la primera secció visible
-        const firstVisibleSection = document.querySelector('.city-section[style*="display: block"]') ||
-            document.querySelector('.city-section:not([style*="display: none"])');
-        if (firstVisibleSection) {
-            firstVisibleSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+        // Scroll a la primera secció visible amb una mica de delay per a millor UX
+        setTimeout(() => {
+            const firstVisibleSection = document.querySelector('.city-section[style*="display: block"]') ||
+                document.querySelector('.city-section:not([style*="display: none"])');
+            if (firstVisibleSection) {
+                firstVisibleSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 400);
     }
 }
 
