@@ -1,8 +1,8 @@
 // Script per a la pàgina de login
 
-// Si l'usuari ja està autenticat, redirigir a home
+// Si l'usuari ja està autenticat, redirigir a xat
 if (AuthManager.isAuthenticated()) {
-    window.location.href = 'home.html';
+    window.location.href = 'xat.html';
 }
 
 // Manejo del formulario de inicio de sesión
@@ -16,8 +16,8 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     const result = AuthManager.login(email, password);
 
     if (result.success) {
-        // Redirigir a home.html
-        window.location.href = 'home.html';
+        // Redirigir a xat.html
+        window.location.href = 'xat.html';
     } else {
         modalManager.error(result.message, 'Error d\'autenticació');
     }
