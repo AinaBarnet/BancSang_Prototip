@@ -56,6 +56,11 @@ body {
     border: 1px solid rgba(183, 28, 52, 0.1);
 }
 
+[data-effective-theme="dark"] .profile-section {
+    background: linear-gradient(135deg, var(--card), var(--card-hover)) !important;
+    border-color: var(--border) !important;
+}
+
 .profile-info-config {
     display: flex;
     align-items: center;
@@ -275,6 +280,11 @@ body {
 .danger-section {
     border: 2px solid rgba(211, 47, 47, 0.2);
     background: linear-gradient(135deg, #fff, #fff5f5);
+}
+
+[data-effective-theme="dark"] .danger-section {
+    background: linear-gradient(135deg, var(--card), rgba(211, 47, 47, 0.1)) !important;
+    border-color: rgba(211, 47, 47, 0.4) !important;
 }
 
 .danger-section .section-header svg {

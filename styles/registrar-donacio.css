@@ -609,3 +609,117 @@ main {
         padding: 0.3rem 0.6rem;
     }
 }
+
+/* Dark Theme Enhancements */
+[data-effective-theme="dark"] .register-container {
+    background: var(--card) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-effective-theme="dark"] .register-container:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-effective-theme="dark"] .register-header h1 {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .register-header p {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .register-btn {
+    background: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .register-btn:hover {
+    border-color: #ff8a95 !important;
+    background: linear-gradient(135deg, rgba(255, 138, 149, 0.1) 0%, rgba(255, 138, 149, 0.05) 100%) !important;
+    box-shadow: 0 4px 12px rgba(255, 138, 149, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .register-btn svg {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .btn-title {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .btn-description {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .recent-donations {
+    border-top-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .recent-donations h5 {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .last-donation-info {
+    background: var(--card-hover) !important;
+}
+
+[data-effective-theme="dark"] .last-donation-info p {
+    color: var(--text-muted) !important;
+}
+
+[data-effective-theme="dark"] .donation-text strong {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .donation-text span {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .donation-method {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .code-explanation {
+    background: linear-gradient(135deg, #1e4620 0%, #2a5a2d 100%) !important;
+    border-left-color: #4caf50 !important;
+}
+
+[data-effective-theme="dark"] .code-explanation h4 {
+    color: #90ee90 !important;
+}
+
+[data-effective-theme="dark"] .code-explanation>p {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .code-format-info {
+    background: var(--card-hover) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .code-format-info strong {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .code-example {
+    background: #2d2d2d !important;
+}
+
+[data-effective-theme="dark"] .code-parts-description li {
+    color: var(--text-secondary) !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .centers-list {
+    background: var(--card-hover) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .centers-list strong {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .centers-grid span {
+    background: var(--card) !important;
+    color: var(--text-secondary) !important;
+}

@@ -480,7 +480,6 @@ if (window.location.pathname.includes('home.html')) {
 // Només executar la interfície si estem a la pàgina de notificacions
 if (window.location.pathname.includes('notificacions.html')) {
     // Elements del DOM
-    const markAllReadBtn = document.getElementById('markAllReadBtn');
     const notificationsList = document.getElementById('notificationsList');
     const emptyState = document.getElementById('emptyState');
     const filterTabs = document.querySelectorAll('.tab-btn');
@@ -815,9 +814,6 @@ if (window.location.pathname.includes('notificacions.html')) {
 
     // Configurar event listeners
     function setupEventListeners() {
-        // Marcar totes com llegides
-        markAllReadBtn.addEventListener('click', markAllAsRead);
-
         // Filtres
         filterTabs.forEach(tab => {
             tab.addEventListener('click', () => {

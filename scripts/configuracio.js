@@ -8,20 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
     loadPreferences();
     setupEventListeners();
-
-    // Aplicar el tema guardat a l'inici
-    const userData = UserDataManager.getCurrentUserData();
-    if (userData && userData.preferences.theme) {
-        applyTheme(userData.preferences.theme);
-    }
-
-    // Escoltar canvis en la preferència del sistema per al mode automàtic
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        const userData = UserDataManager.getCurrentUserData();
-        if (userData && userData.preferences.theme === 'auto') {
-            applyTheme('auto');
-        }
-    });
 });
 
 // Carregar informació del perfil de l'usuari
@@ -119,7 +105,7 @@ function setupEventListeners() {
     // Tema
     document.getElementById('themeSelect').addEventListener('change', (e) => {
         savePreference('theme', e.target.value);
-        applyTheme(e.target.value);
+        ThemeManager.setTheme(e.target.value);
     });
 
     // Botons
@@ -158,124 +144,7 @@ function saveNotificationPreference(key, value) {
     UserDataManager.saveCurrentUserData(userData);
 }
 
-// Aplicar tema
-function applyTheme(theme) {
-    document.body.setAttribute('data-theme', theme);
-
-    // Obtenir el tema efectiu (si és automàtic, detectar preferència del sistema)
-    let effectiveTheme = theme;
-    if (theme === 'auto') {
-        effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    if (effectiveTheme === 'dark') {
-        // Tema fosc
-        document.documentElement.style.setProperty('--bg', '#1a1a1a');
-        document.documentElement.style.setProperty('--card', '#2d2d2d');
-        document.documentElement.style.setProperty('--text-primary', '#ffffff');
-        document.documentElement.style.setProperty('--text-secondary', '#b0b0b0');
-        document.documentElement.style.setProperty('--text-muted', '#808080');
-        document.documentElement.style.setProperty('--border', '#404040');
-
-        // Aplicar estils al body i elements principals
-        document.body.style.backgroundColor = '#1a1a1a';
-        document.body.style.color = '#ffffff';
-
-        // Actualitzar header
-        const header = document.querySelector('header');
-        if (header) {
-            header.style.background = 'linear-gradient(135deg, #8e1628 0%, #b71c34 100%)';
-        }
-
-        // Actualitzar seccions de configuració
-        const sections = document.querySelectorAll('.config-section');
-        sections.forEach(section => {
-            section.style.backgroundColor = '#2d2d2d';
-            section.style.color = '#ffffff';
-        });
-
-        // Actualitzar opcions
-        const options = document.querySelectorAll('.config-option');
-        options.forEach(option => {
-            option.style.backgroundColor = '#3d3d3d';
-        });
-
-        // Actualitzar títols
-        const titles = document.querySelectorAll('.option-title, .section-header h2');
-        titles.forEach(title => {
-            title.style.color = '#ffffff';
-        });
-
-        // Actualitzar descripcions
-        const descriptions = document.querySelectorAll('.option-description');
-        descriptions.forEach(desc => {
-            desc.style.color = '#b0b0b0';
-        });
-
-        // Actualitzar inputs i selects
-        const inputs = document.querySelectorAll('.config-select');
-        inputs.forEach(input => {
-            input.style.backgroundColor = '#3d3d3d';
-            input.style.color = '#ffffff';
-            input.style.borderColor = '#404040';
-        });
-
-    } else {
-        // Tema clar (per defecte)
-        document.documentElement.style.setProperty('--bg', '#f6f6f6');
-        document.documentElement.style.setProperty('--card', '#ffffff');
-        document.documentElement.style.setProperty('--text-primary', '#333');
-        document.documentElement.style.setProperty('--text-secondary', '#666');
-        document.documentElement.style.setProperty('--text-muted', '#999');
-        document.documentElement.style.setProperty('--border', '#e0e0e0');
-
-        // Restaurar estils originals
-        document.body.style.backgroundColor = '#f6f6f6';
-        document.body.style.color = '#333';
-
-        // Restaurar header
-        const header = document.querySelector('header');
-        if (header) {
-            header.style.background = 'linear-gradient(135deg, #b71c34 0%, #d32f2f 100%)';
-        }
-
-        // Restaurar seccions
-        const sections = document.querySelectorAll('.config-section');
-        sections.forEach(section => {
-            section.style.backgroundColor = '#ffffff';
-            section.style.color = '#333';
-        });
-
-        // Restaurar opcions
-        const options = document.querySelectorAll('.config-option');
-        options.forEach(option => {
-            option.style.backgroundColor = '#fafafa';
-        });
-
-        // Restaurar títols
-        const titles = document.querySelectorAll('.option-title, .section-header h2');
-        titles.forEach(title => {
-            title.style.color = '#333';
-        });
-
-        // Restaurar descripcions
-        const descriptions = document.querySelectorAll('.option-description');
-        descriptions.forEach(desc => {
-            desc.style.color = '#666';
-        });
-
-        // Restaurar inputs i selects
-        const inputs = document.querySelectorAll('.config-select');
-        inputs.forEach(input => {
-            input.style.backgroundColor = 'white';
-            input.style.color = '#333';
-            input.style.borderColor = '#e0e0e0';
-        });
-    }
-
-    // Afegir transicions suaus
-    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-}
+// Nota: La funció applyTheme ara està gestionada pel ThemeManager global
 
 // Gestors d'esdeveniments per als botons
 

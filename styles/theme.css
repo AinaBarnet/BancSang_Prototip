@@ -1,0 +1,730 @@
+/**
+ * Sistema de temes globals per a BancSang
+ * Variables CSS que canvien segons el tema seleccionat (clar/fosc)
+ */
+
+:root {
+    /* Tema clar (per defecte) */
+    --bg: #f6f6f6;
+    --bg-secondary: #ffffff;
+    --card: #ffffff;
+    --card-hover: #fafafa;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border: #e0e0e0;
+    --border-light: #f0f0f0;
+    --shadow: rgba(0, 0, 0, 0.15);
+
+    /* Colors primaris (constants en ambdós temes) */
+    --primary: #b71c34;
+    --primary-dark: #8e1628;
+    --primary-light: #d32f2f;
+    --primary-rgb: 183, 28, 52;
+}
+
+/* Tema fosc */
+[data-effective-theme="dark"] {
+    --bg: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --card: #2d2d2d;
+    --card-hover: #3d3d3d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #808080;
+    --border: #404040;
+    --border-light: #333333;
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* Aplicar variables globals automàticament */
+body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Targetes i contenidors */
+.config-section,
+.profile-card,
+.counter-container,
+.info-card,
+.notification-card,
+.message-card,
+.location-card,
+.group-item,
+.modal-container,
+.chat-header,
+.contact-item,
+.event-card,
+.donation-card {
+    background-color: var(--card);
+    color: var(--text-primary);
+    border-color: var(--border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Hover states */
+.config-option,
+.dropdown-item,
+.contact-item,
+.notification-card,
+.message-card {
+    transition: background-color 0.3s ease;
+}
+
+.config-option:hover,
+.contact-item:hover {
+    background-color: var(--card-hover);
+}
+
+/* Text i títols */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.option-title,
+.section-header h2,
+.prize-title,
+.location-content h5 {
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.option-description,
+.muted,
+.prize-description {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+/* Formularis */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+.config-select {
+    background-color: var(--card-hover);
+    color: var(--text-primary);
+    border-color: var(--border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+input:focus:not([type="checkbox"]):not([type="radio"]),
+select:focus,
+textarea:focus {
+    border-color: var(--primary);
+    background-color: var(--bg-secondary);
+}
+
+/* Dropdowns i menús */
+.dropdown-menu,
+.submenu {
+    background-color: var(--card);
+    border-color: var(--border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    border-color: var(--border-light);
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Calendari */
+.calendar-cell {
+    background-color: var(--card);
+    color: var(--text-primary);
+    border-color: var(--border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Xat - missatges */
+[data-effective-theme="dark"] .message-bubble.received {
+    background-color: var(--card-hover);
+    color: var(--text-primary);
+}
+
+[data-effective-theme="dark"] .message-bubble.sent {
+    background-color: var(--primary-dark);
+}
+
+/* Estils especials per al tema fosc */
+[data-effective-theme="dark"] body::before {
+    background-image:
+        radial-gradient(circle at 15% 25%, rgba(183, 28, 52, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(183, 28, 52, 0.05) 0%, transparent 50%);
+}
+
+[data-effective-theme="dark"] .prize-info:not(.completed) {
+    background: linear-gradient(135deg, #332200 0%, #4d3300 50%, #665500 100%);
+    border-color: #998800;
+}
+
+[data-effective-theme="dark"] .prize-info.completed {
+    background: linear-gradient(135deg, #1a3d1a 0%, #2d5a2d 50%, #407040 100%);
+    border-color: #5a8a5a;
+}
+
+/* Header sempre amb colors del tema */
+[data-effective-theme="dark"] header {
+    background: linear-gradient(135deg, #8e1628 0%, #b71c34 100%);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+[data-effective-theme="light"] header {
+    background: #b71c34;
+    box-shadow: 0 2px 12px rgba(139, 34, 59, 0.15);
+}
+
+/* ============================================
+   MILLORES PER AL TEMA FOSC
+   ============================================ */
+
+/* Modals i contenidors blancs */
+[data-effective-theme="dark"] .modal-body,
+[data-effective-theme="dark"] .modal-container,
+[data-effective-theme="dark"] .submenu,
+[data-effective-theme="dark"] .notification-list,
+[data-effective-theme="dark"] .messages-list,
+[data-effective-theme="dark"] .locations-list {
+    background-color: var(--card) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Targetes i opcions amb fons blanc */
+[data-effective-theme="dark"] .config-option,
+[data-effective-theme="dark"] .profile-info-config,
+[data-effective-theme="dark"] .notification-icon,
+[data-effective-theme="dark"] .location-card,
+[data-effective-theme="dark"] .message-card,
+[data-effective-theme="dark"] .register-btn,
+[data-effective-theme="dark"] .calendar-container,
+[data-effective-theme="dark"] .event-details,
+[data-effective-theme="dark"] .chat-container,
+[data-effective-theme="dark"] .contact-sidebar {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Inputs i selects amb fons blanc */
+[data-effective-theme="dark"] .config-select,
+[data-effective-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-effective-theme="dark"] select,
+[data-effective-theme="dark"] textarea {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] input::placeholder,
+[data-effective-theme="dark"] textarea::placeholder {
+    color: var(--text-muted) !important;
+}
+
+/* Toggle switch slider */
+[data-effective-theme="dark"] .toggle-slider {
+    background-color: #555 !important;
+}
+
+[data-effective-theme="dark"] .toggle-slider:before {
+    background-color: #f0f0f0 !important;
+}
+
+/* Text i descripcions */
+[data-effective-theme="dark"] .option-description,
+[data-effective-theme="dark"] .profile-email,
+[data-effective-theme="dark"] .profile-stats,
+[data-effective-theme="dark"] .message-content p,
+[data-effective-theme="dark"] .notification-content p,
+[data-effective-theme="dark"] .location-address,
+[data-effective-theme="dark"] .info-tag,
+[data-effective-theme="dark"] .muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Títols i headers */
+[data-effective-theme="dark"] .option-title,
+[data-effective-theme="dark"] .profile-details h3,
+[data-effective-theme="dark"] .message-content h5,
+[data-effective-theme="dark"] .notification-content h5,
+[data-effective-theme="dark"] .location-content h5,
+[data-effective-theme="dark"] .section-header h2 {
+    color: var(--text-primary) !important;
+}
+
+/* Vores i separadors */
+[data-effective-theme="dark"] .section-header,
+[data-effective-theme="dark"] .dropdown-item,
+[data-effective-theme="dark"] .notification-card,
+[data-effective-theme="dark"] .message-card {
+    border-color: var(--border) !important;
+}
+
+/* Badges i etiquetes */
+[data-effective-theme="dark"] .notification-badge,
+[data-effective-theme="dark"] .info-tag.open,
+[data-effective-theme="dark"] .info-tag.closed {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+[data-effective-theme="dark"] .info-tag {
+    background-color: var(--card-hover) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Hover states específics */
+[data-effective-theme="dark"] .dropdown-item:hover,
+[data-effective-theme="dark"] .notification-card:hover,
+[data-effective-theme="dark"] .message-card:hover,
+[data-effective-theme="dark"] .location-card:hover,
+[data-effective-theme="dark"] .contact-item:hover {
+    background-color: var(--card-hover) !important;
+}
+
+/* Elements amb fons grocs/clars que necessiten ajust */
+[data-effective-theme="dark"] .notification-card.unread {
+    background-color: rgba(183, 28, 52, 0.1) !important;
+}
+
+[data-effective-theme="dark"] .notification-icon.new-event,
+[data-effective-theme="dark"] .notification-icon.reminder,
+[data-effective-theme="dark"] .notification-icon.achievement,
+[data-effective-theme="dark"] .notification-icon.info {
+    background-color: var(--card-hover) !important;
+    opacity: 0.9;
+}
+
+/* Modals i formularis */
+[data-effective-theme="dark"] .form-group label,
+[data-effective-theme="dark"] .modal-header h3 {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .modal-header {
+    background: linear-gradient(135deg, #8e1628 0%, #b71c34 100%) !important;
+}
+
+/* Botons secundaris */
+[data-effective-theme="dark"] .btn-cancel,
+[data-effective-theme="dark"] .config-btn.secondary,
+[data-effective-theme="dark"] .main-btn.secondary {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .btn-cancel:hover,
+[data-effective-theme="dark"] .config-btn.secondary:hover {
+    background-color: #4d4d4d !important;
+}
+
+/* Calendari */
+[data-effective-theme="dark"] .calendar-header,
+[data-effective-theme="dark"] .calendar-grid {
+    background-color: var(--card) !important;
+}
+
+[data-effective-theme="dark"] .calendar-cell {
+    background-color: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .calendar-cell:hover {
+    background-color: #4d4d4d !important;
+}
+
+[data-effective-theme="dark"] .calendar-cell.today {
+    background-color: rgba(183, 28, 52, 0.2) !important;
+    border-color: var(--primary) !important;
+}
+
+[data-effective-theme="dark"] .calendar-cell.other-month {
+    opacity: 0.4;
+}
+
+/* Xat */
+[data-effective-theme="dark"] .chat-sidebar,
+[data-effective-theme="dark"] .chat-main {
+    background-color: var(--bg) !important;
+}
+
+[data-effective-theme="dark"] .chat-input {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .message-time,
+[data-effective-theme="dark"] .contact-last-message {
+    color: var(--text-muted) !important;
+}
+
+/* Localitzacions */
+[data-effective-theme="dark"] .location-distance {
+    background-color: rgba(183, 28, 52, 0.2) !important;
+    color: #ff8a95 !important;
+}
+
+/* Prize info en tema fosc - ja està definit abans, millorem-lo */
+[data-effective-theme="dark"] .prize-info:not(.completed) {
+    background: linear-gradient(135deg, #443300 0%, #665500 50%, #887700 100%) !important;
+    border-color: #aa9900 !important;
+}
+
+[data-effective-theme="dark"] .prize-info.completed {
+    background: linear-gradient(135deg, #1a3d1a 0%, #2d5a2d 50%, #407040 100%) !important;
+    border-color: #5a8a5a !important;
+}
+
+[data-effective-theme="dark"] .prize-title {
+    color: #ffcc00 !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .prize-info.completed .prize-title {
+    color: #90ee90 !important;
+}
+
+/* Abans de donar - sections */
+[data-effective-theme="dark"] .requirements-section,
+[data-effective-theme="dark"] .info-section,
+[data-effective-theme="dark"] .process-section {
+    background-color: var(--card) !important;
+}
+
+[data-effective-theme="dark"] .requirement-item,
+[data-effective-theme="dark"] .info-item,
+[data-effective-theme="dark"] .process-step {
+    background-color: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+/* Registrar donació */
+[data-effective-theme="dark"] .donation-form,
+[data-effective-theme="dark"] .donation-methods,
+[data-effective-theme="dark"] .qr-section {
+    background-color: var(--card) !important;
+}
+
+[data-effective-theme="dark"] .method-card {
+    background-color: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+/* Strong/bold text visibility */
+[data-effective-theme="dark"] strong {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+}
+
+/* Links */
+[data-effective-theme="dark"] a:not(.dropdown-item):not(.group-link):not(.main-btn) {
+    color: #ff8a95 !important;
+}
+
+/* Scrollbars personalitzades per al tema fosc */
+[data-effective-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-effective-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+[data-effective-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+[data-effective-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Separadors i HR */
+[data-effective-theme="dark"] hr {
+    border-color: var(--border) !important;
+}
+
+/* Code i pre */
+[data-effective-theme="dark"] code,
+[data-effective-theme="dark"] pre {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Taules */
+[data-effective-theme="dark"] table {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] th,
+[data-effective-theme="dark"] td {
+    border-color: var(--border) !important;
+}
+
+/* Group items i enllaços */
+[data-effective-theme="dark"] .group-item {
+    background-color: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .group-item:hover {
+    background-color: #4d4d4d !important;
+}
+
+[data-effective-theme="dark"] .group-name {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .group-date {
+    color: var(--text-muted) !important;
+}
+
+/* Avatar i perfils */
+[data-effective-theme="dark"] .profile-avatar,
+[data-effective-theme="dark"] .profile-avatar-config,
+[data-effective-theme="dark"] .message-avatar {
+    /* Mantenen el gradient original però amb més contrast */
+    filter: brightness(1.1);
+}
+
+/* Estat de connexió i indicadors */
+[data-effective-theme="dark"] .online-indicator {
+    box-shadow: 0 0 0 2px var(--bg-secondary);
+}
+
+/* Mark all read button */
+[data-effective-theme="dark"] .mark-all-btn,
+[data-effective-theme="dark"] .mark-all-read {
+    color: var(--text-primary) !important;
+    background-color: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .mark-all-btn:hover,
+[data-effective-theme="dark"] .mark-all-read:hover {
+    background-color: #4d4d4d !important;
+}
+
+/* Counter container i stats */
+[data-effective-theme="dark"] .counter-container {
+    background-color: var(--card) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .info-content span {
+    color: var(--primary) !important;
+}
+
+[data-effective-theme="dark"] .percentage {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] #percentage {
+    color: var(--primary) !important;
+}
+
+/* Donation info cards */
+[data-effective-theme="dark"] .donation-info .info-card {
+    background: linear-gradient(135deg, var(--card) 0%, var(--card-hover) 100%) !important;
+    border-color: var(--border) !important;
+}
+
+/* Back button */
+[data-effective-theme="dark"] .back-btn {
+    color: white !important;
+}
+
+/* Create button i icon buttons */
+[data-effective-theme="dark"] .create-btn,
+[data-effective-theme="dark"] .icon-btn {
+    color: white !important;
+}
+
+/* Filter buttons */
+[data-effective-theme="dark"] .filter-btn {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .filter-btn:hover {
+    background-color: #4d4d4d !important;
+    border-color: var(--primary) !important;
+}
+
+/* Event cards i badges */
+[data-effective-theme="dark"] .event-type-badge,
+[data-effective-theme="dark"] .event-badge {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Empty states */
+[data-effective-theme="dark"] .empty-state {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .empty-state svg {
+    opacity: 0.5;
+}
+
+/* Loading states */
+[data-effective-theme="dark"] .loading,
+[data-effective-theme="dark"] .spinner {
+    color: var(--text-secondary) !important;
+}
+
+/* Success/error messages */
+[data-effective-theme="dark"] .success-message {
+    background-color: rgba(76, 175, 80, 0.15) !important;
+    color: #90ee90 !important;
+    border-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .error-message {
+    background-color: rgba(211, 47, 47, 0.15) !important;
+    color: #ff8a95 !important;
+    border-color: rgba(211, 47, 47, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .warning-message {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #ffd54f !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .info-message {
+    background-color: rgba(33, 150, 243, 0.15) !important;
+    color: #64b5f6 !important;
+    border-color: rgba(33, 150, 243, 0.3) !important;
+}
+
+/* Footer i app version */
+[data-effective-theme="dark"] .app-version,
+[data-effective-theme="dark"] footer {
+    color: var(--text-muted) !important;
+}
+
+/* Botons principals mantenen els seus colors originals definits als seus CSS específics */
+
+/* Focus states millors per al tema fosc */
+[data-effective-theme="dark"] input:focus,
+[data-effective-theme="dark"] select:focus,
+[data-effective-theme="dark"] textarea:focus,
+[data-effective-theme="dark"] button:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(183, 28, 52, 0.3) !important;
+}
+
+/* Hover millors per a elements clicables */
+[data-effective-theme="dark"] button:not(.icon-btn):not(.main-btn):not(.config-btn):hover {
+    filter: brightness(1.2);
+}
+
+/* Millores per a selects amb opcions */
+[data-effective-theme="dark"] select option {
+    background-color: var(--card) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Disabled states */
+[data-effective-theme="dark"] button:disabled,
+[data-effective-theme="dark"] input:disabled,
+[data-effective-theme="dark"] select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--text-muted) !important;
+}
+
+/* Placeholder millor visible */
+[data-effective-theme="dark"] ::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 0.7;
+}
+
+/* Shadow cards millors */
+[data-effective-theme="dark"] .card-shadow,
+[data-effective-theme="dark"] .config-section {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Millores per a text en badges */
+[data-effective-theme="dark"] .badge,
+[data-effective-theme="dark"] .chip,
+[data-effective-theme="dark"] .tag {
+    background-color: var(--card-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Icons amb millor contrast */
+[data-effective-theme="dark"] svg:not(.primary-svg) {
+    opacity: 0.9;
+}
+
+[data-effective-theme="dark"] .section-header svg {
+    opacity: 1;
+}
+
+/* User menu dropdown millor */
+[data-effective-theme="dark"] .user-menu-btn {
+    color: white !important;
+}
+
+/* Blood drop millor visible */
+[data-effective-theme="dark"] .blood-drop svg path {
+    stroke: var(--border) !important;
+}
+
+/* Millores per a text de títols de pàgina */
+[data-effective-theme="dark"] .page-title,
+[data-effective-theme="dark"] .section-title {
+    color: var(--text-primary) !important;
+}
+
+/* Lists millors */
+[data-effective-theme="dark"] ul li::marker,
+[data-effective-theme="dark"] ol li::marker {
+    color: var(--text-secondary) !important;
+}
+
+/* Legend i labels */
+[data-effective-theme="dark"] legend,
+[data-effective-theme="dark"] label {
+    color: var(--text-primary) !important;
+}
+
+/* Fieldset */
+[data-effective-theme="dark"] fieldset {
+    border-color: var(--border) !important;
+}
+
+/* Progress bars */
+[data-effective-theme="dark"] progress {
+    background-color: var(--card-hover) !important;
+}
+
+/* Selecció de text */
+[data-effective-theme="dark"] ::selection {
+    background-color: rgba(183, 28, 52, 0.4) !important;
+    color: white !important;
+}
+
+/* Transicions suaus per a tots els elements amb tema */
+* {
+    transition-property: background-color, color, border-color;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* Desactivar transicions en elements interactius durant el hover */
+button,
+a,
+input,
+select {
+    transition-property: background-color, color, border-color, transform, box-shadow;
+}

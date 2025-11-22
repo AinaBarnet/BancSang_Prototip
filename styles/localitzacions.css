@@ -467,6 +467,142 @@ main {
     }
 }
 
+/* Dark Theme Enhancements */
+[data-effective-theme="dark"] body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%) !important;
+}
+
+[data-effective-theme="dark"] .search-container {
+    background: var(--card) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .search-container:hover {
+    box-shadow: 0 6px 20px rgba(255, 138, 149, 0.2) !important;
+}
+
+[data-effective-theme="dark"] .search-box {
+    background: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .search-box:focus-within {
+    border-color: #ff8a95 !important;
+    box-shadow: 0 0 0 3px rgba(255, 138, 149, 0.2) !important;
+    background: var(--card) !important;
+}
+
+[data-effective-theme="dark"] .search-icon {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] #searchInput {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] #searchInput::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-effective-theme="dark"] .today-section::before {
+    background: radial-gradient(circle, rgba(255, 138, 149, 0.15) 0%, transparent 70%) !important;
+}
+
+[data-effective-theme="dark"] .btn-calendar {
+    background: var(--card) !important;
+    color: #ff8a95 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-effective-theme="dark"] .btn-calendar:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6) !important;
+    background: var(--card-hover) !important;
+}
+
+[data-effective-theme="dark"] .btn-calendar svg {
+    stroke: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .section-title {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .city-section {
+    background: var(--card) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .city-section:hover {
+    box-shadow: 0 8px 24px rgba(255, 138, 149, 0.2) !important;
+}
+
+[data-effective-theme="dark"] .city-name {
+    color: #ff8a95 !important;
+    border-bottom-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .hospital-card {
+    background: var(--card-hover) !important;
+    border-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .hospital-card:hover {
+    background: #3d3d3d !important;
+    border-color: rgba(255, 138, 149, 0.4) !important;
+    box-shadow: 0 2px 8px rgba(255, 138, 149, 0.2) !important;
+}
+
+[data-effective-theme="dark"] .hospital-card h4 {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .btn-donate {
+    background: linear-gradient(135deg, #b71c34 0%, #d32f2f 100%) !important;
+    box-shadow: 0 3px 10px rgba(183, 28, 52, 0.5) !important;
+}
+
+[data-effective-theme="dark"] .btn-donate:hover {
+    box-shadow: 0 5px 16px rgba(255, 138, 149, 0.5) !important;
+    background: linear-gradient(135deg, #ff8a95 0%, #ff6b7a 100%) !important;
+}
+
+[data-effective-theme="dark"] .no-results {
+    background: var(--card) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-effective-theme="dark"] .no-results h3 {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .no-results p {
+    color: var(--text-muted) !important;
+}
+
+[data-effective-theme="dark"] .modal-content .location-name {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .modal-content .city-name {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .modal-content .info-list li {
+    border-bottom-color: var(--border) !important;
+}
+
+[data-effective-theme="dark"] .modal-content .info-list li::before {
+    color: #4caf50 !important;
+}
+
+[data-effective-theme="dark"] .modal-content .question-text {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] #alertMessage {
+    color: var(--text-secondary) !important;
+}
+
 /* Animation for cards appearing */
 @keyframes slideIn {
     from {

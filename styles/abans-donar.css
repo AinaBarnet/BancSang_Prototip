@@ -472,3 +472,109 @@ main {
         font-size: 1rem;
     }
 }
+
+/* Dark Theme Enhancements */
+[data-effective-theme="dark"] body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%) !important;
+}
+
+[data-effective-theme="dark"] .content-container {
+    background: var(--card) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-effective-theme="dark"] .info-section h2 {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .intro-text {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .recommendation-card {
+    background: linear-gradient(135deg, var(--card-hover) 0%, var(--card) 100%) !important;
+    border-color: rgba(30, 58, 95, 0.5) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .recommendation-card:hover {
+    box-shadow: 0 8px 24px rgba(255, 138, 149, 0.2) !important;
+    border-color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .recommendation-card h3,
+[data-effective-theme="dark"] .recommendation-title {
+    color: var(--text-primary) !important;
+}
+
+[data-effective-theme="dark"] .recommendation-card p {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .steps-section h2 {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .step-card {
+    background: linear-gradient(135deg, rgba(255, 138, 149, 0.1) 0%, transparent 100%) !important;
+    border-left-color: #ff8a95 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .step-card:hover {
+    box-shadow: 0 6px 20px rgba(255, 138, 149, 0.2) !important;
+}
+
+[data-effective-theme="dark"] .step-content h3 {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .step-content p {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .step-detail {
+    color: var(--text-muted) !important;
+}
+
+[data-effective-theme="dark"] .avoid-section h2 {
+    color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .avoid-card {
+    background: linear-gradient(135deg, rgba(211, 47, 47, 0.15) 0%, transparent 100%) !important;
+    border-color: rgba(255, 205, 210, 0.2) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-effective-theme="dark"] .avoid-card:hover {
+    box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3) !important;
+    border-color: #ff5252 !important;
+}
+
+[data-effective-theme="dark"] .avoid-card h3 {
+    color: #ff5252 !important;
+}
+
+[data-effective-theme="dark"] .avoid-card p {
+    color: var(--text-secondary) !important;
+}
+
+[data-effective-theme="dark"] .transport-section {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 250, 240, 0.05) 100%) !important;
+    border-left-color: #ffa726 !important;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2) !important;
+}
+
+[data-effective-theme="dark"] .transport-section h3 {
+    color: #ffa726 !important;
+}
+
+[data-effective-theme="dark"] .cta-section {
+    background: linear-gradient(135deg, var(--card-hover) 0%, var(--card) 100%) !important;
+    border-color: #ff8a95 !important;
+}
+
+[data-effective-theme="dark"] .cta-text {
+    color: var(--text-primary) !important;
+}

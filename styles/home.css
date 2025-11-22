@@ -28,6 +28,12 @@ body::before {
     z-index: 0;
 }
 
+[data-effective-theme="dark"] body::before {
+    background-image:
+        radial-gradient(circle at 15% 25%, rgba(183, 28, 52, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(183, 28, 52, 0.08) 0%, transparent 50%);
+}
+
 /* Header */
 header {
     background: #b71c34;
