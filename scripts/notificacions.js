@@ -156,14 +156,45 @@ const NotificationsManager = {
         return UserDataManager.getNotifications();
     },
 
+    // Obtenir totes les notificacions filtrades per preferències
+    getAllFiltered() {
+        const allNotifications = this.getAll();
+        const userData = UserDataManager.getCurrentUserData();
+
+        if (!userData) return allNotifications;
+
+        // Si les notificacions estan desactivades globalment, retornar array buit
+        if (userData.preferences.notificationsEnabled === false) {
+            return [];
+        }
+
+        const prefs = userData.notifications.preferences;
+
+        // Filtrar segons les preferències
+        return allNotifications.filter(notification => {
+            switch (notification.type) {
+                case 'events':
+                    return prefs.enableEvents !== false;
+                case 'reminders':
+                    return prefs.enableReminders !== false;
+                case 'achievements':
+                    return prefs.enableAchievements !== false;
+                case 'info':
+                    return prefs.enableInfo !== false;
+                default:
+                    return true; // Mostrar notificacions sense tipus definit
+            }
+        });
+    },
+
     // Obtenir notificacions no llegides
     getUnread() {
-        return this.getAll().filter(n => n.unread);
+        return this.getAllFiltered().filter(n => n.unread);
     },
 
     // Obtenir només les més recents (per al submenu)
     getRecent(limit = 4) {
-        return this.getAll()
+        return this.getAllFiltered()
             .sort((a, b) => b.timestamp - a.timestamp)
             .slice(0, limit);
     },
@@ -225,9 +256,9 @@ const NotificationsManager = {
         return this.getUnread().length;
     },
 
-    // Obtenir notificacions actives (no eliminades ni posposades)
+    // Obtenir notificacions actives (no eliminades ni posposades) i filtrades
     getActive() {
-        return this.getAll().filter(n => {
+        return this.getAllFiltered().filter(n => {
             // Filtrar posposades
             if (n.snoozedUntil && n.snoozedUntil > Date.now()) {
                 return false;

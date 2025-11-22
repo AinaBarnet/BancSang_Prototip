@@ -8,6 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
     loadPreferences();
     setupEventListeners();
+
+    // Aplicar el tema guardat a l'inici
+    const userData = UserDataManager.getCurrentUserData();
+    if (userData && userData.preferences.theme) {
+        applyTheme(userData.preferences.theme);
+    }
+
+    // Escoltar canvis en la preferència del sistema per al mode automàtic
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        const userData = UserDataManager.getCurrentUserData();
+        if (userData && userData.preferences.theme === 'auto') {
+            applyTheme('auto');
+        }
+    });
 });
 
 // Carregar informació del perfil de l'usuari
@@ -63,7 +77,6 @@ function loadPreferences() {
 
     // Preferències generals
     document.getElementById('themeSelect').value = userData.preferences.theme || 'light';
-    document.getElementById('showTutorials').checked = userData.preferences.showTutorials !== false;
 }
 
 // Configurar event listeners
@@ -71,12 +84,6 @@ function setupEventListeners() {
     // Notificacions
     document.getElementById('notificationsEnabled').addEventListener('change', (e) => {
         savePreference('notificationsEnabled', e.target.checked);
-
-        if (e.target.checked) {
-            modalManager.success('Notificacions activades correctament', '✓ Activades');
-        } else {
-            modalManager.alert('Notificacions desactivades. No rebràs avisos.', '🔕 Desactivades');
-        }
     });
 
     document.getElementById('notifEvents').addEventListener('change', (e) => {
@@ -98,18 +105,11 @@ function setupEventListeners() {
     // Idioma
     document.getElementById('languageSelect').addEventListener('change', (e) => {
         savePreference('language', e.target.value);
-        modalManager.success('Idioma canviat correctament. Recàrrega la pàgina per aplicar els canvis.', '🌐 Idioma actualitzat');
     });
 
     // Privacitat
     document.getElementById('publicProfile').addEventListener('change', (e) => {
         savePreference('publicProfile', e.target.checked);
-
-        if (e.target.checked) {
-            modalManager.success('El teu perfil ara és públic', '👁️ Perfil públic');
-        } else {
-            modalManager.success('El teu perfil ara és privat', '🔒 Perfil privat');
-        }
     });
 
     document.getElementById('showStats').addEventListener('change', (e) => {
@@ -120,21 +120,24 @@ function setupEventListeners() {
     document.getElementById('themeSelect').addEventListener('change', (e) => {
         savePreference('theme', e.target.value);
         applyTheme(e.target.value);
-        modalManager.success('Tema aplicat correctament', '🎨 Tema canviat');
-    });
-
-    // Tutorials
-    document.getElementById('showTutorials').addEventListener('change', (e) => {
-        savePreference('showTutorials', e.target.checked);
     });
 
     // Botons
-    document.getElementById('changePasswordBtn').addEventListener('click', handleChangePassword);
-    document.getElementById('aboutBtn').addEventListener('click', handleAbout);
-    document.getElementById('helpBtn').addEventListener('click', handleHelp);
-    document.getElementById('termsBtn').addEventListener('click', handleTerms);
-    document.getElementById('privacyBtn').addEventListener('click', handlePrivacy);
-    document.getElementById('deleteAccountBtn').addEventListener('click', handleDeleteAccount);
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+    if (changePasswordBtn) {
+        console.log('Botó canviar contrasenya trobat, afegint event listener');
+        changePasswordBtn.addEventListener('click', handleChangePassword);
+    } else {
+        console.error('No s\'ha trobat el botó changePasswordBtn');
+    }
+
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', handleDeleteAccount);
+    } else {
+        console.error('No s\'ha trobat el botó deleteAccountBtn');
+    }
 }
 
 // Guardar preferència general
@@ -157,118 +160,236 @@ function saveNotificationPreference(key, value) {
 
 // Aplicar tema
 function applyTheme(theme) {
-    // Aquesta funcionalitat es pot ampliar en el futur
     document.body.setAttribute('data-theme', theme);
 
-    if (theme === 'dark') {
+    // Obtenir el tema efectiu (si és automàtic, detectar preferència del sistema)
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+        effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    if (effectiveTheme === 'dark') {
+        // Tema fosc
+        document.documentElement.style.setProperty('--bg', '#1a1a1a');
+        document.documentElement.style.setProperty('--card', '#2d2d2d');
+        document.documentElement.style.setProperty('--text-primary', '#ffffff');
+        document.documentElement.style.setProperty('--text-secondary', '#b0b0b0');
+        document.documentElement.style.setProperty('--text-muted', '#808080');
+        document.documentElement.style.setProperty('--border', '#404040');
+
+        // Aplicar estils al body i elements principals
         document.body.style.backgroundColor = '#1a1a1a';
         document.body.style.color = '#ffffff';
+
+        // Actualitzar header
+        const header = document.querySelector('header');
+        if (header) {
+            header.style.background = 'linear-gradient(135deg, #8e1628 0%, #b71c34 100%)';
+        }
+
+        // Actualitzar seccions de configuració
+        const sections = document.querySelectorAll('.config-section');
+        sections.forEach(section => {
+            section.style.backgroundColor = '#2d2d2d';
+            section.style.color = '#ffffff';
+        });
+
+        // Actualitzar opcions
+        const options = document.querySelectorAll('.config-option');
+        options.forEach(option => {
+            option.style.backgroundColor = '#3d3d3d';
+        });
+
+        // Actualitzar títols
+        const titles = document.querySelectorAll('.option-title, .section-header h2');
+        titles.forEach(title => {
+            title.style.color = '#ffffff';
+        });
+
+        // Actualitzar descripcions
+        const descriptions = document.querySelectorAll('.option-description');
+        descriptions.forEach(desc => {
+            desc.style.color = '#b0b0b0';
+        });
+
+        // Actualitzar inputs i selects
+        const inputs = document.querySelectorAll('.config-select');
+        inputs.forEach(input => {
+            input.style.backgroundColor = '#3d3d3d';
+            input.style.color = '#ffffff';
+            input.style.borderColor = '#404040';
+        });
+
     } else {
+        // Tema clar (per defecte)
+        document.documentElement.style.setProperty('--bg', '#f6f6f6');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--text-primary', '#333');
+        document.documentElement.style.setProperty('--text-secondary', '#666');
+        document.documentElement.style.setProperty('--text-muted', '#999');
+        document.documentElement.style.setProperty('--border', '#e0e0e0');
+
+        // Restaurar estils originals
         document.body.style.backgroundColor = '#f6f6f6';
-        document.body.style.color = '#333333';
+        document.body.style.color = '#333';
+
+        // Restaurar header
+        const header = document.querySelector('header');
+        if (header) {
+            header.style.background = 'linear-gradient(135deg, #b71c34 0%, #d32f2f 100%)';
+        }
+
+        // Restaurar seccions
+        const sections = document.querySelectorAll('.config-section');
+        sections.forEach(section => {
+            section.style.backgroundColor = '#ffffff';
+            section.style.color = '#333';
+        });
+
+        // Restaurar opcions
+        const options = document.querySelectorAll('.config-option');
+        options.forEach(option => {
+            option.style.backgroundColor = '#fafafa';
+        });
+
+        // Restaurar títols
+        const titles = document.querySelectorAll('.option-title, .section-header h2');
+        titles.forEach(title => {
+            title.style.color = '#333';
+        });
+
+        // Restaurar descripcions
+        const descriptions = document.querySelectorAll('.option-description');
+        descriptions.forEach(desc => {
+            desc.style.color = '#666';
+        });
+
+        // Restaurar inputs i selects
+        const inputs = document.querySelectorAll('.config-select');
+        inputs.forEach(input => {
+            input.style.backgroundColor = 'white';
+            input.style.color = '#333';
+            input.style.borderColor = '#e0e0e0';
+        });
     }
+
+    // Afegir transicions suaus
+    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
 }
 
 // Gestors d'esdeveniments per als botons
 
 function handleChangePassword() {
-    modalManager.alert(
-        'Per canviar la contrasenya, contacta amb el suport tècnic o utilitza l\'opció "He oblidat la contrasenya" a la pàgina d\'inici de sessió.',
-        '🔐 Canviar contrasenya'
-    );
-}
+    // Crear formulari de canvi de contrasenya
+    const formHTML = `
+        <div style="text-align: left; padding: 1.75rem 1.75rem 1rem;">
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.6rem; color: #333; font-size: 0.95rem;">Contrasenya actual:</label>
+                <input type="password" id="currentPassword" style="width: 100%; padding: 0.9rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; transition: border-color 0.2s;" placeholder="Introdueix la contrasenya actual">
+            </div>
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.6rem; color: #333; font-size: 0.95rem;">Nova contrasenya:</label>
+                <input type="password" id="newPassword" style="width: 100%; padding: 0.9rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; transition: border-color 0.2s;" placeholder="Mínim 6 caràcters">
+            </div>
+            <div style="margin-bottom: 1.25rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.6rem; color: #333; font-size: 0.95rem;">Confirmar nova contrasenya:</label>
+                <input type="password" id="confirmPassword" style="width: 100%; padding: 0.9rem 1rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; transition: border-color 0.2s;" placeholder="Repeteix la nova contrasenya">
+            </div>
+            <div id="passwordError" style="color: #d32f2f; font-size: 0.9rem; font-weight: 600; margin-top: 0.5rem; display: none; padding: 0.75rem; background: #ffe8e8; border-radius: 8px; border-left: 4px solid #d32f2f;"></div>
+        </div>
+    `;
 
-function handleAbout() {
-    const version = '1.0.0';
-    const year = new Date().getFullYear();
+    modalManager.custom(formHTML, 'Canviar contrasenya', [
+        {
+            text: 'Acceptar',
+            class: 'primary',
+            action: () => {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const errorDiv = document.getElementById('passwordError');
 
-    modalManager.alert(
-        `BancSang - Aplicació de gestió de donacions de sang\n\n` +
-        `Versió: ${version}\n` +
-        `© ${year} Banc de Sang i Teixits\n\n` +
-        `Aquesta aplicació permet gestionar les teves donacions de sang, trobar centres de donació propers, ` +
-        `rebre notificacions i participar en sortejos mensuals.\n\n` +
-        `Gràcies per salvar vides! 🩸`,
-        'ℹ️ Sobre l\'aplicació'
-    );
-}
+                // Validacions
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    errorDiv.textContent = '⚠️ Si us plau, omple tots els camps';
+                    errorDiv.style.display = 'block';
+                    return false; // No tancar el modal
+                }
 
-function handleHelp() {
-    modalManager.alert(
-        'Centre d\'ajuda\n\n' +
-        '📱 Utilitzar l\'aplicació:\n' +
-        '• Consulta el calendari per veure les teves cites\n' +
-        '• Registra donacions des del menú principal\n' +
-        '• Troba centres de donació propers\n\n' +
-        '🔔 Notificacions:\n' +
-        '• Configura les teves preferències aquí\n' +
-        '• Gestiona les notificacions des del menú\n\n' +
-        '📧 Contacte:\n' +
-        '• Email: suport@bancsang.cat\n' +
-        '• Telèfon: 900 123 456\n\n' +
-        '(En desenvolupament)',
-        '❓ Centre d\'ajuda'
-    );
-}
+                if (newPassword !== confirmPassword) {
+                    errorDiv.textContent = '⚠️ Les contrasenyes noves no coincideixen';
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
 
-function handleTerms() {
-    modalManager.alert(
-        'Termes i condicions\n\n' +
-        '1. Ús de l\'aplicació:\n' +
-        '• L\'aplicació és d\'ús gratuït per a donants de sang\n' +
-        '• Les dades són confidencials i protegides\n\n' +
-        '2. Responsabilitats:\n' +
-        '• Mantenir la informació actualitzada\n' +
-        '• Complir amb els requisits mèdics per donar sang\n\n' +
-        '3. Privacitat:\n' +
-        '• Les teves dades no es compartiran amb tercers\n' +
-        '• Pots eliminar el teu compte en qualsevol moment\n\n' +
-        '(Text complet disponible a www.bancsang.cat/termes)',
-        '📄 Termes i condicions'
-    );
-}
+                if (newPassword.length < 6) {
+                    errorDiv.textContent = '⚠️ La contrasenya ha de tenir almenys 6 caràcters';
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
 
-function handlePrivacy() {
-    modalManager.alert(
-        'Política de privacitat\n\n' +
-        '🔒 Protecció de dades:\n' +
-        '• Les teves dades estan encriptades i protegides\n' +
-        '• Complim amb el RGPD europeu\n\n' +
-        '📊 Dades recollides:\n' +
-        '• Nom i email (obligatoris)\n' +
-        '• Historial de donacions (opcional)\n' +
-        '• Preferències de notificacions\n\n' +
-        '👁️ Ús de les dades:\n' +
-        '• Gestió de cites i donacions\n' +
-        '• Enviament de notificacions\n' +
-        '• Millora del servei\n\n' +
-        '✅ Drets:\n' +
-        '• Accés, rectificació i supressió de dades\n' +
-        '• Portabilitat de dades\n\n' +
-        '(Text complet disponible a www.bancsang.cat/privacitat)',
-        '🔐 Política de privacitat'
-    );
+                // Intentar canviar la contrasenya
+                const result = AuthManager.changePassword(currentPassword, newPassword);
+
+                if (result.success) {
+                    modalManager.success('La teva contrasenya s\'ha canviat correctament', 'Contrasenya actualitzada');
+                    return true; // Tancar el modal
+                } else {
+                    errorDiv.textContent = result.message;
+                    errorDiv.style.display = 'block';
+                    return false;
+                }
+            }
+        },
+        {
+            text: 'Cancel·lar',
+            class: 'secondary',
+            action: () => { }
+        }
+    ]);
+
+    // Afegir focus i estils als inputs
+    setTimeout(() => {
+        const inputs = document.querySelectorAll('#currentPassword, #newPassword, #confirmPassword');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function () {
+                this.style.borderColor = '#b71c34';
+            });
+            input.addEventListener('blur', function () {
+                this.style.borderColor = '#e0e0e0';
+            });
+        });
+    }, 100);
 }
 
 function handleDeleteAccount() {
+    // Primera confirmació
     modalManager.confirm(
-        'Estàs segur que vols eliminar el teu compte?\n\n' +
-        '⚠️ ATENCIÓ:\n' +
-        '• Perdràs tot l\'historial de donacions\n' +
-        '• S\'eliminaran totes les teves dades\n' +
-        '• Aquesta acció no es pot desfer\n\n' +
-        'Si estàs segur, contacta amb suport@bancsang.cat per confirmar l\'eliminació.',
-        (confirmed) => {
-            if (confirmed) {
-                modalManager.alert(
-                    'Per eliminar el teu compte, si us plau contacta amb:\n\n' +
-                    '📧 Email: suport@bancsang.cat\n' +
-                    '📞 Telèfon: 900 123 456\n\n' +
-                    'Necessitarem verificar la teva identitat abans de procedir amb l\'eliminació.',
-                    '⚠️ Eliminar compte'
+        'Vols eliminar el teu compte de Banc de Sang?\n\n' +
+        'ATENCIÓ: Aquesta acció és irreversible\n\n' +
+        '• Es perdrà tot l\'historial de donacions\n' +
+        '• S\'eliminaran les teves dades personals\n' +
+        '• No podràs recuperar el teu compte\n' +
+        '• Perdràs els teus assoliments i punts\n\n' +
+        'Vols continuar amb l\'eliminació?',
+        () => {
+            // Quan l'usuari prem Acceptar, eliminar immediatament
+            const result = AuthManager.deleteAccount();
+
+            if (result.success) {
+                // Assegurar-se que la sessió està completament eliminada
+                localStorage.removeItem('banc_sang_session');
+
+                // Redirigir immediatament a la pàgina d'inici sense mostrar cap més modal
+                window.location.replace('index.html');
+            } else {
+                // Si hi ha error, mostrar-lo
+                modalManager.error(
+                    result.message || 'Error en eliminar el compte',
+                    'Error'
                 );
             }
         },
-        '🗑️ Eliminar compte'
+        'Eliminar compte'
     );
 }

@@ -104,7 +104,6 @@ class ModalManager {
         return this.show({
             title,
             message,
-            icon: '<div class="modal-icon-check"></div>',
             type: 'success'
         });
     }
@@ -113,7 +112,6 @@ class ModalManager {
         return this.show({
             title,
             message,
-            icon: '<div class="modal-icon-error"></div>',
             type: 'error'
         });
     }
@@ -122,20 +120,84 @@ class ModalManager {
         return this.show({
             title,
             message,
-            icon: '<div class="modal-icon-warning"></div>',
             type: 'warning'
         });
     }
 
-    confirm(message, title = 'Confirmar', onConfirm = null, onCancel = null) {
+    confirm(message, onConfirm = null, title = 'Confirmar') {
         return this.show({
             title,
             message,
             type: 'info',
             confirmText: 'Acceptar',
             cancelText: 'Cancel·lar',
-            onConfirm,
-            onCancel
+            onConfirm
+        });
+    }
+
+    // Modal personalitzat amb HTML i botons personalitzats
+    custom(htmlContent, title = '', buttons = []) {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'custom-modal-overlay';
+
+            // Crear botons
+            let buttonsHTML = '';
+            if (buttons.length > 0) {
+                buttonsHTML = '<div class="custom-modal-buttons">';
+                buttons.forEach((btn, index) => {
+                    const btnClass = btn.class === 'primary' ? 'custom-modal-btn-confirm' : 'custom-modal-btn-cancel';
+                    buttonsHTML += `<button class="custom-modal-btn ${btnClass}" data-index="${index}">${btn.text}</button>`;
+                });
+                buttonsHTML += '</div>';
+            }
+
+            modal.innerHTML = `
+                <div class="custom-modal">
+                    ${title ? `<h3 class="custom-modal-title">${title}</h3>` : ''}
+                    <div class="custom-modal-content">${htmlContent}</div>
+                    ${buttonsHTML}
+                </div>
+            `;
+
+            this.modalContainer.appendChild(modal);
+
+            // Animar l'entrada
+            setTimeout(() => modal.classList.add('show'), 10);
+
+            const closeModal = (result) => {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.remove();
+                    resolve(result);
+                }, 300);
+            };
+
+            // Manejadors per cada botó
+            const btnElements = modal.querySelectorAll('.custom-modal-btn');
+            btnElements.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    const buttonConfig = buttons[index];
+                    if (buttonConfig && buttonConfig.action) {
+                        const result = buttonConfig.action();
+                        // Si la acció retorna false, no tancar el modal
+                        if (result !== false) {
+                            closeModal(result);
+                        }
+                    } else {
+                        closeModal(false);
+                    }
+                });
+            });
+
+            // Tancar amb ESC
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal(false);
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
         });
     }
 }

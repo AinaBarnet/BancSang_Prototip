@@ -236,6 +236,10 @@ body {
     width: 100%;
 }
 
+.config-section>.config-btn {
+    margin-top: 1rem;
+}
+
 .config-btn:not(.secondary):not(.danger) {
     background: linear-gradient(135deg, var(--primary), #d32f2f);
     color: white;

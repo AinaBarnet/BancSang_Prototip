@@ -639,7 +639,7 @@ function getCurrentLocation() {
                 errorMessage = 'La sol·licitud d\'ubicació ha excedit el temps d\'espera.';
             }
 
-            modalManager.error(errorMessage, '⚠️ Error d\'ubicació');
+            modalManager.error(errorMessage, 'Error d\'ubicació');
 
             btn.classList.remove('loading');
             btn.disabled = false;
@@ -677,8 +677,6 @@ function updateCategorySelectColor(categoryId) {
 // Gestionar enviament del formulari
 function handleEventSubmit(e) {
     e.preventDefault();
-
-    console.log('Formulari enviat');
 
     const eventTitle = document.getElementById('eventTitle').value.trim();
     const categoryId = document.getElementById('eventCategory').value;

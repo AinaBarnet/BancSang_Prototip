@@ -132,6 +132,70 @@ const AuthManager = {
     getCurrentUserName() {
         const session = this.getCurrentSession();
         return session ? session.name : 'Usuari';
+    },
+
+    // Canviar contrasenya de l'usuari actual
+    changePassword(currentPassword, newPassword) {
+        const session = this.getCurrentSession();
+        if (!session) {
+            return { success: false, message: 'No hi ha cap sessió activa' };
+        }
+
+        const users = this.getUsers();
+        const user = users.find(u => u.id === session.userId);
+
+        if (!user) {
+            return { success: false, message: 'Usuari no trobat' };
+        }
+
+        // Verificar contrasenya actual
+        if (user.password !== currentPassword) {
+            return { success: false, message: 'La contrasenya actual és incorrecta' };
+        }
+
+        // Validar nova contrasenya
+        if (newPassword.length < 6) {
+            return { success: false, message: 'La nova contrasenya ha de tenir almenys 6 caràcters' };
+        }
+
+        if (currentPassword === newPassword) {
+            return { success: false, message: 'La nova contrasenya ha de ser diferent de l\'actual' };
+        }
+
+        // Actualitzar contrasenya
+        user.password = newPassword;
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+        return { success: true, message: 'Contrasenya canviada correctament' };
+    },
+
+    // Eliminar compte de l'usuari actual
+    deleteAccount() {
+        const session = this.getCurrentSession();
+        if (!session) {
+            return { success: false, message: 'No hi ha cap sessió activa' };
+        }
+
+        const users = this.getUsers();
+        const userIndex = users.findIndex(u => u.id === session.userId);
+
+        if (userIndex === -1) {
+            return { success: false, message: 'Usuari no trobat' };
+        }
+
+        // Eliminar l'usuari de la llista
+        users.splice(userIndex, 1);
+        localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+        // Eliminar les dades de l'usuari
+        if (typeof UserDataManager !== 'undefined') {
+            UserDataManager.deleteUserData(session.userId);
+        }
+
+        // Tancar sessió
+        localStorage.removeItem(this.SESSION_KEY);
+
+        return { success: true, message: 'Compte eliminat correctament' };
     }
 };
 

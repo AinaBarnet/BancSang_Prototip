@@ -86,6 +86,16 @@ const UserDataManager = {
         window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: { userId } }));
     },
 
+    // Eliminar dades d'un usuari específic
+    deleteUserData(userId) {
+        const allData = this.getAllUsersData();
+        delete allData[userId];
+        this.saveAllUsersData(allData);
+
+        // Disparar event per notificar l'eliminació
+        window.dispatchEvent(new CustomEvent('userDataDeleted', { detail: { userId } }));
+    },
+
     // Actualitzar una secció específica de les dades d'un usuari
     updateUserSection(userId, section, data) {
         const userData = this.getUserData(userId);
