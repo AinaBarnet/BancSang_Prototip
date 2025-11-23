@@ -45,8 +45,8 @@ document.getElementById('registerForm').addEventListener('submit', function (e) 
     const loginResult = AuthManager.login(email, password);
 
     if (loginResult.success) {
-        // Redirigir directamente a home.html
-        window.location.href = 'home.html';
+        // Redirigir directamente a xat.html
+        window.location.href = 'xat.html';
     } else {
         showError('Error al iniciar sessió. Si us plau, intenta-ho manualment.');
     }

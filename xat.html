@@ -39,12 +39,13 @@
                 </svg>
             </button>
 
-            <!-- Buscar grupos (mock) -->
-            <button class="icon-btn" id="searchGroupsBtn" title="Buscar grups">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <!-- Buscar grups (mock) - botó més visible i clar -->
+            <button class="icon-btn highlight-search-btn" id="searchGroupsBtn" title="Buscar grups i explorar grups disponibles">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="6"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
+                <span class="search-label">🔎 Buscar grups</span>
             </button>
             <!-- Perfil (nuevo) -->
             <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'">
@@ -318,6 +319,7 @@
     <script src="scripts/theme-manager.js"></script>
     <script src="scripts/modal.js"></script>
     <script src="scripts/xat.js"></script>
+    <script src="scripts/page-toggle.js"></script>
 </body>
 
 </html>

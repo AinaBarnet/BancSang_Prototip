@@ -87,6 +87,43 @@ function loadFriends() {
     }
 }
 
+// Helper: afegir missatge a una conversa i forçar un 'reply' simulat després d'un retard
+function scheduleSimulatedReply(contactId, replyText, replyDelay = null) {
+    try {
+        const conversations = UserDataManager.getChatConversations() || {};
+        if (!conversations[contactId]) conversations[contactId] = [];
+
+        const delay = typeof replyDelay === 'number' ? replyDelay : (1000 + Math.floor(Math.random() * 2000));
+
+        setTimeout(() => {
+            try {
+                const convs = UserDataManager.getChatConversations() || {};
+                if (!convs[contactId]) convs[contactId] = [];
+
+                const replyMsg = {
+                    id: `msg-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                    text: replyText,
+                    sender: contactId,
+                    timestamp: Date.now(),
+                    read: false,
+                    sent: true,
+                    delivered: true
+                };
+
+                convs[contactId].push(replyMsg);
+                UserDataManager.saveChatConversations(convs);
+
+                // Forçar un canvi a localStorage per notificar altres pestanyes
+                try { localStorage.setItem('bancSang_chat_last_update', Date.now().toString()); } catch (e) {}
+            } catch (err) {
+                console.error('Error simulant resposta per', contactId, err);
+            }
+        }, delay);
+    } catch (err) {
+        console.error('Error programant resposta simulada:', err);
+    }
+}
+
 // Renderitzar llista d'amics amb checkboxes
 function renderFriendsList() {
     const container = document.getElementById('friendsListContainer');
@@ -109,17 +146,94 @@ function addNewFriend() {
     const friendName = prompt('Nom del nou amic:');
 
     if (friendName && friendName.trim()) {
+        const trimmed = friendName.trim();
+
+        // Evitar duplicats per nom
+        const exists = userFriends.find(f => f.name.toLowerCase() === trimmed.toLowerCase());
+        if (exists) {
+            modalManager.info(`${trimmed} ja està a la teva llista d'amics.`, 'Amic existent');
+            return;
+        }
+
         const newFriend = {
             id: `friend-${Date.now()}`,
-            name: friendName.trim(),
+            name: trimmed,
             createdAt: Date.now()
         };
 
+        // Afegir a la llista d'amics (usuari)
         userFriends.push(newFriend);
         UserDataManager.addFriend(newFriend);
         renderFriendsList();
 
-        modalManager.success(`${friendName} s'ha afegit correctament a la teva llista d'amics!`, 'Amic afegit!');
+        // Sincronitzar amb el sistema de xat: crear contacte i conversació buida
+        try {
+            const chatContacts = UserDataManager.getChatContacts() || [];
+
+            // Crear un id de contacte consistent amb ChatManager.addContact
+            const newChatContact = {
+                id: `contact-${Date.now()}`,
+                name: trimmed,
+                avatar: '👤',
+                role: 'Contacte',
+                online: false,
+                lastSeen: Date.now()
+            };
+
+            // Afegir si no existeix ja (evitar duplicats per nom)
+            const already = chatContacts.find(c => c.name && c.name.toLowerCase() === trimmed.toLowerCase());
+            let contactToOpen = null;
+            const conversations = UserDataManager.getChatConversations() || {};
+
+            // Missatge inicial que s'enviarà automàticament
+            const welcomeMsg = {
+                id: `msg-${Date.now()}`,
+                text: `👋 Hola ${trimmed}!
+He estat jo qui t'ha afegit com a amic a BancSang.
+💬 Si vols, passa pel xat per dir "Hola" i coordinar aportacions.
+✨ Benvingut/da!`,
+                sender: 'me',
+                timestamp: Date.now(),
+                read: true,
+                sent: true,
+                delivered: true
+            };
+
+            if (!already) {
+                chatContacts.push(newChatContact);
+                UserDataManager.saveChatContacts(chatContacts);
+
+                // Crear conversa per al nou contacte i afegir el missatge inicial
+                if (!conversations[newChatContact.id]) conversations[newChatContact.id] = [];
+                conversations[newChatContact.id].push(welcomeMsg);
+                UserDataManager.saveChatConversations(conversations);
+
+                contactToOpen = newChatContact;
+            } else {
+                contactToOpen = already;
+
+                // Afegir missatge inicial a la conversa existent
+                if (!conversations[contactToOpen.id]) conversations[contactToOpen.id] = [];
+                conversations[contactToOpen.id].push(welcomeMsg);
+                UserDataManager.saveChatConversations(conversations);
+            }
+
+            // Programar una resposta simulada del contacte per semblar un xat real
+            try {
+                const replyText = `Gràcies ${trimmed}! 🙏
+Encantat/da d'estar a la teva llista — t'escric si cal coordinar.`;
+                scheduleSimulatedReply(contactToOpen.id, replyText);
+            } catch (err) {
+                console.error('No s\'ha pogut programar la resposta simulada:', err);
+            }
+
+            // Mostrar confirmació — el missatge inicial s'ha enviat en segon pla
+            modalManager.success(`${trimmed} s'ha afegit a la teva llista d'amics i s'ha enviat un missatge inicial.`, 'Amic afegit');
+
+        } catch (err) {
+            console.error('Error sincronitzant amb xat:', err);
+            modalManager.success(`${trimmed} s'ha afegit a la teva llista d'amics, però no s'ha pogut crear el xat.`, 'Amic afegit');
+        }
     }
 }
 
@@ -801,6 +915,79 @@ function handleEventSubmit(e) {
         }
 
         modalManager.success(confirmMessage, 'Esdeveniment creat');
+
+        // Enviar missatge automàtica als col·laboradors del xat (es fa en segon pla)
+        try {
+            const collaborators = (collaboratorsData && collaboratorsData.list) ? collaboratorsData.list : [];
+            if (collaborators.length > 0) {
+                const chatContacts = UserDataManager.getChatContacts() || [];
+                const conversations = UserDataManager.getChatConversations() || {};
+
+                // Construir missatge resum de l'esdeveniment amb format millorat
+                const parts = [];
+                parts.push(`📅  *Nou esdeveniment*: ${eventTitle}`);
+                parts.push(`🗓️  Data: ${new Date(date).toLocaleDateString('ca-ES')}`);
+                parts.push(`🕒  Hora: ${time}`);
+                parts.push(`📍  Centre: ${center}`);
+                if (categoryLabel) parts.push(`🏷️  Categoria: ${categoryLabel}`);
+                if (notes) parts.push(`📝  Notes: ${notes}`);
+                parts.push('');
+                parts.push('🔔 Recordatori: confirma assistència o respon aquest missatge per coordinar.');
+                const eventSummary = parts.join('\n');
+
+                collaborators.forEach(name => {
+                    try {
+                        // Buscar contacte per nom
+                        let contact = chatContacts.find(c => c.name && c.name.toLowerCase() === name.toLowerCase());
+
+                        // Si no existeix, crear un contacte nou lleuger
+                        if (!contact) {
+                            contact = {
+                                id: `contact-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                                name: name,
+                                avatar: '👤',
+                                role: 'Contacte',
+                                online: false,
+                                lastSeen: Date.now()
+                            };
+                            chatContacts.push(contact);
+                            // Guardar contactes nous
+                            UserDataManager.saveChatContacts(chatContacts);
+                        }
+
+                        // Assegurar conversa
+                        if (!conversations[contact.id]) conversations[contact.id] = [];
+
+                        const msg = {
+                            id: `msg-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                            text: eventSummary,
+                            sender: 'me',
+                            timestamp: Date.now(),
+                            read: false,
+                            sent: true,
+                            delivered: false
+                        };
+
+                        conversations[contact.id].push(msg);
+
+                        // Guardar converses després de cada afegit (pot ser optimitzat si cal)
+                        UserDataManager.saveChatConversations(conversations);
+                            // Programar una resposta simulada del col·laborador
+                            try {
+                                const dateStr = new Date(date).toLocaleDateString('ca-ES');
+                                const replyText = `Rebut! ✅\nConfirmo assistència a "${eventTitle}" el ${dateStr} a les ${time}.`;
+                                scheduleSimulatedReply(contact.id, replyText);
+                            } catch (e) {
+                                console.error('Error programant resposta simulada per esdeveniment:', e);
+                            }
+                    } catch (innerErr) {
+                        console.error('Error enviant missatge a', name, innerErr);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Error sincronitzant missatges als col·laboradors:', err);
+        }
     }
 }
 
