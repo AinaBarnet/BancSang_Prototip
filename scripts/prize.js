@@ -55,7 +55,7 @@ function updateDisplay() {
 function setupEventListeners() {
     // Botón volver
     backBtn.addEventListener('click', () => {
-        window.location.href = 'home.html';
+        window.location.href = 'xat.html';
     });
 
     // Botón compartir

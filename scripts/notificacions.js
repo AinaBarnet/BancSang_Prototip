@@ -101,8 +101,8 @@ const NotificationsManager = {
             priority: 'medium',
             timestamp: Date.now() - 3 * 24 * 60 * 60 * 1000,
             actions: [
-                { label: 'Veure tots els assoliments', action: 'viewAchievements', url: 'home.html' }, //pendent config user
-                { label: 'Veure el meu progrés', action: 'viewDetails', url: 'home.html' } //pendent config user
+                { label: 'Veure tots els assoliments', action: 'viewAchievements', url: 'xat.html' }, //pendent config user
+                { label: 'Veure el meu progrés', action: 'viewDetails', url: 'xat.html' } //pendent config user
             ]
         },
         {
@@ -139,7 +139,7 @@ const NotificationsManager = {
             priority: 'low',
             timestamp: Date.now() - 7 * 24 * 60 * 60 * 1000,
             actions: [
-                { label: 'Veure historial', action: 'viewDetails', url: 'home.html' }, //pendent config user
+                { label: 'Veure historial', action: 'viewDetails', url: 'xat.html' }, //pendent config user
                 { label: 'Detall del sorteig', action: 'viewPrize', url: 'premio.html' }
             ]
         }
@@ -469,7 +469,7 @@ const NotificationsManager = {
 NotificationsManager.init();
 
 // Iniciar simulació en temps real (només a home.html)
-if (window.location.pathname.includes('home.html')) {
+if (window.location.pathname.includes('home.html') || window.location.pathname.includes('xat.html')) {
     NotificationsManager.startRealtimeSimulation();
 }
 

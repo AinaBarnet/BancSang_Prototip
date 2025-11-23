@@ -1494,3 +1494,109 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// --- User menu & notification badge logic for xat.html ---
+function updateNotificationBadgeXat() {
+    const badge = document.getElementById('notificationBadge');
+    if (!badge) return;
+
+    const notifications = (typeof UserDataManager !== 'undefined' && typeof UserDataManager.getNotifications === 'function')
+        ? UserDataManager.getNotifications()
+        : [];
+
+    const unreadNotifications = notifications.filter(n => n.unread);
+    const urgentNotifications = notifications.filter(n => n.priority === 'high' && n.unread);
+
+    const unreadCount = unreadNotifications.length;
+    const urgentCount = urgentNotifications.length;
+
+    if (unreadCount > 0) {
+        badge.textContent = unreadCount;
+        badge.style.display = 'inline-block';
+        badge.style.visibility = 'visible';
+        badge.style.opacity = '1';
+
+        if (urgentCount > 0) {
+            badge.style.background = 'linear-gradient(135deg, #ff5252 0%, #d32f2f 100%)';
+            badge.style.animation = 'pulse 2s ease-in-out infinite';
+        } else {
+            badge.style.background = '#d32f2f';
+            badge.style.animation = 'none';
+        }
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function setupUserMenu() {
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const configMenuItem = document.getElementById('configMenuItem');
+    const registerDonationBtn = document.getElementById('registerDonationBtn');
+
+    if (!userMenuBtn || !dropdownMenu) return;
+
+    // Set user name if available
+    try {
+        const nameEl = userMenuBtn.querySelector('.user-name');
+        if (nameEl && typeof AuthManager !== 'undefined' && typeof AuthManager.getCurrentUserName === 'function') {
+            nameEl.textContent = AuthManager.getCurrentUserName().toUpperCase();
+        }
+    } catch (e) {
+        // ignore
+    }
+
+    userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('active');
+        userMenuBtn.classList.toggle('active');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!userMenuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('active');
+            userMenuBtn.classList.remove('active');
+        }
+    });
+
+    // Prevent clicks inside menu from closing
+    dropdownMenu.addEventListener('click', (e) => e.stopPropagation());
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Segur que vols tancar la sessió?')) {
+                if (typeof AuthManager !== 'undefined' && typeof AuthManager.logout === 'function') {
+                    AuthManager.logout();
+                }
+            }
+        });
+    }
+
+    if (configMenuItem) {
+        configMenuItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'configuracio.html';
+        });
+    }
+
+    if (registerDonationBtn) {
+        registerDonationBtn.addEventListener('click', (e) => {
+            // link already points to registrar-donacio.html, but ensure navigation
+            e.preventDefault();
+            window.location.href = 'registrar-donacio.html';
+        });
+    }
+
+    // Hook notifications update events if available
+    window.addEventListener('notificationsUpdated', updateNotificationBadgeXat);
+    window.addEventListener('focus', updateNotificationBadgeXat);
+    // Initial badge update
+    setTimeout(updateNotificationBadgeXat, 10);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupUserMenu();
+});

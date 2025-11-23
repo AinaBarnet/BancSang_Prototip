@@ -24,20 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (path === 'xat.html') {
-            // En la pàgina de xat: reemplazar el botón de tornar per un toggle cap a "Peremi"
-            applyStyle(toggleBtn, '🎁 Premi', 'Anar a Peremi');
+            // En la pàgina de xat: mostrar el toggle "Premi" i fer-lo anar a la pàgina d'inici
+            applyStyle(toggleBtn, '🎁 Premi', 'Anar a Inici');
             toggleBtn.addEventListener('click', () => {
                 window.location.href = 'home.html';
             });
 
-            const headerLeft = document.querySelector('header .header-left');
-            if (headerLeft) {
-                headerLeft.innerHTML = '';
-                headerLeft.appendChild(toggleBtn);
+            // Afegir al header-right per evitar tapar elements a l'esquerra (ex: user-menu)
+            const headerRight = document.querySelector('header .header-right');
+            if (headerRight) {
+                headerRight.appendChild(toggleBtn);
             } else {
-                // Si no existeix, afegir en header-right
-                const headerRight = document.querySelector('header .header-right');
-                if (headerRight) headerRight.prepend(toggleBtn);
+                // Si no existeix, com a fallback afegim a header-left
+                const headerLeft = document.querySelector('header .header-left');
+                if (headerLeft) headerLeft.appendChild(toggleBtn);
             }
         } else if (path === 'home.html') {
             // En la página de home: reemplazar el botón de chat per un toggle cap a xat
