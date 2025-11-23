@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banc de Sang - Inici</title>
+    <title>Banc de Sang - Repte Mensual</title>
     <link rel="stylesheet" href="styles/theme.css">
     <link rel="stylesheet" href="styles/home.css">
     <link rel="stylesheet" href="styles/modal.css">
@@ -89,7 +89,7 @@
                 </div>
             </div>
         </div>
-        <h1 class="header-title">Quedem per donar sang?</h1>
+        <h1 class="header-title">Repte Mensual</h1>
         <div class="header-right">
             <button class="icon-btn" id="challengeBtn" title="Repte" onclick="location.href='challenge.html'">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -121,71 +121,53 @@
     </header>
 
     <main>
-        <div class="welcome-container">
-            <div class="welcome-header">
-                <div class="welcome-icon">🩸</div>
-                <h2>Benvingut al Banc de Sang!</h2>
-                <p>El teu portal per contribuir a salvar vides</p>
+        <div class="counter-container">
+            <!-- Información del sorteo -->
+            <div class="prize-info" id="prizeInfo" onclick="window.location.href='prize.html'" style="cursor: pointer;">
+                <div class="prize-icon">🎁</div>
+                <h3 class="prize-title">Premi del mes: Samsung Galaxy Book4 i3 + Funda!</h3>
+                <p class="prize-description">Objectiu mensual: 33.000 donacions per desbloquejar el premi
+                </p>
             </div>
 
-            <div class="quick-actions">
-                <div class="action-card" onclick="location.href='challenge.html'">
-                    <div class="action-icon">�</div>
-                    <h3>Repte Mensual</h3>
-                    <p>Veure el progrés del repte comunitari i premis</p>
-                    <button class="action-btn">Veure repte</button>
-                </div>
-
-                <div class="action-card" onclick="location.href='registrar-donacio.html'">
-                    <div class="action-icon">📋</div>
-                    <h3>Registrar Donació</h3>
-                    <p>Registra la teva nova donació de sang</p>
-                    <button class="action-btn">Registrar</button>
-                </div>
-
-                <div class="action-card" onclick="location.href='calendari.html'">
-                    <div class="action-icon">📅</div>
-                    <h3>El meu Calendari</h3>
-                    <p>Veure les teves cites programades</p>
-                    <button class="action-btn">Veure calendari</button>
-                </div>
-
-                <div class="action-card" onclick="location.href='localitzacions.html'">
-                    <div class="action-icon">📍</div>
-                    <h3>Localitzacions</h3>
-                    <p>Trobar centres de donació a prop teu</p>
-                    <button class="action-btn">Trobar centres</button>
-                </div>
-
-                <div class="action-card" onclick="location.href='abans-donar.html'">
-                    <div class="action-icon">ℹ️</div>
-                    <h3>Abans de Donar</h3>
-                    <p>Informació important abans de donar sang</p>
-                    <button class="action-btn">Llegir més</button>
-                </div>
-
-                <div class="action-card" onclick="location.href='xat.html'">
-                    <div class="action-icon">💬</div>
-                    <h3>Xat Comunitari</h3>
-                    <p>Conecta amb altres donants</p>
-                    <button class="action-btn">Obrir xat</button>
-                </div>
+            <div class="blood-drop">
+                <svg viewBox="0 0 100 120" class="drop-svg">
+                    <defs>
+                        <clipPath id="dropClip">
+                            <path
+                                d="M50,10 C50,10 20,40 20,65 C20,85 32,100 50,100 C68,100 80,85 80,65 C80,40 50,10 50,10 Z" />
+                        </clipPath>
+                    </defs>
+                    <!-- Contorno de la gota -->
+                    <path d="M50,10 C50,10 20,40 20,65 C20,85 32,100 50,100 C68,100 80,85 80,65 C80,40 50,10 50,10 Z"
+                        fill="none" stroke="#e0e0e0" stroke-width="2" />
+                    <!-- Relleno de sangre -->
+                    <rect x="0" y="0" width="100" height="120" fill="#c62828" clip-path="url(#dropClip)"
+                        class="blood-fill" id="bloodFill" />
+                </svg>
+            </div>
+            <div class="counter-value">
+                <span id="donationCount">452</span>
+                <span class="counter-unit">donacions</span>
+            </div>
+            <div class="percentage">
+                <span id="percentage">0</span>%
             </div>
 
-            <div class="stats-overview">
-                <h3>El teu resum</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number" id="userDonationsCount">0</span>
-                        <span class="stat-label">Donacions</span>
+            <!-- Informació addicional -->
+            <div class="donation-info">
+                <div class="info-card">
+                    <div class="info-icon">🎯</div>
+                    <div class="info-content">
+                        <h4>Falten</h4>
+                        <p><span id="remaining">33000</span> donacions</p>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="nextDonationDate">--</span>
-                        <span class="stat-label">Propera donació</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="livesImpacted">0</span>
-                        <span class="stat-label">Vides salvades</span>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">👥</div>
+                    <div class="info-content">
+                        <h4>Avui han hagut</h4>
+                        <p><span id="participants">0</span> donacions</p>
                     </div>
                 </div>
             </div>
