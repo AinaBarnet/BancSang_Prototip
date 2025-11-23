@@ -40,21 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (headerLeft) headerLeft.appendChild(toggleBtn);
             }
         } else if (path === 'home.html') {
-            // En la página de home: reemplazar el botón de chat per un toggle cap a xat
-            applyStyle(toggleBtn, '💬 Xat', 'Anar al xat');
-            toggleBtn.addEventListener('click', () => {
-                window.location.href = 'xat.html';
-            });
-
-            // Buscar el boton de chat existente (id chatBtn) y reemplazarlo
-            const chatBtn = document.getElementById('chatBtn');
-            if (chatBtn && chatBtn.parentNode) {
-                chatBtn.parentNode.replaceChild(toggleBtn, chatBtn);
-            } else {
-                // Sino, añadir al header-right
-                const headerRight = document.querySelector('header .header-right');
-                if (headerRight) headerRight.prepend(toggleBtn);
-            }
+            // No insertamos el toggle de Xat en la página de inicio; el header de home
+            // gestiona sus botones de forma estática (evita duplicar o inyectar el botón Xat).
+            // No hacemos nada aquí a propósito.
         } else {
             // Para otras páginas no autenticadas/landing: no hacer nada
         }

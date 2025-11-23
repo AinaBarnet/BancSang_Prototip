@@ -147,11 +147,13 @@ function celebrateGoalReached() {
 
 // Configurar event listeners
 function setupEventListeners() {
-    // Botón de chat
+    // Botón de chat (si existeix)
     const chatBtn = document.getElementById('chatBtn');
-    chatBtn.addEventListener('click', () => {
-        window.location.href = 'xat.html';
-    });
+    if (chatBtn) {
+        chatBtn.addEventListener('click', () => {
+            window.location.href = 'xat.html';
+        });
+    }
 
     // Opción de configuración en el menú desplegable
     const configMenuItem = document.getElementById('configMenuItem');
