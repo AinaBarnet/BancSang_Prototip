@@ -220,7 +220,7 @@ He estat jo qui t'ha afegit com a amic a BancSang.
 
             // Programar una resposta simulada del contacte per semblar un xat real
             try {
-                const replyText = `Gràcies ${trimmed}! 🙏
+                const replyText = `Gràcies! 🙏
 Encantat/da d'estar a la teva llista — t'escric si cal coordinar.`;
                 scheduleSimulatedReply(contactToOpen.id, replyText);
             } catch (err) {
