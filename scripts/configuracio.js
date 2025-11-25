@@ -8,61 +8,52 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
     loadPreferences();
     setupEventListeners();
+    // Escoltar canvis globals de dades d'usuari per mantenir la UI sincronitzada
+    window.addEventListener('userDataUpdated', () => {
+        loadPreferences();
+    });
 });
 
 // Carregar informació del perfil de l'usuari
 function loadUserProfile() {
     const userData = UserDataManager.getCurrentUserData();
-    const session = AuthManager.getCurrentSession();
-
-    if (!userData || !session) {
+    if (!userData) {
         console.error('No s\'han pogut carregar les dades de l\'usuari');
         return;
     }
 
-    // Actualitzar informació del perfil al header
-    const headerUserName = document.getElementById('headerUserName');
-    const userName = userData.profile.name || session.email.split('@')[0];
-    headerUserName.textContent = userName.split(' ')[0] || userName;
-
-    // Actualitzar informació del perfil a la secció
+    // Dades del perfil
+    const profile = userData.profile || {};
     const profileAvatar = document.getElementById('profileAvatar');
     const profileName = document.getElementById('profileName');
     const profileEmail = document.getElementById('profileEmail');
     const profileDonations = document.getElementById('profileDonations');
     const profileLastDonation = document.getElementById('profileLastDonation');
 
+    // Nom d'usuari: primer nom o email si no hi ha nom
+    let userName = profile.name && profile.name.trim() ? profile.name : (profile.email ? profile.email.split('@')[0] : 'Usuari');
     const firstLetter = (userName || 'U').trim()[0].toUpperCase();
     profileAvatar.textContent = firstLetter;
     profileName.textContent = userName;
-    profileEmail.textContent = session.email;
-    profileDonations.textContent = userData.profile.donations || 0;
-    profileLastDonation.textContent = userData.profile.lastDonation || 'Mai';
+    profileEmail.textContent = profile.email || 'usuari@exemple.com';
+    profileDonations.textContent = profile.donations || 0;
+    profileLastDonation.textContent = profile.lastDonation || '--';
 }
 
 // Carregar preferències de l'usuari
 function loadPreferences() {
     const userData = UserDataManager.getCurrentUserData();
-
     if (!userData) return;
-
-    // Preferències de notificacions
-    const notifPrefs = userData.notifications.preferences || {};
-    document.getElementById('notificationsEnabled').checked = userData.preferences.notificationsEnabled !== false;
-    document.getElementById('notifEvents').checked = notifPrefs.enableEvents !== false;
-    document.getElementById('notifReminders').checked = notifPrefs.enableReminders !== false;
-    document.getElementById('notifAchievements').checked = notifPrefs.enableAchievements !== false;
-    document.getElementById('notifInfo').checked = notifPrefs.enableInfo !== false;
-
-    // Preferències d'idioma
-    document.getElementById('languageSelect').value = userData.preferences.language || 'ca';
-
-    // Preferències de privacitat
-    document.getElementById('publicProfile').checked = userData.preferences.publicProfile !== false;
-    document.getElementById('showStats').checked = userData.preferences.showStats !== false;
-
-    // Preferències generals
-    document.getElementById('themeSelect').value = userData.preferences.theme || 'light';
+    const prefs = userData.preferences || {};
+    document.getElementById('notificationsEnabled').checked = prefs.notificationsEnabled !== false;
+    document.getElementById('notifEvents').checked = prefs.notifEvents !== false;
+    document.getElementById('notifReminders').checked = prefs.notifReminders !== false;
+    document.getElementById('notifAchievements').checked = prefs.notifAchievements !== false;
+    document.getElementById('notifInfo').checked = prefs.notifInfo !== false;
+    document.getElementById('languageSelect').value = prefs.language || 'ca';
+    document.getElementById('publicProfile').checked = prefs.publicProfile !== false;
+    document.getElementById('showStats').checked = prefs.showStats !== false;
+    document.getElementById('themeSelect').value = prefs.theme || 'light';
 }
 
 // Configurar event listeners
@@ -71,21 +62,17 @@ function setupEventListeners() {
     document.getElementById('notificationsEnabled').addEventListener('change', (e) => {
         savePreference('notificationsEnabled', e.target.checked);
     });
-
     document.getElementById('notifEvents').addEventListener('change', (e) => {
-        saveNotificationPreference('enableEvents', e.target.checked);
+        savePreference('notifEvents', e.target.checked);
     });
-
     document.getElementById('notifReminders').addEventListener('change', (e) => {
-        saveNotificationPreference('enableReminders', e.target.checked);
+        savePreference('notifReminders', e.target.checked);
     });
-
     document.getElementById('notifAchievements').addEventListener('change', (e) => {
-        saveNotificationPreference('enableAchievements', e.target.checked);
+        savePreference('notifAchievements', e.target.checked);
     });
-
     document.getElementById('notifInfo').addEventListener('change', (e) => {
-        saveNotificationPreference('enableInfo', e.target.checked);
+        savePreference('notifInfo', e.target.checked);
     });
 
     // Idioma
@@ -130,19 +117,15 @@ function setupEventListeners() {
 function savePreference(key, value) {
     const userData = UserDataManager.getCurrentUserData();
     if (!userData) return;
-
+    if (!userData.preferences) userData.preferences = {};
     userData.preferences[key] = value;
     UserDataManager.saveCurrentUserData(userData);
+    // Opcional: tornar a carregar preferències per reflectir canvis immediats
+    // loadPreferences();
 }
 
 // Guardar preferència de notificació
-function saveNotificationPreference(key, value) {
-    const userData = UserDataManager.getCurrentUserData();
-    if (!userData) return;
 
-    userData.notifications.preferences[key] = value;
-    UserDataManager.saveCurrentUserData(userData);
-}
 
 // Nota: La funció applyTheme ara està gestionada pel ThemeManager global
 

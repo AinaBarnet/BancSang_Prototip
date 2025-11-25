@@ -47,7 +47,13 @@ const UserDataManager = {
             preferences: {
                 language: 'ca',
                 theme: 'light',
-                notificationsEnabled: true
+                notificationsEnabled: true,
+                notifEvents: true,
+                notifReminders: true,
+                notifAchievements: true,
+                notifInfo: true,
+                publicProfile: true,
+                showStats: true
             }
         };
     },
