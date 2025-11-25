@@ -8,107 +8,12 @@ const ChatManager = {
     STORAGE_KEY: 'bancSang_chat',
     CONTACTS_KEY: 'bancSang_chat_contacts',
 
-    // Contactes per defecte (doctors, staff del banc de sang, etc.)
-    defaultContacts: [
-        {
-            id: 'dr-joan',
-            name: 'Dr. Joan Martínez',
-            avatar: '👨‍⚕️',
-            role: 'Metge responsable',
-            online: true,
-            lastSeen: null
-        },
-        {
-            id: 'dra-maria',
-            name: 'Dra. Maria López',
-            avatar: '👩‍⚕️',
-            role: 'Coordinadora',
-            online: false,
-            lastSeen: new Date(Date.now() - 3600000).getTime() // fa 1 hora
-        },
-        {
-            id: 'suport',
-            name: 'Suport BancSang',
-            avatar: '🩸',
-            role: 'Atenció al donant',
-            online: true,
-            lastSeen: null
-        },
-        {
-            id: 'anna-puig',
-            name: 'Anna Puig',
-            avatar: '👤',
-            role: 'Donant regular',
-            online: false,
-            lastSeen: new Date(Date.now() - 7200000).getTime() // fa 2 hores
-        },
-        {
-            id: 'marc-soler',
-            name: 'Marc Soler',
-            avatar: '👤',
-            role: 'Donant',
-            online: true,
-            lastSeen: null
-        }
-    ],
+    // Contactes per defecte (buida per començar)
+    defaultContacts: [],
 
-    // Missatges d'exemple
-    defaultMessages: {
-        'dr-joan': [
-            {
-                id: 'msg-1',
-                text: 'Hola! Volia recordar-te que la teva pròxima donació està programada per divendres.',
-                sender: 'dr-joan',
-                timestamp: new Date(Date.now() - 86400000).getTime(), // ahir
-                read: true,
-                sent: true
-            },
-            {
-                id: 'msg-2',
-                text: 'Gràcies per l\'avís! Hi seré puntual.',
-                sender: 'me',
-                timestamp: new Date(Date.now() - 82800000).getTime(),
-                read: true,
-                sent: true
-            },
-            {
-                id: 'msg-3',
-                text: 'Perfecte! Recorda estar ben descansat i haver menjat bé.',
-                sender: 'dr-joan',
-                timestamp: new Date(Date.now() - 82200000).getTime(),
-                read: true,
-                sent: true
-            }
-        ],
-        'suport': [
-            {
-                id: 'msg-4',
-                text: 'Benvingut al servei de suport de BancSang! Com et podem ajudar?',
-                sender: 'suport',
-                timestamp: new Date(Date.now() - 7200000).getTime(), // fa 2 hores
-                read: false,
-                sent: true
-            }
-        ],
-        'dra-maria': [
-            {
-                id: 'msg-5',
-                text: 'Els teus resultats de l\'última donació són excel·lents!',
-                sender: 'dra-maria',
-                timestamp: new Date(Date.now() - 172800000).getTime(), // fa 2 dies
-                read: true,
-                sent: true
-            },
-            {
-                id: 'msg-6',
-                text: 'Moltes gràcies per la informació! 😊',
-                sender: 'me',
-                timestamp: new Date(Date.now() - 169200000).getTime(),
-                read: true,
-                sent: true
-            }
-        ]
-    },
+
+    // Missatges d'exemple (buit per començar)
+    defaultMessages: {},
 
     // Inicialitzar el sistema (ara per usuari)
     init() {
@@ -1236,10 +1141,52 @@ function handleExportContacts() {
 
 // Carregar llista de contactes
 function loadContactsList() {
-    const contacts = ChatManager.getContacts();
+    const allContacts = ChatManager.getContacts();
+    // Filter to show only friends (exclude groups)
+    const friends = allContacts.filter(contact => contact.role !== 'Grup');
     contactsList.innerHTML = '';
 
-    contacts.forEach(contact => {
+    // Add "Add Friend" button at the top
+    const addFriendBtn = document.createElement('div');
+    addFriendBtn.className = 'contact-item add-friend-item';
+    addFriendBtn.innerHTML = `
+        <div class="contact-avatar add-friend-avatar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+        </div>
+        <div class="contact-info">
+            <h4>Afegir amic</h4>
+            <p>Afegeix un nou contacte a la teva llista d'amics</p>
+        </div>
+    `;
+
+    addFriendBtn.addEventListener('click', () => {
+        closeNewChatModalFunc();
+        openAddContactModal();
+    });
+
+    contactsList.appendChild(addFriendBtn);
+
+    // Show message if no friends yet
+    if (friends.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'empty-friends-message';
+        emptyMsg.innerHTML = `
+            <p style="text-align: center; color: #666; padding: 2rem 1rem;">
+                Encara no tens amics afegits.<br>
+                Clica a "Afegir amic" per començar!
+            </p>
+        `;
+        contactsList.appendChild(emptyMsg);
+        return;
+    }
+
+    // Add all friends to the list
+    friends.forEach(contact => {
         const item = document.createElement('div');
         item.className = 'contact-item';
         item.innerHTML = `
