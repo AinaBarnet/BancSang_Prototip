@@ -383,6 +383,24 @@ function saveDonation(donation) {
         return false;
     }
 
+    // --- ACTUALITZAR VALORS GLOBALS ---
+    // Total mensual
+    let totalDonations = parseInt(localStorage.getItem('global_totalDonations') || '0', 10);
+    totalDonations++;
+    localStorage.setItem('global_totalDonations', totalDonations.toString());
+
+    // Donacions d'avui
+    const todayStr = new Date().toISOString().split('T')[0];
+    const storedTodayDate = localStorage.getItem('global_todayDonations_date');
+    let todayDonations = 0;
+    if (storedTodayDate === todayStr) {
+        todayDonations = parseInt(localStorage.getItem('global_todayDonations') || '0', 10) + 1;
+    } else {
+        todayDonations = 1;
+        localStorage.setItem('global_todayDonations_date', todayStr);
+    }
+    localStorage.setItem('global_todayDonations', todayDonations.toString());
+
     return true;
 }
 

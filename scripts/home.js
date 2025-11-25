@@ -1,7 +1,7 @@
-// Variables globales
+// Variables globals (independents de l'usuari)
 let totalDonations = 0;
 let todayDonations = 0;
-const maxDonations = 33000; // Meta mensual para desbloquear el premio
+const maxDonations = 33000; // Meta mensual per desbloquejar el premi
 
 // Elementos del DOM
 const donationCountEl = document.getElementById('donationCount');
@@ -19,12 +19,15 @@ if (!AuthManager.requireAuth()) {
     throw new Error('Accés no autoritzat');
 }
 
-// Inicializar la aplicación
+// Inicialitzar l'aplicació
 document.addEventListener('DOMContentLoaded', () => {
     // Mostrar nom de l'usuari
     const userName = AuthManager.getCurrentUserName();
-    document.querySelector('.user-name').textContent = userName.toUpperCase();
+    const userNameEl = document.querySelector('.user-name');
+    if (userNameEl) userNameEl.textContent = userName.toUpperCase();
 
+    // Reiniciar donacions d'avui si ha canviat el dia
+    checkAndResetTodayDonations();
     loadDonations();
     updateDisplay();
     setupEventListeners();
@@ -33,64 +36,74 @@ document.addEventListener('DOMContentLoaded', () => {
     checkIfCanDonateAgain();
 
     // Actualitzar badge de notificacions quan es carrega la pàgina
-    // Petit retard per assegurar que NotificationsManager està inicialitzat
     setTimeout(() => {
         updateNotificationBadge();
     }, 10);
+
+    // Comprovar cada minut si ha canviat el dia i reiniciar si cal
+    setInterval(() => {
+        checkAndResetTodayDonations();
+        loadDonations();
+        updateDisplay();
+    }, 60000);
 });
 
-// Cargar donaciones desde localStorage (ara per usuari)
+// Reiniciar donacions d'avui si ha canviat el dia
+function checkAndResetTodayDonations() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const storedTodayDate = localStorage.getItem('global_todayDonations_date');
+    if (storedTodayDate !== todayStr) {
+        localStorage.setItem('global_todayDonations', '0');
+        localStorage.setItem('global_todayDonations_date', todayStr);
+    }
+}
+
+// Carregar donacions globals des de localStorage
 function loadDonations() {
-    // Obtenir donacions de l'usuari actual
-    const userDonations = UserDataManager.getDonations();
+    // Total mensual
+    const storedTotal = localStorage.getItem('global_totalDonations');
+    totalDonations = storedTotal ? parseInt(storedTotal, 10) : 0;
 
-    if (userDonations) {
-        totalDonations = userDonations.totalCount || 0;
-
-        // Comptar només donacions amb data d'AVUI
-        const todayStr = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-        todayDonations = userDonations.list.filter(d => {
-            const donationDateStr = d.date ? d.date.split('T')[0] : new Date(d.timestamp).toISOString().split('T')[0];
-            return donationDateStr === todayStr;
-        }).length;
+    // Donacions d'avui
+    const todayStr = new Date().toISOString().split('T')[0];
+    const storedToday = localStorage.getItem('global_todayDonations');
+    const storedTodayDate = localStorage.getItem('global_todayDonations_date');
+    if (storedToday && storedTodayDate === todayStr) {
+        todayDonations = parseInt(storedToday, 10);
     } else {
-        // Si no hi ha dades, inicialitzar
-        totalDonations = 0;
         todayDonations = 0;
     }
 }
 
-// Guardar donaciones en localStorage (ara per usuari)
+// Guardar donacions globals a localStorage
 function saveDonations() {
-    const userData = UserDataManager.getCurrentUserData();
-    if (!userData) return;
-
-    userData.donations.totalCount = totalDonations;
-    // todayCount es calcula automàticament en addDonation i loadDonations
-
-    UserDataManager.saveCurrentUserData(userData);
+    localStorage.setItem('global_totalDonations', totalDonations.toString());
+    // Guardar donacions d'avui amb la data
+    const todayStr = new Date().toISOString().split('T')[0];
+    localStorage.setItem('global_todayDonations', todayDonations.toString());
+    localStorage.setItem('global_todayDonations_date', todayStr);
 }
 
-// Actualizar la visualización
+// Actualitzar la visualització
 function updateDisplay() {
-    // Actualizar contador
+    // Actualitzar comptador
     donationCountEl.textContent = totalDonations;
 
-    // Calcular porcentaje
+    // Calcular percentatge
     const percentage = Math.min(100, (totalDonations / maxDonations) * 100);
     percentageEl.textContent = percentage.toFixed(1);
 
-    // Actualizar donaciones restantes
+    // Actualitzar donacions restants
     const remaining = Math.max(0, maxDonations - totalDonations);
     remainingEl.textContent = remaining.toLocaleString('ca-ES');
 
-    // Actualizar donaciones de hoy
+    // Actualitzar donacions d'avui
     participantsEl.textContent = todayDonations.toLocaleString('ca-ES');
 
-    // Actualizar información del sorteo
+    // Actualitzar informació del sorteig
     updatePrizeInfo();
 
-    // Actualizar el relleno de la gota
+    // Actualitzar el farcit de la gota
     updateBloodFill(percentage);
 }
 
@@ -110,15 +123,22 @@ function updateBloodFill(percentage) {
     }, 1500);
 }
 
-// Añadir una donación (temporal para pruebas)
+// Afegir una donació (temporal per proves)
 function addDonation() {
     if (totalDonations < maxDonations) {
         totalDonations++;
-        todayDonations++;
+        // Comprovar si és el mateix dia
+        const todayStr = new Date().toISOString().split('T')[0];
+        const storedTodayDate = localStorage.getItem('global_todayDonations_date');
+        if (storedTodayDate === todayStr) {
+            todayDonations++;
+        } else {
+            todayDonations = 1;
+        }
         saveDonations();
         updateDisplay();
 
-        // Si llegamos al 100%, mostrar celebración
+        // Si arribem al 100%, mostrar celebració
         if (totalDonations === maxDonations) {
             celebrateGoalReached();
         }
@@ -371,7 +391,7 @@ function updateNotificationBadge() {
     }
 }
 
-// Función para resetear el contador (útil para pruebas)
+// Funció per resetejar el comptador (útil per proves)
 function resetCounter() {
     totalDonations = 0;
     todayDonations = 0;
