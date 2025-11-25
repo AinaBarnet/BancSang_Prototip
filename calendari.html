@@ -33,16 +33,6 @@
 
     <main>
         <div class="calendar-container">
-            <!-- Botó crear fora del header, alineat a la dreta -->
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
-                <button class="create-btn" id="addEventBtn" title="Crear">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    <span>Crear</span>
-                </button>
-            </div>
             <!-- Navegació del calendari -->
             <div class="calendar-header">
                 <button class="nav-btn" id="prevMonthBtn">
@@ -98,7 +88,16 @@
 
         <!-- Llista d'esdeveniments del mes -->
         <div class="events-sidebar">
-            <h3>Esdeveniments del mes</h3>
+            <div style="display: flex; justify-content: flex-start; margin-bottom: 2.5rem;">
+                <button class="create-btn" id="addEventBtn" title="Crear">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Crear nou esdeveniment</span>
+                </button>
+            </div>
+            <h3 style="margin-top: 0;">Esdeveniments del mes</h3>
             <div class="events-list" id="eventsList">
                 <!-- Esdeveniments generats dinàmicament -->
             </div>
@@ -108,14 +107,7 @@
     <!-- Modal per afegir/editar cita -->
     <div class="modal" id="eventModal">
         <div class="modal-content google-style">
-            <div class="modal-header-google">
-                <button class="close-btn" id="closeModalBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
+
             <form id="eventForm" class="google-form">
                 <!-- Títol de l'esdeveniment -->
                 <div class="form-row title-row">

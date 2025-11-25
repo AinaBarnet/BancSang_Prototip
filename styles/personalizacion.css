@@ -351,6 +351,7 @@ header h1 {
     color: #c62641;
     box-shadow: 0 2px 8px rgba(183, 28, 52, 0.18);
 }
+
 #addFriendForm input[type="text"] {
     background: rgba(255,255,255,0.98);
     border-radius: 15px;   

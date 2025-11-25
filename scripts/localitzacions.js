@@ -86,14 +86,10 @@ function showLocationSuggestion() {
         if (!searchInput.value) {
             modalManager.confirm(
                 'Vols que busquem els centres de donació més propers a la teva ubicació actual?',
-                'Podem conèixer la teva ubicació?',
                 () => {
                     useCurrentLocation();
                 },
-                () => {
-                    // L\'usuari ha dit que no
-                    console.log('Usuari ha rebutjat usar ubicació');
-                }
+                'Podem conèixer la teva ubicació?'
             );
         }
     }, 1000);

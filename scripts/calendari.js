@@ -101,7 +101,7 @@ function scheduleSimulatedReply(contactId, replyText, replyDelay = null) {
                 if (!convs[contactId]) convs[contactId] = [];
 
                 const replyMsg = {
-                    id: `msg-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                    id: `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                     text: replyText,
                     sender: contactId,
                     timestamp: Date.now(),
@@ -114,7 +114,7 @@ function scheduleSimulatedReply(contactId, replyText, replyDelay = null) {
                 UserDataManager.saveChatConversations(convs);
 
                 // Forçar un canvi a localStorage per notificar altres pestanyes
-                try { localStorage.setItem('bancSang_chat_last_update', Date.now().toString()); } catch (e) {}
+                try { localStorage.setItem('bancSang_chat_last_update', Date.now().toString()); } catch (e) { }
             } catch (err) {
                 console.error('Error simulant resposta per', contactId, err);
             }
@@ -492,7 +492,6 @@ function setupEventListeners() {
     });
 
     // Modal d'esdeveniment
-    document.getElementById('closeModalBtn').addEventListener('click', closeEventModal);
     document.getElementById('cancelBtn').addEventListener('click', closeEventModal);
 
     eventModal.addEventListener('click', (e) => {
@@ -943,7 +942,7 @@ function handleEventSubmit(e) {
                         // Si no existeix, crear un contacte nou lleuger
                         if (!contact) {
                             contact = {
-                                id: `contact-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                                id: `contact-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                                 name: name,
                                 avatar: '👤',
                                 role: 'Contacte',
@@ -959,7 +958,7 @@ function handleEventSubmit(e) {
                         if (!conversations[contact.id]) conversations[contact.id] = [];
 
                         const msg = {
-                            id: `msg-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                            id: `msg-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                             text: eventSummary,
                             sender: 'me',
                             timestamp: Date.now(),
@@ -972,14 +971,14 @@ function handleEventSubmit(e) {
 
                         // Guardar converses després de cada afegit (pot ser optimitzat si cal)
                         UserDataManager.saveChatConversations(conversations);
-                            // Programar una resposta simulada del col·laborador
-                            try {
-                                const dateStr = new Date(date).toLocaleDateString('ca-ES');
-                                const replyText = `Rebut! ✅\nConfirmo assistència a "${eventTitle}" el ${dateStr} a les ${time}.`;
-                                scheduleSimulatedReply(contact.id, replyText);
-                            } catch (e) {
-                                console.error('Error programant resposta simulada per esdeveniment:', e);
-                            }
+                        // Programar una resposta simulada del col·laborador
+                        try {
+                            const dateStr = new Date(date).toLocaleDateString('ca-ES');
+                            const replyText = `Rebut! ✅\nConfirmo assistència a "${eventTitle}" el ${dateStr} a les ${time}.`;
+                            scheduleSimulatedReply(contact.id, replyText);
+                        } catch (e) {
+                            console.error('Error programant resposta simulada per esdeveniment:', e);
+                        }
                     } catch (innerErr) {
                         console.error('Error enviant missatge a', name, innerErr);
                     }
@@ -1170,7 +1169,6 @@ function deleteCurrentEvent() {
     // Utilitzar modal de confirmació
     modalManager.confirm(
         confirmMessage,
-        'Confirmar eliminació',
         () => {
             // Si l'usuari confirma, eliminar l'esdeveniment
             UserDataManager.removeCalendarAppointment(currentEventForDeletion.id);
@@ -1187,9 +1185,7 @@ function deleteCurrentEvent() {
             // Mostrar missatge d'èxit
             modalManager.success(successMessage, 'Eliminat');
         },
-        () => {
-            // Si l'usuari cancel·la, no fer res
-        }
+        'Confirmar eliminació'
     );
 }
 // ============================================
@@ -1403,7 +1399,6 @@ function renderLegendEditItems() {
 
             modalManager.confirm(
                 confirmMessage,
-                'Confirmar eliminació',
                 () => {
                     console.log('Confirmada eliminació de categoria:', categoryLabel);
 
@@ -1432,9 +1427,7 @@ function renderLegendEditItems() {
                     }
                     modalManager.success(message, 'Categoria eliminada');
                 },
-                () => {
-                    console.log('Cancel·lada eliminació de categoria:', categoryLabel);
-                }
+                'Confirmar eliminació'
             );
         });
     });
@@ -1488,14 +1481,14 @@ function saveLegendCategories() {
 function resetLegendToDefault() {
     modalManager.confirm(
         'Aquesta acció restaurarà la llegenda als valors per defecte i eliminarà totes les teves categories personalitzades.\n\nAquesta acció no es pot desfer.\n\nVols continuar?',
-        'Restaurar valors per defecte',
         () => {
             legendCategories = JSON.parse(JSON.stringify(DEFAULT_LEGEND_CATEGORIES));
             saveLegendToStorage();
             renderLegendEditItems();
             renderCategoryOptions();
             modalManager.success('La llegenda s\'ha restaurat correctament als valors per defecte. Les categories personalitzades s\'han eliminat.', 'Llegenda restaurada');
-        }
+        },
+        'Restaurar valors per defecte'
     );
 }
 
