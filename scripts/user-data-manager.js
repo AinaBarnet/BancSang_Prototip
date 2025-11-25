@@ -712,6 +712,16 @@ const UserDataManager = {
         if (achievements[totalDonations]) {
             const achievement = achievements[totalDonations];
 
+            // Afegir assoliment desbloquejat a la llista de l'usuari
+            const userData = this.getCurrentUserData();
+            if (userData && userData.achievements && Array.isArray(userData.achievements.unlocked)) {
+                // Evitar duplicats
+                if (!userData.achievements.unlocked.includes(totalDonations)) {
+                    userData.achievements.unlocked.push(totalDonations);
+                    this.saveCurrentUserData(userData);
+                }
+            }
+
             this.addNotification({
                 type: 'achievements',
                 icon: achievement.icon,

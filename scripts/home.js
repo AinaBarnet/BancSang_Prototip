@@ -60,17 +60,28 @@ function checkAndResetTodayDonations() {
 
 // Carregar donacions globals des de localStorage
 function loadDonations() {
-    // Total mensual
+    // Total mensual (segueix igual)
     const storedTotal = localStorage.getItem('global_totalDonations');
     totalDonations = storedTotal ? parseInt(storedTotal, 10) : 0;
 
-    // Donacions d'avui
-    const todayStr = new Date().toISOString().split('T')[0];
-    const storedToday = localStorage.getItem('global_todayDonations');
-    const storedTodayDate = localStorage.getItem('global_todayDonations_date');
-    if (storedToday && storedTodayDate === todayStr) {
-        todayDonations = parseInt(storedToday, 10);
-    } else {
+    // Donacions d'avui globals: sumar totes les donacions d'avui de tots els usuaris
+    todayDonations = 0;
+    try {
+        const allUsersData = localStorage.getItem('banc_sang_user_data');
+        if (allUsersData) {
+            const users = JSON.parse(allUsersData);
+            const todayStr = new Date().toISOString().split('T')[0];
+            Object.values(users).forEach(user => {
+                if (user && user.donations && Array.isArray(user.donations.list)) {
+                    todayDonations += user.donations.list.filter(d => {
+                        const dateStr = d.date ? d.date.split('T')[0] : (d.timestamp ? new Date(d.timestamp).toISOString().split('T')[0] : null);
+                        return dateStr === todayStr;
+                    }).length;
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Error llegint donacions globals d\'avui:', e);
         todayDonations = 0;
     }
 }

@@ -54,14 +54,28 @@ function renderProfile() {
     if (achievementsList) {
         const achievements = (user.achievements && Array.isArray(user.achievements.unlocked)) ? user.achievements.unlocked : [];
         achievementsList.innerHTML = '';
+        // Taula d'assoliments igual que a user-data-manager.js
+        const achievementTable = {
+            1: { title: 'Primera donació! 🎉', level: 'Principiant', icon: '🎉', lives: 3 },
+            3: { title: 'Donant bronze! 🥉', level: 'Bronze', icon: '🥉', lives: 9 },
+            5: { title: 'Donant plata! 🥈', level: 'Plata', icon: '🥈', lives: 15 },
+            10: { title: 'Donant or! 🥇', level: 'Or', icon: '🥇', lives: 30 },
+            25: { title: 'Heroi solidari! 🏆', level: 'Platí', icon: '🏆', lives: 75 },
+            50: { title: 'Llegenda de la solidaritat! 👑', level: 'Diamant', icon: '👑', lives: 150 }
+        };
         if (achievements.length === 0) {
             const li = document.createElement('li');
             li.textContent = 'Encara no tens cap assoliment.';
             achievementsList.appendChild(li);
         } else {
             achievements.forEach(a => {
+                const data = achievementTable[a];
                 const li = document.createElement('li');
-                li.innerHTML = '🏆 ' + a;
+                if (data) {
+                    li.innerHTML = `${data.icon} <strong>${data.title}</strong> <span style="color:gray;font-size:0.9em">(${data.level})</span>`;
+                } else {
+                    li.innerHTML = '🏆 Assoliment desconegut (' + a + ')';
+                }
                 achievementsList.appendChild(li);
             });
         }
