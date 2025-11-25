@@ -1,144 +1,153 @@
-// Obtenir perfil de l'usuari actual
-function getProfile() {
-    const userData = UserDataManager.getCurrentUserData();
-    if (!userData) {
-        console.error('No s\'han pogut obtenir les dades de l\'usuari');
-        return {
-            name: '',
-            donations: 0,
-            lastDonation: '',
-            groups: []
-        };
-    }
-
-    return {
-        name: userData.profile.name || '',
-        donations: userData.profile.donations || 0,
-        lastDonation: userData.profile.lastDonation || '',
-        groups: userData.profile.groups || []
-    };
-}
-
-function saveProfile(profile) {
-    UserDataManager.updateCurrentUserProfile(profile);
-}
+// ---
 
 function renderProfile() {
-    const p = getProfile();
-    document.getElementById('displayName').textContent = p.name;
-    document.getElementById('headerUserName').textContent = p.name.split(' ')[0] || p.name;
-    document.getElementById('donationCount').textContent = p.donations;
-    document.getElementById('lastDonation').textContent = p.lastDonation;
-    document.getElementById('nameInput').value = p.name;
-
-    const ul = document.getElementById('groupsList');
-    ul.innerHTML = '';
-    // Prepare mock chats to sync with xat page
-    const mockChats = p.groups.map((g, idx) => ({
-        id: `chat-${idx + 1}`,
-        name: g.name,
-        joined: g.joined,
-        messages: [
-            { sender: 'system', text: `Benvingut a ${g.name}`, time: '10:00' },
-            { sender: p.name, text: 'Hola a tothom!', time: '10:02' }
-        ]
-    }));
-    try {
-        // Build contacts and conversations in the structure expected by ChatManager
-        // Load existing from UserDataManager
-        let existingContacts = UserDataManager.getChatContacts();
-        let existingConvs = UserDataManager.getChatConversations();
-
-        mockChats.forEach((ch, idx) => {
-            const contactId = ch.id; // e.g. chat-1
-
-            // Add contact if not exists
-            if (!existingContacts.find(c => c.id === contactId)) {
-                existingContacts.push({
-                    id: contactId,
-                    name: ch.name,
-                    avatar: (ch.name || 'U').trim()[0].toUpperCase(),
-                    role: 'Grup',
-                    online: false,
-                    lastSeen: null
-                });
-            }
-
-            // Add conversation if not exists
-            if (!existingConvs[contactId]) {
-                // map messages to ChatManager format
-                const now = Date.now();
-                const msgs = (ch.messages || []).map((m, mi) => {
-                    const sender = (m.sender === p.name || m.sender === 'me') ? 'me' : contactId;
-                    return {
-                        id: `msg-${contactId}-${mi}-${Date.now()}`,
-                        text: m.text || m.message || '',
-                        sender: sender,
-                        timestamp: now - ((ch.messages.length - mi) * 60000),
-                        read: sender === 'me',
-                        sent: true
-                    };
-                });
-
-                existingConvs[contactId] = msgs;
-            }
-        });
-
-        // Save merged data back to UserDataManager
-        UserDataManager.saveChatContacts(existingContacts);
-        UserDataManager.saveChatConversations(existingConvs);
-    } catch (e) { console.error(e) }
-
-    // Render the groups list with links to xat using contactId param
-    mockChats.forEach(ch => {
-        const li = document.createElement('li');
-        li.className = 'group-item';
-        li.innerHTML = `<a class="group-link" href="xat.html?contactId=${encodeURIComponent(ch.id)}"><div class=\"group-name\">${escapeHtml(ch.name)}</div><div class=\"group-date\">${escapeHtml(ch.joined)}</div></a>`;
-        ul.appendChild(li);
-    });
-
+    const user = UserDataManager.getCurrentUserData();
+    if (!user) return;
+    const profile = user.profile || {};
+    // Amics (chats.contacts)
+    const friendsList = document.getElementById('friendsList');
+    if (friendsList) {
+        const contacts = (user.chats && Array.isArray(user.chats.contacts)) ? user.chats.contacts : [];
+        friendsList.innerHTML = '';
+        if (contacts.length === 0) {
+            const li = document.createElement('li');
+            li.textContent = 'Encara no tens cap amic.';
+            friendsList.appendChild(li);
+        } else {
+            contacts.forEach((friend, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = '👤 ' + (friend.name || friend.email || friend.id || 'Amic');
+                // Afegir botó per eliminar amic
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = '✖';
+                removeBtn.className = 'remove-friend-btn';
+                removeBtn.title = 'Elimina amic';
+                removeBtn.onclick = function() {
+                    contacts.splice(idx, 1);
+                    user.chats.contacts = contacts;
+                    UserDataManager.saveCurrentUserData(user);
+                    renderProfile();
+                };
+                li.appendChild(removeBtn);
+                friendsList.appendChild(li);
+            });
+        }
+    }
+    // Achievements
+    const achievementsList = document.getElementById('achievementsList');
+    if (achievementsList) {
+        const achievements = (user.achievements && Array.isArray(user.achievements.unlocked)) ? user.achievements.unlocked : [];
+        achievementsList.innerHTML = '';
+        if (achievements.length === 0) {
+            const li = document.createElement('li');
+            li.textContent = 'Encara no tens cap assoliment.';
+            achievementsList.appendChild(li);
+        } else {
+            achievements.forEach(a => {
+                const li = document.createElement('li');
+                li.innerHTML = '🏆 ' + a;
+                achievementsList.appendChild(li);
+            });
+        }
+    }
+    // Carrega el nom del localStorage
+    const name = profile.name || '';
+    document.getElementById('displayName').textContent = name || '—';
+    document.getElementById('nameInput').value = name;
+    // Avatar
     const avatar = document.querySelector('.profile-avatar');
-    if (avatar) avatar.textContent = (p.name || 'U').trim()[0].toUpperCase();
+    if (avatar) {
+        let firstLetter = 'U';
+        if (name && typeof name === 'string') {
+            const match = name.trim().match(/[A-Za-zÀ-ÿ]/);
+            if (match) firstLetter = match[0].toUpperCase();
+        }
+        avatar.textContent = firstLetter;
+    }
+    // Email
+    const email = profile.email || '—';
+    const emailEl = document.getElementById('profileEmail');
+    if (emailEl) emailEl.textContent = email;
+    // Donacions totals
+    const donations = user.donations && typeof user.donations.totalCount === 'number' ? user.donations.totalCount : (user.donations && user.donations.list ? user.donations.list.length : '—');
+    const donationsEl = document.getElementById('profileDonations');
+    if (donationsEl) donationsEl.textContent = donations !== undefined ? donations : '—';
+    // Última donació
+    let lastDonation = '—';
+    if (user.donations && user.donations.lastDonationDate) {
+        const d = new Date(user.donations.lastDonationDate);
+        if (!isNaN(d)) lastDonation = d.toLocaleDateString('ca-ES');
+    } else if (user.donations && user.donations.list && user.donations.list.length > 0) {
+        const d = new Date(user.donations.list[0].date || user.donations.list[0].timestamp);
+        if (!isNaN(d)) lastDonation = d.toLocaleDateString('ca-ES');
+    }
+    const lastDonationEl = document.getElementById('profileLastDonation');
+    if (lastDonationEl) lastDonationEl.textContent = lastDonation;
 }
 
-function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (m) {
-        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" })[m];
-    });
-}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Protegir la pàgina
-    if (!AuthManager.requireAuth()) {
-        return;
-    }
-
+    if (!AuthManager.requireAuth()) return;
     renderProfile();
-
+    // Formulari per afegir amics
+    const addFriendForm = document.getElementById('addFriendForm');
+    if (addFriendForm) {
+        addFriendForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('friendName').value.trim();
+            const email = document.getElementById('friendEmail').value.trim();
+            if (!name && !email) {
+                document.getElementById('friendName').classList.add('input-error');
+                setTimeout(() => document.getElementById('friendName').classList.remove('input-error'), 1200);
+                return;
+            }
+            const userData = UserDataManager.getCurrentUserData();
+            if (!userData.chats) userData.chats = { contacts: [], conversations: {} };
+            if (!Array.isArray(userData.chats.contacts)) userData.chats.contacts = [];
+            userData.chats.contacts.push({
+                name: name || undefined,
+                email: email || undefined,
+                id: Date.now()
+            });
+            UserDataManager.saveCurrentUserData(userData);
+            document.getElementById('friendName').value = '';
+            document.getElementById('friendEmail').value = '';
+            renderProfile();
+        });
+    }
+    // Botó DESAR nom
     document.getElementById('saveName').addEventListener('click', () => {
-        const name = document.getElementById('nameInput').value.trim();
-        if (!name) return modalManager.warning('Si us plau, introdueix un nom vàlid.', '⚠️ Nom buit');
-        const p = getProfile();
-        p.name = name;
-        saveProfile(p);
-
+        const nameInput = document.getElementById('nameInput');
+        const name = nameInput.value.trim();
+        if (!name) {
+            nameInput.classList.add('input-error');
+            setTimeout(() => nameInput.classList.remove('input-error'), 1200);
+            return;
+        }
+        // Guarda el nom a localStorage (banc_sang_user_data.profile.name)
+        const userData = UserDataManager.getCurrentUserData();
+        userData.profile.name = name;
+        UserDataManager.saveCurrentUserData(userData);
         // Actualitzar també el nom a l'autenticació
         const session = AuthManager.getCurrentSession();
         if (session) {
             session.name = name;
             localStorage.setItem('banc_sang_session', JSON.stringify(session));
         }
-
         renderProfile();
     });
-
     document.getElementById('resetName').addEventListener('click', () => {
-        // En lloc d'eliminar, restaurar al nom de registre
         const session = AuthManager.getCurrentSession();
         if (session) {
             const userData = UserDataManager.getCurrentUserData();
             userData.profile.name = session.email.split('@')[0];
             UserDataManager.saveCurrentUserData(userData);
+            renderProfile();
+        }
+    });
+    // Refresca la vista si hi ha canvis a localStorage
+    window.addEventListener('storage', (e) => {
+        if (e.key && e.key.startsWith('banc_sang_user_data')) {
             renderProfile();
         }
     });

@@ -52,15 +52,64 @@ const UserDataManager = {
         };
     },
 
-    // Obtenir totes les dades dels usuaris
+    // Obtenir totes les dades dels usuaris amb gestió d'errors
     getAllUsersData() {
-        const data = localStorage.getItem(this.USER_DATA_KEY);
-        return data ? JSON.parse(data) : {};
+        try {
+            const data = localStorage.getItem(this.USER_DATA_KEY);
+            return data ? JSON.parse(data) : {};
+        } catch (e) {
+            console.error('Error llegint dades d\'usuari de localStorage:', e);
+            return {};
+        }
     },
 
-    // Guardar totes les dades dels usuaris
+    // Guardar totes les dades dels usuaris amb gestió d'errors
     saveAllUsersData(data) {
-        localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(data));
+        try {
+            // Comprovar espai disponible (limitat a ~5MB per localStorage)
+            const dataStr = JSON.stringify(data);
+            if (dataStr.length > 4.5 * 1024 * 1024) {
+                throw new Error('Les dades excedeixen la capacitat de localStorage.');
+            }
+            localStorage.setItem(this.USER_DATA_KEY, dataStr);
+        } catch (e) {
+            console.error('Error guardant dades d\'usuari a localStorage:', e);
+            alert('No s\'han pogut guardar les dades. Comprova l\'espai disponible o exporta les teves donacions.');
+        }
+    },
+    // Exportar donacions de l'usuari actual (JSON descarregable)
+    exportCurrentUserDonations() {
+        const userId = this.getCurrentUser();
+        if (!userId) return;
+        const userData = this.getUserData(userId);
+        const blob = new Blob([JSON.stringify(userData.donations, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `donacions_${userId}.json`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    },
+
+    // Importar donacions per a l'usuari actual (JSON)
+    importCurrentUserDonations(jsonString) {
+        try {
+            const userId = this.getCurrentUser();
+            if (!userId) throw new Error('No hi ha usuari autenticat');
+            const donations = JSON.parse(jsonString);
+            if (!donations.list || !Array.isArray(donations.list)) throw new Error('Format de donacions incorrecte');
+            const userData = this.getUserData(userId);
+            userData.donations = donations;
+            this.saveUserData(userId, userData);
+            return { success: true };
+        } catch (e) {
+            console.error('Error important donacions:', e);
+            return { success: false, error: e.message };
+        }
     },
 
     // Obtenir dades d'un usuari específic pel seu ID

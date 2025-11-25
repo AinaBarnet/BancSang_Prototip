@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLastDonation();
 });
 
+
 // Configurar event listeners
 function setupEventListeners() {
     // Botons principals

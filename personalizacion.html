@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalització - Banc de Sang i Teixits</title>
+    <title>El meu perfil - Banc de Sang</title>
     <link rel="stylesheet" href="styles/theme.css">
-    <link rel="stylesheet" href="styles/home.css">
-    <link rel="stylesheet" href="styles/personalizacion.css">
     <link rel="stylesheet" href="styles/modal.css">
+    <link rel="stylesheet" href="styles/personalizacion.css">
 </head>
 
 <body>
@@ -21,51 +20,47 @@
                 <span>Tornar</span>
             </button>
         </div>
-        <h1 class="header-title">Personalització</h1>
-        <div class="header-right">
-            <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'" aria-label="Perfil">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </button>
-        </div>
+        <h1 class="header-title">El meu perfil</h1>
     </header>
-
-    <main>
-        <section class="profile-container">
-            <div class="profile-card">
-                <div class="profile-avatar">L</div>
-                <div class="profile-info">
-                    <h2 id="displayName">Laura García</h2>
-                    <p class="muted" id="donationSummary">Has donat <strong id="donationCount">5</strong> vegades</p>
-                    <p class="muted">Darrera donació: <strong id="lastDonation">10/12/2025</strong></p>
+    <main class="profile-main">
+        <section class="profile-card">
+            <div class="profile-avatar"></div>
+            <div class="profile-info">
+                <label for="nameInput">Nom</label>
+                <div class="profile-name-row">
+                    <span id="displayName" class="profile-name">—</span>
+                    <input id="nameInput" type="text" maxlength="40" autocomplete="off" placeholder="El teu nom" />
                 </div>
-            </div>
-
-            <div class="controls">
-                <label for="nameInput">Editar nom</label>
-                <input id="nameInput" type="text" placeholder="El teu nom">
-                <div class="control-actions">
-                    <button id="saveName" class="main-btn save-btn">Desar</button>
-                    <button id="resetName" class="main-btn secondary">Restablir</button>
-                    <a href="calendari.html" class="main-btn calendar-btn">Veure el meu calendari</a>
+                <div class="profile-actions">
+                    <button id="saveName" class="profile-btn">Desar</button>
+                    <button id="resetName" class="profile-btn secondary">Restableix</button>
                 </div>
-            </div>
-
-            <div class="groups">
-                <h3>Grups de xat</h3>
-                <ul id="groupsList" class="groups-list">
-                    <!-- Omplert per JS -->
-                </ul>
             </div>
         </section>
+        <section class="profile-details">
+            <h2>Dades de l'usuari</h2>
+            <ul>
+                <li><strong>Email:</strong> <span id="profileEmail">—</span></li>
+                <li><strong>Donacions totals:</strong> <span id="profileDonations">—</span></li>
+                <li><strong>Última donació:</strong> <span id="profileLastDonation">—</span></li>
+            </ul>
+        </section>
+        <section class="profile-achievements">
+            <h2>Els meus assoliments</h2>
+            <ul id="achievementsList"></ul>
+        </section>
+        <section class="profile-friends">
+            <h2>Els meus amics</h2>
+            <ul id="friendsList"></ul>
+            <form id="addFriendForm" style="margin-bottom:1em;display:flex;gap:0.5em;align-items:center">
+                <input id="friendName" type="text" placeholder="Nom de l'amic" maxlength="40" autocomplete="off" />
+                <input id="friendEmail" type="email" placeholder="Email (opcional)" maxlength="80" autocomplete="off" />
+                <button type="submit">Afegir</button>
+            </form>
+        </section>
     </main>
-
     <script src="scripts/user-data-manager.js"></script>
     <script src="scripts/auth.js"></script>
-    <script src="scripts/theme-manager.js"></script>
-    <script src="scripts/modal.js"></script>
     <script src="scripts/personalizacion.js"></script>
 </body>
 
