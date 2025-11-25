@@ -423,8 +423,6 @@ function saveGroups(groups) {
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
-        // Esborrar sempre la clau de grups mock a cada recàrrega de la pàgina
-        localStorage.removeItem('bancSang_groups');
     // Ensure ChatManager defaults exist
     if (typeof ChatManager.init === 'function') ChatManager.init();
 
@@ -493,21 +491,39 @@ function setupEventListeners() {
         editContactName.value = contact.name || '';
         editContactRole.value = contact.role || '';
         editContactAvatar.value = contact.avatar || '👤';
-        // Generar opcions d'avatar
-        const avatars = ['👤','👧🏼','🧒🏽','👦🏻','👩🏼','👩🏽','🧔🏽','👵🏼','🧓🏿','👴🏻','👱🏽','👨🏼','🧑🏽'];
+        // Generar opcions d'avatar per grup igual que a la creació
+        const groupAvatars = [
+            {
+            category: '',
+            icons: [
+                '👥','🧑‍🤝‍🧑','💬','🌟',
+                '🏃','🚴','🏊',
+                '🎮','🎵','🎤','📚',
+                '✈️','🚗',
+                '🍔','🍕','🍣','☕','🍺',
+                '🩸','🌍','🎉'
+            ]
+            }
+        ];
         editAvatarSelector.innerHTML = '';
-        avatars.forEach(av => {
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'avatar-option' + (contact.avatar === av ? ' selected' : '');
-            btn.textContent = av;
-            btn.dataset.avatar = av;
-            btn.onclick = () => {
-                editContactAvatar.value = av;
-                editAvatarSelector.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-            };
-            editAvatarSelector.appendChild(btn);
+        groupAvatars.forEach(cat => {
+            const div = document.createElement('div');
+            div.className = 'avatar-category';
+            div.innerHTML = `<strong>${cat.category}</strong>`;
+            editAvatarSelector.appendChild(div);
+            cat.icons.forEach(av => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'avatar-option' + (contact.avatar === av ? ' selected' : '');
+                btn.textContent = av;
+                btn.dataset.avatar = av;
+                btn.onclick = () => {
+                    editContactAvatar.value = av;
+                    editAvatarSelector.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+                editAvatarSelector.appendChild(btn);
+            });
         });
 
         // Si és grup, mostrar secció de membres
@@ -1271,13 +1287,16 @@ function handleCreateGroup() {
         return;
     }
 
+    // Obtenir avatar seleccionat
+    const groupAvatar = document.getElementById('groupAvatar').value || '👥';
+
     // Crear objecte del grup i persistir-lo
     const groups = getSavedGroups();
     const newGroup = {
         id: `group-${Date.now()}`,
         name: groupName,
         description: groupDescription,
-        avatar: '👥',
+        avatar: groupAvatar,
         messages: [],
         members: selectedGroupContacts.slice()
     };
@@ -1302,7 +1321,8 @@ function handleCreateGroup() {
             avatar: newGroup.avatar || '👥',
             role: 'Grup',
             online: false,
-            lastSeen: Date.now()
+            lastSeen: Date.now(),
+            members: newGroup.members.slice()
         });
         ChatManager.saveContacts(contacts);
     }
@@ -1368,8 +1388,16 @@ function handleSaveContact() {
         return;
     }
 
+
     // Afegir contacte al ChatManager
     const newContact = ChatManager.addContact(name, avatar, role);
+
+    // Crear automàticament la conversa buida per aquest contacte
+    const conversations = ChatManager.getAllConversations();
+    if (!conversations[newContact.id]) {
+        conversations[newContact.id] = [];
+        ChatManager.saveAllConversations(conversations);
+    }
 
     // També afegir-lo a la llista d'amics del calendari si no existeix
     try {
@@ -1390,7 +1418,14 @@ function handleSaveContact() {
     }
 
     showFeedback(`Contacte "${name}" afegit correctament!`);
+
+    // Tancar modal d'afegir contacte
     closeAddContactModalFunc();
+    // Tancar modal de nova conversa si està obert
+    if (typeof closeNewChatModalFunc === 'function') closeNewChatModalFunc();
+
+    // Obrir directament el xat del nou contacte
+    openChat(newContact.id);
 
     // Recarregar llista de converses
     loadConversations();

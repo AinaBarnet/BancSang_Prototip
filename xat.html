@@ -366,6 +366,33 @@
                     <textarea id="groupDescription" placeholder="Afegeix una descripció del grup" rows="3"></textarea>
                 </div>
                 <div class="form-group">
+                    <label>Selecciona una icona pel grup</label>
+                    <div class="avatar-selector" id="groupAvatarSelector">
+                        <button type="button" class="avatar-option selected" data-avatar="👥">👥</button>
+                        <button type="button" class="avatar-option" data-avatar="🧑‍🤝‍🧑">🧑‍🤝‍🧑</button>
+                        <button type="button" class="avatar-option" data-avatar="💬">💬</button>
+                        <button type="button" class="avatar-option" data-avatar="🌟">🌟</button>
+                        <button type="button" class="avatar-option" data-avatar="🏃">🏃</button>
+                        <button type="button" class="avatar-option" data-avatar="🚴">🚴</button>
+                        <button type="button" class="avatar-option" data-avatar="🏊">🏊</button>
+                        <button type="button" class="avatar-option" data-avatar="🎮">🎮</button>
+                        <button type="button" class="avatar-option" data-avatar="🎵">🎵</button>
+                        <button type="button" class="avatar-option" data-avatar="🎤">🎤</button>
+                        <button type="button" class="avatar-option" data-avatar="📚">📚</button>
+                        <button type="button" class="avatar-option" data-avatar="✈️">✈️</button>
+                        <button type="button" class="avatar-option" data-avatar="🚗">🚗</button>
+                        <button type="button" class="avatar-option" data-avatar="🍔">🍔</button>
+                        <button type="button" class="avatar-option" data-avatar="🍕">🍕</button>
+                        <button type="button" class="avatar-option" data-avatar="🍣">🍣</button>
+                        <button type="button" class="avatar-option" data-avatar="☕">☕</button>
+                        <button type="button" class="avatar-option" data-avatar="🍺">🍺</button>
+                        <button type="button" class="avatar-option" data-avatar="🩸">🩸</button>
+                        <button type="button" class="avatar-option" data-avatar="🌍">🌍</button>
+                        <button type="button" class="avatar-option" data-avatar="🎉">🎉</button>
+                    </div>
+                    <input type="hidden" id="groupAvatar" value="👥">
+                </div>
+                <div class="form-group">
                     <label>Selecciona els participants</label>
                     <div class="search-bar">
                         <input type="text" id="groupContactSearchInput" placeholder="Cercar contactes">
@@ -374,8 +401,7 @@
                         <!-- Els contactes es carregaran dinàmicament -->
                     </div>
                     <button class="btn-secondary" id="addContactFromNewGroupBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
-                                        <button class="btn-secondary" id="addContactFromEditGroupBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
-                    </div>
+                    <button class="btn-secondary" id="addContactFromEditGroupBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
                 </div>
                 <div class="selected-contacts" id="selectedContacts" style="display: none;">
                     <label>Participants seleccionats:</label>
