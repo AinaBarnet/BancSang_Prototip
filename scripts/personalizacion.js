@@ -16,7 +16,23 @@ function renderProfile() {
         } else {
             contacts.forEach((friend, idx) => {
                 const li = document.createElement('li');
-                li.innerHTML = '👤 ' + (friend.name || friend.email || friend.id || 'Amic');
+                // Avatar
+                const avatarSpan = document.createElement('span');
+                avatarSpan.className = 'friend-avatar';
+                avatarSpan.textContent = friend.avatar || '👤';
+                li.appendChild(avatarSpan);
+                // Nom
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'friend-name';
+                nameSpan.textContent = ' ' + (friend.name || friend.id || 'Amic');
+                li.appendChild(nameSpan);
+                // Tipus/rol
+                if (friend.role) {
+                    const roleSpan = document.createElement('span');
+                    roleSpan.className = 'friend-role';
+                    roleSpan.textContent = '(' + friend.role.toLowerCase() + ')';
+                    li.appendChild(roleSpan);
+                }
                 // Afegir botó per eliminar amic
                 const removeBtn = document.createElement('button');
                 removeBtn.textContent = '✖';
@@ -53,7 +69,7 @@ function renderProfile() {
     // Carrega el nom del localStorage
     const name = profile.name || '';
     document.getElementById('displayName').textContent = name || '—';
-    document.getElementById('nameInput').value = name;
+    document.getElementById('nameInput').value = '';
     // Avatar
     const avatar = document.querySelector('.profile-avatar');
     if (avatar) {
@@ -89,14 +105,64 @@ function renderProfile() {
 document.addEventListener('DOMContentLoaded', () => {
     if (!AuthManager.requireAuth()) return;
     renderProfile();
-    // Formulari per afegir amics
+    // MODAL: Obrir/tancar modal d'afegir amic
+    const openAddFriendModalBtn = document.getElementById('openAddFriendModalBtn');
+    const addFriendModal = document.getElementById('addFriendModal');
+    const cancelAddFriendBtn = document.getElementById('cancelAddFriendBtn');
     const addFriendForm = document.getElementById('addFriendForm');
+    const avatarSelector = document.getElementById('friendAvatarSelector');
+    const avatarInput = document.getElementById('friendAvatar');
+
+    if (openAddFriendModalBtn && addFriendModal) {
+        openAddFriendModalBtn.addEventListener('click', () => {
+            addFriendModal.style.display = 'flex';
+        });
+    }
+    if (cancelAddFriendBtn && addFriendModal) {
+        cancelAddFriendBtn.addEventListener('click', () => {
+            addFriendModal.style.display = 'none';
+            if (addFriendForm) addFriendForm.reset();
+            if (avatarSelector) {
+                avatarSelector.querySelectorAll('.avatar-option').forEach(btn => btn.classList.remove('selected'));
+                const firstBtn = avatarSelector.querySelector('.avatar-option[data-avatar="👤"]');
+                if (firstBtn) firstBtn.classList.add('selected');
+            }
+            if (avatarInput) avatarInput.value = '👤';
+        });
+    }
+    // Tancar modal si es fa clic fora
+    if (addFriendModal) {
+        addFriendModal.addEventListener('click', (e) => {
+            if (e.target === addFriendModal) {
+                addFriendModal.style.display = 'none';
+                if (addFriendForm) addFriendForm.reset();
+                if (avatarSelector) {
+                    avatarSelector.querySelectorAll('.avatar-option').forEach(btn => btn.classList.remove('selected'));
+                    const firstBtn = avatarSelector.querySelector('.avatar-option[data-avatar="👤"]');
+                    if (firstBtn) firstBtn.classList.add('selected');
+                }
+                if (avatarInput) avatarInput.value = '👤';
+            }
+        });
+    }
+    // Gestió selector d'avatar
+    if (avatarSelector && avatarInput) {
+        avatarSelector.addEventListener('click', function(e) {
+            if (e.target.classList.contains('avatar-option')) {
+                avatarSelector.querySelectorAll('.avatar-option').forEach(btn => btn.classList.remove('selected'));
+                e.target.classList.add('selected');
+                avatarInput.value = e.target.dataset.avatar;
+            }
+        });
+    }
+    // Formulari d'afegir amic
     if (addFriendForm) {
         addFriendForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('friendName').value.trim();
-            const email = document.getElementById('friendEmail').value.trim();
-            if (!name && !email) {
+            const role = document.getElementById('friendRole').value.trim();
+            const avatar = document.getElementById('friendAvatar').value || '👤';
+            if (!name) {
                 document.getElementById('friendName').classList.add('input-error');
                 setTimeout(() => document.getElementById('friendName').classList.remove('input-error'), 1200);
                 return;
@@ -106,12 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(userData.chats.contacts)) userData.chats.contacts = [];
             userData.chats.contacts.push({
                 name: name || undefined,
-                email: email || undefined,
+                role: role || undefined,
+                avatar: avatar || '👤',
                 id: Date.now()
             });
             UserDataManager.saveCurrentUserData(userData);
-            document.getElementById('friendName').value = '';
-            document.getElementById('friendEmail').value = '';
+            addFriendModal.style.display = 'none';
+            addFriendForm.reset();
+            if (avatarSelector) {
+                avatarSelector.querySelectorAll('.avatar-option').forEach(btn => btn.classList.remove('selected'));
+                const firstBtn = avatarSelector.querySelector('.avatar-option[data-avatar="👤"]');
+                if (firstBtn) firstBtn.classList.add('selected');
+            }
+            if (avatarInput) avatarInput.value = '👤';
             renderProfile();
         });
     }
@@ -140,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const session = AuthManager.getCurrentSession();
         if (session) {
             const userData = UserDataManager.getCurrentUserData();
-            userData.profile.name = session.email.split('@')[0];
             UserDataManager.saveCurrentUserData(userData);
             renderProfile();
         }

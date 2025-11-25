@@ -26,10 +26,9 @@
         <section class="profile-card">
             <div class="profile-avatar"></div>
             <div class="profile-info">
-                <label for="nameInput">Nom</label>
                 <div class="profile-name-row">
                     <span id="displayName" class="profile-name">—</span>
-                    <input id="nameInput" type="text" maxlength="40" autocomplete="off" placeholder="El teu nom" />
+                    <input id="nameInput" type="text" maxlength="40" autocomplete="off" placeholder="Introdueix el teu nom" />
                 </div>
                 <div class="profile-actions">
                     <button id="saveName" class="profile-btn">Desar</button>
@@ -52,11 +51,41 @@
         <section class="profile-friends">
             <h2>Els meus amics</h2>
             <ul id="friendsList"></ul>
-            <form id="addFriendForm" style="margin-bottom:1em;display:flex;gap:0.5em;align-items:center">
-                <input id="friendName" type="text" placeholder="Nom de l'amic" maxlength="40" autocomplete="off" />
-                <input id="friendEmail" type="email" placeholder="Email (opcional)" maxlength="80" autocomplete="off" />
-                <button type="submit">Afegir</button>
-            </form>
+            <button id="openAddFriendModalBtn" class="profile-btn" type="button" style="margin-top:1em;">Afegir amic</button>
+            <!-- Modal Afegir Amic -->
+            <div id="addFriendModal" class="modal-overlay" style="display:none;">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>Afegir un nou amic</h3>
+                    </div>
+                    <form id="addFriendForm" autocomplete="off">
+                        <input id="friendName" type="text" placeholder="Nom del contacte" maxlength="40" autocomplete="off" style="margin-bottom:0.5em;width:100%;" />
+                        <input id="friendRole" type="text" placeholder="Rol o descripció" maxlength="40" autocomplete="off" style="margin-bottom:0.5em;width:100%;" />
+                        <label style="margin-bottom:0.3em;display:block;">Selecciona un avatar</label>
+                        <div class="avatar-selector" id="friendAvatarSelector" style="display:flex;gap:0.2em;align-items:center;flex-wrap:wrap;margin-bottom:0.7em;">
+                            <button type="button" class="avatar-option selected" data-avatar="👤">👤</button>
+                            <button type="button" class="avatar-option" data-avatar="👧🏼">👧🏼</button>
+                            <button type="button" class="avatar-option" data-avatar="🧒🏽">🧒🏽</button>
+                            <button type="button" class="avatar-option" data-avatar="👦🏻">👦🏻</button>
+                            <button type="button" class="avatar-option" data-avatar="👩🏼">👩🏼</button>
+                            <button type="button" class="avatar-option" data-avatar="👩🏽">👩🏽</button>
+                            <button type="button" class="avatar-option" data-avatar="🧔🏽">🧔🏽</button>
+                            <button type="button" class="avatar-option" data-avatar="👵🏼">👵🏼</button>
+                            <button type="button" class="avatar-option" data-avatar="🧓🏿">🧓🏿</button>
+                            <button type="button" class="avatar-option" data-avatar="👴🏻">👴🏻</button>
+                            <button type="button" class="avatar-option" data-avatar="👱🏽">👱🏽</button>
+                            <button type="button" class="avatar-option" data-avatar="👨🏼">👨🏼</button>
+                            <button type="button" class="avatar-option" data-avatar="👩🏼">👩🏼</button>
+                            <button type="button" class="avatar-option" data-avatar="🧑🏽">🧑🏽</button>
+                        </div>
+                        <input type="hidden" id="friendAvatar" value="👤">
+                        <div style="display:flex;gap:0.5em;justify-content:flex-end;">
+                            <button type="button" id="cancelAddFriendBtn" class="profile-btn secondary">Cancel·lar</button>
+                            <button type="submit" class="profile-btn">Afegir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </section>
     </main>
     <script src="scripts/user-data-manager.js"></script>
