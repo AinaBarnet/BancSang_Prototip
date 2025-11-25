@@ -170,7 +170,7 @@
             <!-- Estat inicial (cap conversa seleccionada) -->
             <div class="chat-welcome" id="chatWelcome">
                 <div class="welcome-content">
-                    <h2>Xat de BancSang</h2>
+                    <h2>Xat d'acompanya'm</h2>
                     <p>Selecciona una conversa per començar a enviar missatges</p>
                 </div>
             </div>
@@ -187,11 +187,55 @@
                         </div>
                     </div>
                     <div class="chat-actions">
+                        <button class="icon-btn" id="editContactBtn" title="Edita informació">
+                            <span>✏️</span>
+                        </button>
                         <button class="icon-btn" id="chatMenuBtn" title="Menú">
                             <span>⋮</span>
                         </button>
                     </div>
                 </div>
+    <!-- Modal per editar informació de contacte o grup -->
+    <div class="modal-overlay" id="editContactModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Edita informació</h2>
+                <button class="modal-close" id="closeEditContactModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editContactName">Nom</label>
+                    <input type="text" id="editContactName" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="editContactRole">Rol/Descripció</label>
+                    <input type="text" id="editContactRole" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Avatar</label>
+                    <div class="avatar-selector" id="editAvatarSelector">
+                        <!-- Opcions d'avatar es generaran per JS -->
+                    </div>
+                    <input type="hidden" id="editContactAvatar">
+                </div>
+                <div class="form-group" id="editGroupMembersSection" style="display:none;">
+                    <label>Membres del grup</label>
+                    <div class="search-bar">
+                        <input type="text" id="editGroupMemberSearch" placeholder="Cercar contactes">
+                    </div>
+                    <div class="contacts-list" id="editGroupMembersList"></div>
+                    <div class="selected-contacts" id="editSelectedGroupMembers" style="margin-top:0.5em;"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelEditContactBtn">Cancel·lar</button>
+                    <button class="btn-primary" id="saveEditContactBtn">Desar canvis</button>
+                </div>
+                <div style="margin-top:1.5rem; text-align:center;">
+                    <button class="btn-secondary" id="addContactFromEditGroupBottomBtn" type="button">Afegir contacte</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
                 <!-- Missatges de la conversa -->
                 <div class="chat-messages" id="chatMessages">
@@ -236,6 +280,8 @@
                 </div>
                 <div class="contacts-list" id="contactsList">
                     <!-- Els contactes es carregaran dinàmicament -->
+                </div>
+                <button class="btn-secondary" id="addContactFromNewChatBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
                 </div>
             </div>
         </div>
@@ -326,6 +372,9 @@
                     </div>
                     <div class="contacts-list" id="groupContactsList">
                         <!-- Els contactes es carregaran dinàmicament -->
+                    </div>
+                    <button class="btn-secondary" id="addContactFromNewGroupBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
+                                        <button class="btn-secondary" id="addContactFromEditGroupBtn" type="button" style="margin-top:1rem;">Afegir contacte</button>
                     </div>
                 </div>
                 <div class="selected-contacts" id="selectedContacts" style="display: none;">

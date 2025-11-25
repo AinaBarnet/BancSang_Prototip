@@ -1,3 +1,95 @@
+.selected-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    border: 1.5px solid #b71c34;
+    border-radius: 18px;
+    padding: 0.3rem 0.8rem 0.3rem 0.8rem;
+    font-size: 0.97rem;
+    color: #b71c34;
+    font-weight: 500;
+    margin: 0.1rem 0.2rem 0.1rem 0;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(183,28,52,0.07);
+    transition: border 0.2s, box-shadow 0.2s;
+}
+.selected-member button {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-size: 1.1rem;
+    margin-left: 0.3rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    transition: color 0.2s;
+}
+.selected-member button:hover {
+    color: #b71c34;
+}
+/* --- Edició de membres de grup (modal d'edició) --- */
+#editGroupMembersSection {
+    margin-top: 1.2rem;
+}
+#editGroupMembersList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.member-option {
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 18px;
+    padding: 0.35rem 0.9rem;
+    font-size: 1rem;
+    color: #b71c34;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+.member-option.selected {
+    background: linear-gradient(135deg, #ffe6eb 0%, #fff0f3 100%);
+    border-color: #b71c34;
+    color: #b71c34;
+    font-weight: 700;
+}
+#editSelectedGroupMembers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.selected-member {
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 18px;
+    padding: 0.3rem 0.8rem 0.3rem 0.8rem;
+    font-size: 0.97rem;
+    color: #b71c34;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+    position: relative;
+}
+.selected-member button {
+    background: none;
+    border: none;
+    color: #d32f2f;
+    font-size: 1.1rem;
+    margin-left: 0.3rem;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    transition: color 0.2s;
+}
+.selected-member button:hover {
+    color: #b71c34;
+}
 .group-description {
     font-size: 0.97rem;
     color: #b71c34;

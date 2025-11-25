@@ -352,6 +352,16 @@ const groupsList = document.getElementById('groupsList');
 const groupSearchInput = document.getElementById('groupSearchInput');
 
 let selectedGroupContacts = [];
+// Elements per editar contacte/grup
+const editContactBtn = document.getElementById('editContactBtn');
+const editContactModal = document.getElementById('editContactModal');
+const closeEditContactModal = document.getElementById('closeEditContactModal');
+const editContactName = document.getElementById('editContactName');
+const editContactRole = document.getElementById('editContactRole');
+const editAvatarSelector = document.getElementById('editAvatarSelector');
+const editContactAvatar = document.getElementById('editContactAvatar');
+const cancelEditContactBtn = document.getElementById('cancelEditContactBtn');
+const saveEditContactBtn = document.getElementById('saveEditContactBtn');
 
 // Key to persist groups
 const GROUPS_STORAGE_KEY = 'bancSang_groups';
@@ -382,7 +392,7 @@ const defaultMockGroups = [
         id: 'group-donants-maresme',
         name: 'Sóc donant del Maresme',
         description: 'Grup per fer pinya entre donants de la comarca del Maresme  i organitzar sortides conjuntes per donar sang.',
-        avatar: '👥',
+        avatar: '🩸',
         messages: [
             { sender: 'System', text: 'Grup per fer pinya entre donants de la comarca del Maresme', time: '09:00' }
         ],
@@ -455,6 +465,155 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Configurar event listeners
 function setupEventListeners() {
+                const addContactFromEditGroupBottomBtn = document.getElementById('addContactFromEditGroupBottomBtn');
+                if (addContactFromEditGroupBottomBtn) addContactFromEditGroupBottomBtn.addEventListener('click', openAddContactModal);
+            // Botons 'Afegir contacte' a seccions de membres/contactes
+            const addContactFromNewChatBtn = document.getElementById('addContactFromNewChatBtn');
+            if (addContactFromNewChatBtn) addContactFromNewChatBtn.addEventListener('click', openAddContactModal);
+            const addContactFromNewGroupBtn = document.getElementById('addContactFromNewGroupBtn');
+            if (addContactFromNewGroupBtn) addContactFromNewGroupBtn.addEventListener('click', openAddContactModal);
+            const addContactFromEditGroupBtn = document.getElementById('addContactFromEditGroupBtn');
+            if (addContactFromEditGroupBtn) addContactFromEditGroupBtn.addEventListener('click', openAddContactModal);
+        // Obrir modal d'edició de contacte/grup
+        if (editContactBtn) {
+            editContactBtn.addEventListener('click', openEditContactModal);
+        }
+        if (closeEditContactModal) closeEditContactModal.addEventListener('click', closeEditContactModalFunc);
+        if (cancelEditContactBtn) cancelEditContactBtn.addEventListener('click', closeEditContactModalFunc);
+        if (editContactModal) editContactModal.addEventListener('click', (e) => {
+            if (e.target === editContactModal) closeEditContactModalFunc();
+        });
+        if (saveEditContactBtn) saveEditContactBtn.addEventListener('click', handleSaveEditContact);
+    // Obrir modal d'edició i carregar dades del contacte/grup
+    function openEditContactModal() {
+        if (!currentChatId) return;
+        const contact = ChatManager.getContact(currentChatId);
+        if (!contact) return;
+        // Carregar dades bàsiques
+        editContactName.value = contact.name || '';
+        editContactRole.value = contact.role || '';
+        editContactAvatar.value = contact.avatar || '👤';
+        // Generar opcions d'avatar
+        const avatars = ['👤','👧🏼','🧒🏽','👦🏻','👩🏼','👩🏽','🧔🏽','👵🏼','🧓🏿','👴🏻','👱🏽','👨🏼','🧑🏽'];
+        editAvatarSelector.innerHTML = '';
+        avatars.forEach(av => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'avatar-option' + (contact.avatar === av ? ' selected' : '');
+            btn.textContent = av;
+            btn.dataset.avatar = av;
+            btn.onclick = () => {
+                editContactAvatar.value = av;
+                editAvatarSelector.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+            };
+            editAvatarSelector.appendChild(btn);
+        });
+
+        // Si és grup, mostrar secció de membres
+        const groupMembersSection = document.getElementById('editGroupMembersSection');
+        if (contact.role && contact.role.toLowerCase().includes('grup')) {
+            groupMembersSection.style.display = '';
+            // Carregar membres i contactes
+            const allContacts = ChatManager.getContacts();
+            // Sempre inicialitzar la llista de membres a partir de contact.members (no reutilitzar _editMembers)
+            let groupMembers = Array.isArray(contact.members) ? contact.members.slice() : [];
+            // Mostrar contactes per afegir
+            const membersListDiv = document.getElementById('editGroupMembersList');
+            const selectedDiv = document.getElementById('editSelectedGroupMembers');
+            const searchInput = document.getElementById('editGroupMemberSearch');
+            let filter = '';
+            function renderMembersList() {
+                membersListDiv.innerHTML = '';
+                allContacts.forEach(c => {
+                    if (c.id === contact.id) return; // No afegir el grup a ell mateix
+                    if (c.role && c.role.toLowerCase().includes('grup')) return; // No mostrar altres grups
+                    if (filter && !c.name.toLowerCase().includes(filter.toLowerCase())) return;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'member-option' + (groupMembers.includes(c.id) ? ' selected' : '');
+                    btn.textContent = c.avatar + ' ' + c.name;
+                    btn.onclick = () => {
+                        const idx = groupMembers.indexOf(c.id);
+                        if (idx === -1) groupMembers.push(c.id);
+                        else groupMembers.splice(idx, 1);
+                        renderMembersList();
+                        renderSelected();
+                    };
+                    membersListDiv.appendChild(btn);
+                });
+            }
+            function renderSelected() {
+                selectedDiv.innerHTML = '';
+                if (groupMembers.length === 0) {
+                    selectedDiv.textContent = 'Cap membre seleccionat.';
+                    return;
+                }
+                groupMembers.forEach(id => {
+                    const c = allContacts.find(x => x.id === id);
+                    if (!c) return;
+                    const span = document.createElement('span');
+                    span.className = 'selected-member';
+                    span.textContent = c.avatar + ' ' + c.name;
+                    // Botó per eliminar
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.textContent = '✕';
+                    removeBtn.onclick = () => {
+                        const idx = groupMembers.indexOf(id);
+                        if (idx !== -1) groupMembers.splice(idx, 1);
+                        renderMembersList();
+                        renderSelected();
+                    };
+                    span.appendChild(removeBtn);
+                    selectedDiv.appendChild(span);
+                });
+            }
+            searchInput.value = '';
+            searchInput.oninput = (e) => {
+                filter = e.target.value;
+                renderMembersList();
+            };
+            renderMembersList();
+            renderSelected();
+            // Guardar membres editats a _editMembers per a la següent desada
+            contact._editMembers = groupMembers;
+            // Quan es fa clic a guardar, s'agafarà el valor actual de _editMembers
+        } else {
+            groupMembersSection.style.display = 'none';
+        }
+        // Mostrar modal
+        editContactModal.style.display = 'flex';
+    }
+
+    function closeEditContactModalFunc() {
+        editContactModal.style.display = 'none';
+    }
+
+    // Guardar canvis d'edició de contacte/grup
+    function handleSaveEditContact() {
+        if (!currentChatId) return;
+        const contacts = ChatManager.getContacts();
+        const idx = contacts.findIndex(c => c.id === currentChatId);
+        if (idx === -1) return;
+        // Actualitzar dades
+        contacts[idx].name = editContactName.value.trim() || contacts[idx].name;
+        contacts[idx].role = editContactRole.value.trim() || contacts[idx].role;
+        contacts[idx].avatar = editContactAvatar.value || contacts[idx].avatar;
+        // Si és grup, guardar membres
+        if (contacts[idx].role && contacts[idx].role.toLowerCase().includes('grup')) {
+            // Guardar membres editats
+            if (typeof contacts[idx]._editMembers !== 'undefined') {
+                contacts[idx].members = contacts[idx]._editMembers.slice();
+                delete contacts[idx]._editMembers;
+            }
+        }
+        ChatManager.saveContacts(contacts);
+        // Actualitzar UI
+        openChat(currentChatId);
+        loadConversations();
+        closeEditContactModalFunc();
+    }
     // Enviar missatge
     sendBtn.addEventListener('click', sendMessage);
     messageInput.addEventListener('keydown', (e) => {
@@ -617,7 +776,46 @@ function openChat(contactId) {
     chatAvatar.textContent = contact.avatar;
     chatName.textContent = contact.name;
 
-    if (contact.online) {
+    if (contact.role && contact.role.toLowerCase().includes('grup')) {
+        // Mostrar membres del grup i el recompte
+        let membersCount = 0;
+        let memberNames = [];
+        if (Array.isArray(contact.members)) {
+            if (contact.members.length === 1 && typeof contact.members[0] === 'number') {
+                membersCount = contact.members[0];
+            } else {
+                membersCount = contact.members.length;
+                const allContacts = ChatManager.getContacts();
+                memberNames = contact.members.map(id => {
+                    const c = allContacts.find(x => x.id === id);
+                    return c ? (c.avatar + ' ' + c.name) : '';
+                }).filter(Boolean);
+            }
+        } else if (typeof contact.members === 'number') {
+            membersCount = contact.members;
+        }
+        // Si no hi ha membres, buscar a defaultMockGroups pel cas mock
+        if (membersCount <= 0) {
+            if (typeof defaultMockGroups !== 'undefined') {
+                const mock = defaultMockGroups.find(g => g.id === contact.id);
+                if (mock && Array.isArray(mock.members) && mock.members.length === 1 && typeof mock.members[0] === 'number') {
+                    membersCount = mock.members[0];
+                } else if (mock && typeof mock.members === 'number') {
+                    membersCount = mock.members;
+                }
+            }
+        }
+        if (membersCount > 0) {
+            if (memberNames.length > 0) {
+                chatStatus.textContent = `${membersCount} ${membersCount === 1 ? 'membre' : 'membres'}: ${memberNames.join(', ')}`;
+            } else {
+                chatStatus.textContent = `${membersCount} ${membersCount === 1 ? 'membre' : 'membres'}`;
+            }
+        } else {
+            chatStatus.textContent = 'Sense membres';
+        }
+        chatStatus.classList.remove('online');
+    } else if (contact.online) {
         chatStatus.textContent = 'En línia';
         chatStatus.classList.add('online');
     } else {
@@ -899,12 +1097,25 @@ function loadMockGroups() {
         const item = document.createElement('div');
         item.className = 'group-item';
         item.dataset.groupId = g.id;
-        const membersCount = Array.isArray(g.members) ? g.members.length : 0;
+        let membersCount = 0;
+        if (Array.isArray(g.members)) {
+            // Si és array, pot ser d'IDs o d'un sol número (mal format)
+            if (g.members.length === 1 && typeof g.members[0] === 'number') {
+                membersCount = g.members[0];
+            } else {
+                membersCount = g.members.length;
+            }
+        } else if (typeof g.members === 'number') {
+            membersCount = g.members;
+        }
         item.innerHTML = `
             <div class="group-avatar">${g.avatar || '👥'}</div>
             <div class="group-info">
                 <h4 style="color:#b71c34;font-weight:700;">${escapeHtml(g.name)}</h4>
                 <div class="group-description" style="color:#b71c34;font-weight:500; margin-bottom:0.15rem; margin-top:0.1rem; opacity:0.85;">${escapeHtml(g.description || '')}</div>
+                <div class="group-members-count" style="color:#b71c34;font-size:0.95em;opacity:0.7;">
+                    ${membersCount} ${membersCount === 1 ? 'membre' : 'membres'}
+                </div>
             </div>
         `;
         item.addEventListener('click', () => {
