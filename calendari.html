@@ -13,26 +13,17 @@
 <body>
     <header>
         <div class="header-left">
-            <button class="back-btn" onclick="window.location.href='xat.html'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="back-btn" onclick="window.location.href='xat.html'" aria-label="Tornar al xat">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
-                Tornar
+                <span>Tornar</span>
             </button>
         </div>
         <h1 class="header-title">El meu calendari</h1>
         <div class="header-right">
-            <button class="create-btn" id="addEventBtn" title="Crear">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span>Crear</span>
-            </button>
-
-            <!-- Perfil (nuevo) -->
-            <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'" aria-label="Perfil">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -42,6 +33,16 @@
 
     <main>
         <div class="calendar-container">
+            <!-- Botó crear fora del header, alineat a la dreta -->
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                <button class="create-btn" id="addEventBtn" title="Crear">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Crear</span>
+                </button>
+            </div>
             <!-- Navegació del calendari -->
             <div class="calendar-header">
                 <button class="nav-btn" id="prevMonthBtn">

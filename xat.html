@@ -41,7 +41,6 @@
                         <span>Notificacions</span>
                         <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
                     </a>
-
                     <a href="registrar-donacio.html" class="dropdown-item" id="registerDonationBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -89,6 +88,9 @@
                     </a>
                 </div>
             </div>
+            <button class="icon-btn header-prize-btn" id="prizeBtn" title="Premi del mes" aria-label="Premi del mes" onclick="window.location.href='prize.html'">
+                <span style="font-size: 1.35rem; line-height: 1; display: flex; align-items: center; justify-content: center;">🎁</span>
+            </button>
         </div>
         <h1 class="header-title">Xat</h1>
         <div class="header-right">
@@ -121,8 +123,8 @@
                 <span class="search-label">Buscar grups</span>
             </button>
             <!-- Perfil (nuevo) -->
-            <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="icon-btn" id="profileBtn" title="Perfil" onclick="location.href='personalizacion.html'" aria-label="Perfil">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>

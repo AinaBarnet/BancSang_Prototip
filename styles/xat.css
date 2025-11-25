@@ -226,19 +226,24 @@ header {
 .header-left {
     flex: 1;
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
     justify-content: flex-start;
 }
 
 /* User Menu (copiado de home.css para que funcione en xat.html) */
 .user-menu {
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .user-menu-btn {
     background: rgba(255, 255, 255, 0.2);
     border: none;
     cursor: pointer;
-    padding: 0.6rem 1rem;
+    padding: 0 1.1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
     display: flex;
@@ -248,6 +253,9 @@ header {
     font-weight: 600;
     font-size: 0.9rem;
     white-space: nowrap;
+    height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
 }
 
 .user-menu-btn:hover {
