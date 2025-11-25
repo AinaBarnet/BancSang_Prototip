@@ -36,9 +36,20 @@ body {
 }
 
 .main-logo {
-    max-width: 280px;
+    max-width: 200px;
     width: 100%;
     height: auto;
+}
+
+.app-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 5rem;
+    font-weight: 800;
+    color: #b71c34;
+    text-align: center;
+    margin: 40px 0;
+    letter-spacing: 5px;
+    text-transform: uppercase;
 }
 
 .buttons-container {
@@ -91,7 +102,7 @@ body {
 /* Responsive */
 @media (max-width: 480px) {
     .main-logo {
-        max-width: 220px;
+        max-width: 150px;
     }
 
     .buttons-container {
