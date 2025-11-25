@@ -349,6 +349,7 @@ const searchGroupsBtn = document.getElementById('searchGroupsBtn');
 const searchGroupsModal = document.getElementById('searchGroupsModal');
 const closeSearchGroupsModal = document.getElementById('closeSearchGroupsModal');
 const groupsList = document.getElementById('groupsList');
+const groupSearchInput = document.getElementById('groupSearchInput');
 
 let selectedGroupContacts = [];
 
@@ -358,24 +359,34 @@ const GROUPS_STORAGE_KEY = 'bancSang_groups';
 // Mock groups default list
 const defaultMockGroups = [
     {
-        id: 'group-amantes-deporte',
-        name: 'amantes del deporte',
+        id: 'group-amants-deporte',
+        name: "Amants de l'esport",
+        description: 'Grup per a persones actives i aficionades a l’esport. Comparteix sortides, reptes i motivació per mantenir-te en forma!',
         avatar: '🏃',
         messages: [
-            { sender: 'system', text: 'Benvinguts al grup d\'amants de l\'esport!', time: '08:00' },
-            { sender: 'ana', text: 'Quedem diumenge per córrer?', time: '08:05' }
+            { sender: 'System', text: 'Quedem diumenge per córrer?', time: '08:00' }
         ],
-        members: []
+        members: [37]
     },
     {
         id: 'group-gamers',
-        name: 'gamers',
+        name: 'Gamers',
+        description: 'Si t’agraden els videojocs, aquest és el teu grup! Organitzem partides, compartim novetats i fem pinya entre gamers.',
         avatar: '🎮',
         messages: [
-            { sender: 'system', text: 'Sala de jocs oberta!', time: '20:00' },
-            { sender: 'marc', text: 'Algu pot fer una partida?', time: '20:10' }
+            { sender: 'System', text: 'Algu pot fer una partida?', time: '20:00' }
         ],
-        members: []
+        members: [12]
+    },
+    {
+        id: 'group-donants-maresme',
+        name: 'Sóc donant del Maresme',
+        description: 'Grup per fer pinya entre donants de la comarca del Maresme  i organitzar sortides conjuntes per donar sang.',
+        avatar: '👥',
+        messages: [
+            { sender: 'System', text: 'Grup per fer pinya entre donants de la comarca del Maresme', time: '09:00' }
+        ],
+        members: [46]
     }
 ];
 
@@ -402,6 +413,8 @@ function saveGroups(groups) {
 
 // Inicialitzar
 document.addEventListener('DOMContentLoaded', () => {
+        // Esborrar sempre la clau de grups mock a cada recàrrega de la pàgina
+        localStorage.removeItem('bancSang_groups');
     // Ensure ChatManager defaults exist
     if (typeof ChatManager.init === 'function') ChatManager.init();
 
@@ -838,10 +851,21 @@ function closeNewGroupModalFunc() {
 }
 
 // Obrir modal de buscar grups mock
+let lastGroupsFilter = '';
 function openSearchGroupsModal() {
     if (!searchGroupsModal) return;
     searchGroupsModal.style.display = 'flex';
-    // Carregar grups mock
+    if (groupSearchInput) groupSearchInput.value = '';
+    lastGroupsFilter = '';
+    loadMockGroups();
+    if (groupSearchInput) {
+        groupSearchInput.removeEventListener('input', handleGroupSearchInput);
+        groupSearchInput.addEventListener('input', handleGroupSearchInput);
+    }
+}
+
+function handleGroupSearchInput(e) {
+    lastGroupsFilter = e.target.value.trim().toLowerCase();
     loadMockGroups();
 }
 
@@ -856,28 +880,37 @@ function loadMockGroups() {
     if (!groupsList) return;
     groupsList.innerHTML = '';
 
-    const groups = getSavedGroups();
+    let groups = getSavedGroups();
+    if (lastGroupsFilter) {
+        groups = groups.filter(g => g.name && g.name.toLowerCase().includes(lastGroupsFilter));
+    }
+
+    if (groups.length === 0) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.style.textAlign = 'center';
+        emptyMsg.style.color = '#b71c34';
+        emptyMsg.style.padding = '1.5rem 0';
+        emptyMsg.textContent = 'No s\'ha trobat cap grup.';
+        groupsList.appendChild(emptyMsg);
+        return;
+    }
 
     groups.forEach(g => {
         const item = document.createElement('div');
         item.className = 'group-item';
         item.dataset.groupId = g.id;
-        const lastText = (g.messages && g.messages.length) ? g.messages[g.messages.length - 1].text : '';
         const membersCount = Array.isArray(g.members) ? g.members.length : 0;
         item.innerHTML = `
             <div class="group-avatar">${g.avatar || '👥'}</div>
             <div class="group-info">
-                <h4>${escapeHtml(g.name)}</h4>
-                <p class="group-preview">${escapeHtml(lastText)}</p>
+                <h4 style="color:#b71c34;font-weight:700;">${escapeHtml(g.name)}</h4>
+                <div class="group-description" style="color:#b71c34;font-weight:500; margin-bottom:0.15rem; margin-top:0.1rem; opacity:0.85;">${escapeHtml(g.description || '')}</div>
             </div>
-            ${membersCount > 0 ? `<div class="group-badge">${membersCount}</div>` : ''}
         `;
-
         item.addEventListener('click', () => {
             showMockGroupChat(g.id);
             closeSearchGroupsModalFunc();
         });
-
         groupsList.appendChild(item);
     });
 }
@@ -1424,14 +1457,6 @@ style.textContent = `
         margin: 0;
         color: #666;
         font-size: 13px;
-    }
-    .groups-list .group-item .group-badge {
-        font-size: 11px;
-        color: #fff;
-        background: #6b6cff;
-        padding: 2px 6px;
-        border-radius: 6px;
-        margin-left: auto;
     }
 `;
 document.head.appendChild(style);
