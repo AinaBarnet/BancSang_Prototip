@@ -423,8 +423,6 @@ const newChatModal = document.getElementById('newChatModal');
 const closeNewChatModal = document.getElementById('closeNewChatModal');
 const contactsList = document.getElementById('contactsList');
 const contactSearchInput = document.getElementById('contactSearchInput');
-const emojiBtn = document.getElementById('emojiBtn');
-const emojiPanel = document.getElementById('emojiPanel');
 const chatMenuBtn = document.getElementById('chatMenuBtn');
 const contextMenu = document.getElementById('contextMenu');
 const newGroupBtn = document.getElementById('newGroupBtn');
@@ -571,22 +569,6 @@ function setupEventListeners() {
     // Cerca de contactes
     contactSearchInput.addEventListener('input', (e) => {
         filterContacts(e.target.value);
-    });
-
-    // Panel d'emojis
-    emojiBtn.addEventListener('click', toggleEmojiPanel);
-    document.addEventListener('click', (e) => {
-        if (!emojiPanel.contains(e.target) && e.target !== emojiBtn) {
-            emojiPanel.style.display = 'none';
-        }
-    });
-
-    // Seleccionar emoji
-    emojiPanel.querySelectorAll('.emoji-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            messageInput.value += e.target.textContent;
-            messageInput.focus();
-        });
     });
 
     // Menú contextual
@@ -1286,12 +1268,6 @@ function filterContacts(query) {
         const name = item.querySelector('h4').textContent.toLowerCase();
         item.style.display = name.includes(lowerQuery) ? 'flex' : 'none';
     });
-}
-
-// Toggle panel d'emojis
-function toggleEmojiPanel() {
-    const isVisible = emojiPanel.style.display === 'flex';
-    emojiPanel.style.display = isVisible ? 'none' : 'flex';
 }
 
 // Toggle menú contextual
