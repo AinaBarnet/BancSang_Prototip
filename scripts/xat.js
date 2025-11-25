@@ -1127,6 +1127,24 @@ function handleSaveContact() {
     // Afegir contacte al ChatManager
     const newContact = ChatManager.addContact(name, avatar, role);
 
+    // També afegir-lo a la llista d'amics del calendari si no existeix
+    try {
+        const userFriends = UserDataManager.getFriends() || [];
+        const already = userFriends.find(f => f.name && f.name.toLowerCase() === name.toLowerCase());
+        if (!already) {
+            // El model d'amic del calendari pot ser més simple, però afegim el mínim necessari
+            const newFriend = {
+                id: `friend-${Date.now()}`,
+                name: name,
+                createdAt: Date.now()
+            };
+            userFriends.push(newFriend);
+            UserDataManager.addFriend(newFriend);
+        }
+    } catch (err) {
+        console.error('No s\'ha pogut sincronitzar amb la llista d\'amics del calendari:', err);
+    }
+
     showFeedback(`Contacte "${name}" afegit correctament!`);
     closeAddContactModalFunc();
 
