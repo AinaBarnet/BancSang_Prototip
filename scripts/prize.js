@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Cargar donaciones
 function loadDonations() {
-    const saved = localStorage.getItem('totalDonations');
+    const saved = localStorage.getItem('global_totalDonations');
     if (saved !== null) {
         totalDonations = parseInt(saved, 10);
     }

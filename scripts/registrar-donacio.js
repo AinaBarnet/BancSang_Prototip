@@ -383,23 +383,33 @@ function saveDonation(donation) {
         return false;
     }
 
-    // --- ACTUALITZAR VALORS GLOBALS ---
-    // Total mensual
-    let totalDonations = parseInt(localStorage.getItem('global_totalDonations') || '0', 10);
-    totalDonations++;
-    localStorage.setItem('global_totalDonations', totalDonations.toString());
 
-    // Donacions d'avui
-    const todayStr = new Date().toISOString().split('T')[0];
-    const storedTodayDate = localStorage.getItem('global_todayDonations_date');
+    // --- ACTUALITZAR VALORS GLOBALS ---
+    // Recalcular total mensual i donacions d'avui sumant totes les donacions de tots els usuaris
+    let totalDonations = 0;
     let todayDonations = 0;
-    if (storedTodayDate === todayStr) {
-        todayDonations = parseInt(localStorage.getItem('global_todayDonations') || '0', 10) + 1;
-    } else {
-        todayDonations = 1;
-        localStorage.setItem('global_todayDonations_date', todayStr);
+    try {
+        const allUsersData = localStorage.getItem('banc_sang_user_data');
+        if (allUsersData) {
+            const users = JSON.parse(allUsersData);
+            const todayStr = new Date().toISOString().split('T')[0];
+            Object.values(users).forEach(user => {
+                if (user && user.donations && Array.isArray(user.donations.list)) {
+                    totalDonations += user.donations.list.length;
+                    todayDonations += user.donations.list.filter(d => {
+                        const dateStr = d.date ? d.date.split('T')[0] : (d.timestamp ? new Date(d.timestamp).toISOString().split('T')[0] : null);
+                        return dateStr === todayStr;
+                    }).length;
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Error recalculant totals globals:', e);
     }
+    localStorage.setItem('global_totalDonations', totalDonations.toString());
+    const todayStr = new Date().toISOString().split('T')[0];
     localStorage.setItem('global_todayDonations', todayDonations.toString());
+    localStorage.setItem('global_todayDonations_date', todayStr);
 
     return true;
 }
